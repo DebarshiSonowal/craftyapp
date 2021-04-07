@@ -1,0 +1,103 @@
+
+import 'package:crafty/Helper/CartData.dart';
+import 'package:crafty/UI/Activity/Host.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:lottie/lottie.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
+
+import '../../main.dart';
+
+
+class Result extends StatefulWidget {
+
+
+  @override
+  _ResultState createState() => _ResultState();
+
+
+}
+
+class _ResultState extends State<Result> {
+//Zakaria Jawas
+//utsav
+//Abby Ambrogi
+var RESULT;
+  @override
+  Widget build(BuildContext context) {
+    RESULT = Provider.of<CartData>(context, listen: true).RESULT;
+    return Material(
+      child: Container(
+          color: Colors.white,
+          child: Padding(
+            padding: EdgeInsets.only(top: MediaQuery.of(context).size.width / 4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Flexible(
+                    flex: 3,
+                    child: Lottie.asset(Provider.of<CartData>(context, listen: true).RESULT)),
+                Flexible(
+                    flex: 1,
+                    child: Center(
+                      child: Text(
+                        "The Reference ID is ${Provider.of<CartData>(context, listen: true).TXT}",
+                        style: TextStyle(
+                          fontSize: 14,
+                        ),
+                      ),
+                    )),
+                Flexible(
+                    flex: 1,
+                    child: Center(
+                      child: Text(
+                        "Do not close this",
+                        style: TextStyle(
+                          fontSize: 14,
+                        ),
+                      ),
+                    )),
+                Flexible(
+                    flex: 4,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child:
+                          ElevatedButton(onPressed: () {
+                            if (RESULT!="assets/raw/loading.json") {
+                              Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: Host()));
+                              Provider.of<CartData>(context, listen: false).RESULT="assets/raw/loading.json";
+                            } else {
+                              Fluttertoast.showToast(
+                                  msg: "Please Wait",
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.BOTTOM,
+                                  timeInSecForIosWeb: 1,
+                                  backgroundColor: Colors.red,
+                                  textColor: Colors.black,
+                                  fontSize: 16.0);
+                            }
+                          }, child: Text("Next")),
+                    )),
+              ],
+            ),
+          )),
+    );
+  }
+
+  String getAsset() {
+    if(Provider.of<CartData>(context, listen: false).RESULT == "Successful") {
+      setState(() {
+        return "assets/raw/successful.json";
+      });
+    }else if(Provider.of<CartData>(context, listen: false).RESULT == "Please Wait"){
+      setState(() {
+        return "assets/raw/failed.json";
+      });
+    }else{
+      return "assets/raw/loading.json";
+    }
+
+  }
+}
