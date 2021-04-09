@@ -473,6 +473,7 @@ class _ProductViewState extends State<ProductView> {
         label: 'Next',
         onPressed: () {
           setState(() {
+            Navigator.pop(context);
             widget.fragNav.putPosit(key: 'Cart');
           });
         },

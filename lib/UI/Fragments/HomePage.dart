@@ -22,7 +22,6 @@ import 'ProductView.dart';
 
 //Carolina Cajazeira
 class HomePage extends StatefulWidget {
-
   @override
   _HomePageState createState() => _HomePageState();
 
@@ -44,12 +43,10 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     _refreshController.dispose();
     super.dispose();
-
   }
 
   @override
   void didChangeDependencies() {
-
     super.didChangeDependencies();
   }
 
@@ -151,7 +148,7 @@ class _HomePageState extends State<HomePage> {
                           .getCateg(),
                       index: index,
                       OnTap: () {
-                        Test.fragNavigate.putPosit(key: 'Men',force: true);
+                        Test.fragNavigate.putPosit(key: 'Men', force: true);
                       },
                     );
                   },
@@ -204,7 +201,6 @@ class _HomePageState extends State<HomePage> {
                   );
                 }).toList(),
               ),
-
               SizedBox(
                 height: 15,
               ),
@@ -302,7 +298,7 @@ class _HomePageState extends State<HomePage> {
                                     product: Provider.of<CartData>(context,
                                             listen: false)
                                         .allproducts[index],
-                                    fragNav:Test.fragNavigate)));
+                                    fragNav: Test.fragNavigate)));
                       },
                     );
                   },

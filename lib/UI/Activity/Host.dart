@@ -6,6 +6,7 @@ import 'package:crafty/Helper/Navigation.dart';
 import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/Models/Products.dart';
+import 'package:crafty/UI/Fragments/About.dart';
 import 'package:crafty/UI/Fragments/Cart.dart';
 import 'package:crafty/UI/Fragments/Contact_Us.dart';
 import 'package:crafty/UI/Fragments/HomePage.dart';
@@ -50,22 +51,34 @@ class HostState extends State<Host> {
           title: 'Profile',
           fragment: ProfilePage(),
           icon: Icons.accessibility),
-      Posit(key: 'Cart', title: 'Cart', fragment: Cart(), icon: Icons.ac_unit),
       Posit(
-          key: 'Men', title: 'Men', fragment: MenProducts(), icon: Icons.code),
+          key: 'Cart',
+          title: 'Cart',
+          fragment: Cart(),
+          icon: Icons.ac_unit),
+      Posit(
+          key: 'Men',
+          title: 'Men',
+          fragment: MenProducts(),
+          icon: Icons.code),
       Posit(
           key: 'Women',
           title: 'Women',
           fragment: WomenProducts(),
           icon: Icons.code),
-      Posit(key: 'Wish', title: 'Wish', fragment: WishList(), icon: Icons.code),
+      Posit(
+          key: 'WishList',
+          title: 'WishList',
+          fragment: WishList(),
+          icon: Icons.code),
       Posit(
           key: 'Orders', title: 'Orders', fragment: Orders(), icon: Icons.code),
       Posit(
-          key: 'ContactUs',
-          title: 'ContactUs',
+          key: 'Contact Us',
+          title: 'Contact Us',
           fragment: ContactUs(),
           icon: Icons.code),
+      Posit(key: 'About', title: 'About', fragment: About(), icon: Icons.code),
     ],
   );
 

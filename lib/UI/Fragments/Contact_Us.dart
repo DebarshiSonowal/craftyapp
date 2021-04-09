@@ -62,7 +62,11 @@ class _ContactUsState extends State<ContactUs> {
                 }, Color(0xffD93084), FontAwesomeIcons.chrome,
                     Color(0xffD64135)),
                 ContactIconButton(() {
-                  notavailable();
+                  try {
+                    _launchURL();
+                  } catch (e) {
+                    print(e);
+                  }
                 }, Color(0xff4EB207), FontAwesomeIcons.googlePlay,
                     Color(0xff4EB207)),
                 ContactIconButton(() {
@@ -118,7 +122,7 @@ class _ContactUsState extends State<ContactUs> {
   }
 
   void _makingPhoneCall() async {
-    const url = 'tel:9954975444';
+    const url = 'tel:8011011178';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
@@ -161,7 +165,7 @@ class _ContactUsState extends State<ContactUs> {
 
   void _launchURL() async {
     const urls =
-        'https://www.freeprivacypolicy.com/live/2bed81fc-8c4f-4fe6-8015-8fcdcb5cc8e0';
+        "https://play.app.goo.gl/?link=https://play.google.com/store/apps/details?id=com.craftyfashion.crafty";
     var url = Uri.encodeFull(urls);
     // var url = Uri.encodeComponent(urls);
     try {
