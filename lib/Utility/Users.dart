@@ -15,6 +15,7 @@ const url = "https://officialcraftybackend.herokuapp.com/users/";
 class UsersModel {
   Future<dynamic> login(LoginData loginData) async {
     NetworkHelper networkHelper = NetworkHelper(url);
+    print("HERE");
     var Data = await networkHelper.log(loginData);
     return Data;
   }
@@ -73,6 +74,7 @@ class UsersModel {
     NetworkHelper networkHelper = NetworkHelper(url);
     ServerOrder serverOrder =
         ServerOrder.fromJson(await networkHelper.getorder(price));
+    print("HEREczccz ${serverOrder.id}");
     return serverOrder;
   }
 
@@ -85,6 +87,12 @@ class UsersModel {
   Future<dynamic> saveOrder(dynamic body) async {
     NetworkHelper networkHelper = NetworkHelper(url);
     var v = await networkHelper.saveorder(body);
+    return v;
+  }
+  Future<dynamic> getRequired()async{
+    NetworkHelper networkHelper = NetworkHelper(url);
+    print("BBBB1");
+    var v = await networkHelper.getRequired();
     return v;
   }
 }

@@ -1,18 +1,19 @@
 import 'package:crafty/Helper/CartData.dart';
+import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/Models/Products.dart';
 import 'package:crafty/UI/Activity/Host.dart';
 import 'package:crafty/UI/CustomWidgets/CombineRecyclerviewHorizontal.dart';
 import 'package:flutter/material.dart';
+import 'package:fragment_navigate/navigate-bloc.dart';
 import 'package:provider/provider.dart';
 
 
 
 class MenProducts extends StatefulWidget {
-  final HostState parent;
   @override
   _MenProductsState createState() => _MenProductsState();
 
-  MenProducts(this.parent);
+  MenProducts();
 }
 
 class _MenProductsState extends State<MenProducts> {
@@ -47,7 +48,7 @@ class _MenProductsState extends State<MenProducts> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    CombinerRecyclerView(buttonSize: buttonSize,name: "Shirt",list: Provider.of<CartData>(context, listen: false).men,parent: widget.parent,),
+                    CombinerRecyclerView(buttonSize: buttonSize,name: "Shirt",list: Provider.of<CartData>(context, listen: false).men,fragNav: Test.fragNavigate,),
                   ],
                 ),
               ),
@@ -56,6 +57,12 @@ class _MenProductsState extends State<MenProducts> {
         ],
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    print("VVV");
   }
 }
 

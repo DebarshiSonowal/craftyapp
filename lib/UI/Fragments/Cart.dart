@@ -18,6 +18,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:fragment_navigate/navigate-bloc.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:page_transition/page_transition.dart';
@@ -28,18 +29,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Result.dart';
 
-
-
 BuildContext _context;
 ProgressDialog pr;
 
 class Cart extends StatefulWidget {
-  final HostState parent;
-
   @override
   _CartState createState() => _CartState();
-
-  Cart(this.parent);
 }
 
 class _CartState extends State<Cart> {
@@ -52,6 +47,7 @@ class _CartState extends State<Cart> {
 
   Future<ServerOrder> getEveryThing(double price) async {
     UsersModel usersModel = UsersModel();
+    print("HEREczccz");
     return await usersModel.getOrder(price);
   }
 
@@ -328,45 +324,76 @@ class _CartState extends State<Cart> {
                       ),
                       IconsButton(
                         onPressed: () async {
-                          Navigator.pop(context);
-                          products =
-                              Provider.of<CartData>(context, listen: false)
-                                  .list;
-                          try {
-                            id = await getEveryThing(Provider.of<CartData>(
-                                        context,
-                                        listen: false)
-                                    .getPrice())
-                                .then((value) {
-                              return value.id;
-                            });
-                          } catch (e) {
-                            print(e);
+                          var cx = Provider.of<CartData>(context, listen: false)
+                              .razorpay
+                              .Key
+                              .toString();
+                          print("KEY $cx");
+                          if (Provider.of<CartData>(context, listen: false)
+                                  .razorpay !=
+                              null) {
+                            Navigator.pop(context);
+                            products =
+                                Provider.of<CartData>(context, listen: false)
+                                    .list;
+                            try {
+                              id = await getEveryThing(Provider.of<CartData>(
+                                          context,
+                                          listen: false)
+                                      .getPrice())
+                                  .then((value) {
+                                return value.id;
+                              });
+                            } catch (e) {
+                              print(e);
+                            }
+                            var size =
+                                Provider.of<CartData>(context, listen: false)
+                                    .Sizes;
+                            var amount =
+                                Provider.of<CartData>(context, listen: false)
+                                        .getPrice() *
+                                    100;
+                            var items =
+                                Provider.of<CartData>(context, listen: false)
+                                    .names;
+                            Test.currentCartItems =
+                                Provider.of<CartData>(context, listen: false)
+                                    .list;
+                            print(Test.currentCartItems);
+                            print(
+                                "DDDDD ${Provider.of<CartData>(context, listen: false).razorpay.Id}");
+
+                            var options = {
+                              'key':
+                                  Provider.of<CartData>(context, listen: false)
+                                      .razorpay
+                                      .Id
+                                      .toString(),
+                              'amount': amount,
+                              'order_id': '$id',
+                              'name': 'Crafty',
+                              'description': items,
+                              'external': {
+                                'wallets': ['paytm']
+                              }
+                            };
+                            print("INFOM ${id}");
+                            try {
+                              _razorpay.open(options);
+                            } catch (e) {
+                              print("VVVV $e");
+                            }
+                          } else {
+                            Fluttertoast.showToast(
+                                msg: "Failed Please Log out",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.CENTER,
+                                timeInSecForIosWeb: 1,
+                                backgroundColor: Colors.red,
+                                textColor: Colors.black,
+                                fontSize: 16.0);
                           }
-                          print(id);
-                          var size =
-                              Provider.of<CartData>(context, listen: false)
-                                  .Sizes;
-                          var amount =
-                              Provider.of<CartData>(context, listen: false)
-                                      .getPrice() *
-                                  100;
-                          var items =
-                              Provider.of<CartData>(context, listen: false)
-                                  .names;
-                          Test.currentCartItems =
-                              Provider.of<CartData>(context, listen: false)
-                                  .list;
-                          print(Test.currentCartItems);
-                          var options = {
-                            'key': 'rzp_test_grmtE0KHU0FbE0',
-                            'amount': amount,
-                            'order_id': id.toString(),
-                            'name': 'Crafty',
-                            'description': items,
-                          };
-                          print(options);
-                          _razorpay.open(options);
                         },
                         text: 'PAY',
                         iconData: FontAwesomeIcons.dollarSign,
@@ -698,7 +725,7 @@ void _handlePaymentSuccess(PaymentSuccessResponse response) async {
 }
 
 void _handlePaymentError(PaymentFailureResponse response) {
-  print("ERRROR " + response.message);
+  print("ERRROR " + response.message + " " + response.code.toString() + "");
   pr.hide().then((isHidden) {
     print(isHidden);
   });
@@ -731,5 +758,13 @@ Order saveToDatabase(id, double amount, String status, BuildContext context) {
 }
 
 void _handleExternalWallet(ExternalWalletResponse response) {
-  print(response);
+  print("My respones is ${response.walletName}");
+  Fluttertoast.showToast(
+      msg: "Successful ${response}",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.red,
+      textColor: Colors.black,
+      fontSize: 16.0);
 }

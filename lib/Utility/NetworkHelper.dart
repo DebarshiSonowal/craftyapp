@@ -138,7 +138,7 @@ class NetworkHelper {
     } on DioError catch (e) {
       if (e.type == DioErrorType.CONNECT_TIMEOUT ||
           e.type == DioErrorType.RESPONSE) {
-        if (e.response.statusCode!=400) {
+        if (e.response==null||e.response.statusCode!=400) {
           response = Response(statusCode: 500);
         } else {
           response = Response(statusCode: 400);
@@ -146,6 +146,7 @@ class NetworkHelper {
       }
     }
     if (response.statusCode == 200) {
+      print("Respone : ${response.data}");
       return response.data;
     } else if (response.statusCode == 500) {
       return "Server Error";
@@ -233,6 +234,43 @@ class NetworkHelper {
       }
     }
   }
+
+  Future getRequired() async{
+    if(Test.accessToken!=null){
+      BaseOptions option =
+      new BaseOptions(connectTimeout: 7000, receiveTimeout: 3000, headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ${Test.accessToken}',
+      });
+      dio = Dio(option);
+      dio.interceptors.add(
+        RetryOnAccessTokenInterceptor(
+          requestRetrier: DioConnectivityRequestRetrier(
+            dio: dio,
+            connectivity: Connectivity(),
+          ),
+        ),
+      );
+      Response response;
+      try {
+        response = await dio.get(url + "required");
+      } on DioError catch (e) {
+        if (e.type == DioErrorType.CONNECT_TIMEOUT) {
+          response = Response(statusCode: 500);
+        }
+      }
+      if (response.statusCode == 200) {
+        print("BBBB2");
+        return response.data;
+      } else if (response.statusCode == 500) {
+        return "Server Error";
+      } else {
+        return "Required info not found";
+      }
+    }
+    }
+
 
 
   Future getorder(double price) async {

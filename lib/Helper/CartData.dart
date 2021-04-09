@@ -1,9 +1,12 @@
 import 'dart:collection';
 import 'dart:convert';
+import 'package:crafty/Models/Ads.dart';
 import 'package:crafty/Models/CartProduct.dart';
+import 'package:crafty/Models/Categories.dart';
 import 'package:crafty/Models/Order.dart';
 import 'package:crafty/Models/Products.dart';
 import 'package:crafty/Models/Profile.dart';
+import 'package:crafty/Models/Razorpay.dart';
 import 'package:crafty/Models/User.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -19,12 +22,32 @@ class CartData extends ChangeNotifier {
   List<Products> _men = [];
   List<Products> _women = [];
   String RESULT = "assets/raw/loading.json", TXT = "Please Wait";
-
+  Razorpay _razorpay = null;
+  List<Categories>_categ=[];
+  List<Ads>_ads=[];
 
 
 //Set
+  void setCategory(List<Categories>list ){
+    _categ = list;
+    notifyListeners();
+  }
+  void setRazorpay(Razorpay razorpay){
+    _razorpay = razorpay;
+    print("RAzor ${_razorpay.Key}");
+    notifyListeners();
+  }
+
+  void setAds(List<Ads> ads){
+    _ads = ads;
+    notifyListeners();
+  }
+
+
   void setAllProduct(List<Products> product) {
     _allproducts = product;
+    print(product.length);
+    notifyListeners();
   }
 
   void setMen(List<Products> product) {
@@ -103,6 +126,26 @@ class CartData extends ChangeNotifier {
 
   User get user {
     return _user;
+  }
+
+  Razorpay get razorpay => _razorpay;
+
+  List<Ads> getAds(){
+    return List<Ads>.unmodifiable(_ads);
+  }
+
+  List<String> getAdImage(){
+    List<String> list = [];
+    for(var i in getAds()){
+      list.add(i.picture);
+    }
+    print("Size ${list.length}");
+    return list;
+
+  }
+
+  List<Categories> getCateg(){
+    return List<Categories>.unmodifiable(_categ);
   }
 
   List<Order> get order => List<Order>.unmodifiable(_order);

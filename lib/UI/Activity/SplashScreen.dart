@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/UI/Activity/Host.dart';
 import 'package:crafty/UI/Fragments/NoInternet.dart';
@@ -7,7 +8,7 @@ import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'Login.dart';
 
 
@@ -102,8 +103,16 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<bool> checkInternet() async {
-    bool result = await DataConnectionChecker().hasConnection;
-    status = result;
+    bool result;
+    if(kIsWeb){
+      print("Here");
+      status =true;
+      result = true;
+    }else{
+      result = await DataConnectionChecker().hasConnection;
+      status = result;
+
+    }
     return result;
   }
 
@@ -118,6 +127,7 @@ class _SplashScreenState extends State<SplashScreen> {
           PageTransition(type: PageTransitionType.fade, child: Host()),(r)=>false):Navigator.pushAndRemoveUntil(context,
           PageTransition(type: PageTransitionType.fade, child: NoInternet()),(r)=>false);
     }else{
+      print("Here");
       status==true?Navigator.pushAndRemoveUntil(context,
           PageTransition(type: PageTransitionType.fade, child: Login()),(r)=>false):Navigator.pushAndRemoveUntil(context,
           PageTransition(type: PageTransitionType.fade, child: NoInternet()),(r)=>false);

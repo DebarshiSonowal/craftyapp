@@ -1,4 +1,3 @@
-
 import 'package:crafty/Helper/CartData.dart';
 import 'package:crafty/Models/CartProduct.dart';
 import 'package:crafty/Models/Products.dart';
@@ -9,15 +8,16 @@ import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:fragment_navigate/navigate-bloc.dart';
 import 'package:like_button/like_button.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:provider/provider.dart';
 
-
 class ProductView extends StatefulWidget {
-  final HostState parent;
-  ProductView({this.product,this.parent});
+  final FragNavigate fragNav;
+
+  ProductView({this.product, this.fragNav});
 
 //FadeInImage.assetNetwork(
 //                   placeholder: "assets/images/404.png",
@@ -43,7 +43,7 @@ class _ProductViewState extends State<ProductView> {
   var selectedColor, selectedSize;
   var snackBar;
   int currentPhoto = 0;
-  List<int>lst = [1, 22, 3];
+  List<int> lst = [1, 22, 3];
 
   MaterialColor getSelectedColor(String color) {
     switch (color) {
@@ -71,7 +71,7 @@ class _ProductViewState extends State<ProductView> {
               label: 'Next',
               onPressed: () {
                 setState(() {
-                  this.widget.parent.selectedindex(2);
+                  widget.fragNav.putPosit(key: 'Cart', force: true);
                 });
               },
             ),
@@ -80,13 +80,13 @@ class _ProductViewState extends State<ProductView> {
           (selectedSize != null && selectedColor != null)
               ? show()
               : Fluttertoast.showToast(
-              msg: "Must add size and color",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.CENTER,
-              timeInSecForIosWeb: 1,
-              backgroundColor: Colors.red,
-              textColor: Colors.black,
-              fontSize: 16.0);
+                  msg: "Must add size and color",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.CENTER,
+                  timeInSecForIosWeb: 1,
+                  backgroundColor: Colors.red,
+                  textColor: Colors.black,
+                  fontSize: 16.0);
         },
         backgroundColor: Styles.Log_sign,
         splashColor: Colors.orange,
@@ -149,32 +149,30 @@ class _ProductViewState extends State<ProductView> {
                     builder: (BuildContext context, int index) {
                       return PhotoViewGalleryPageOptions(
                         imageProvider: NetworkImage(widget.product.Image
-                            .toString().split(",")[index].trim()),
+                            .toString()
+                            .split(",")[index]
+                            .trim()),
                         initialScale: PhotoViewComputedScale.contained * 0.8,
-                        heroAttributes: PhotoViewHeroAttributes(
-                            tag: lst[index]),
+                        heroAttributes:
+                            PhotoViewHeroAttributes(tag: lst[index]),
                       );
                     },
-                    itemCount: widget.product.Image
-                        .toString()
-                        .split(",")
-                        .length,
-                    loadingBuilder: (context, event) =>
-                        Center(
-                          child: Container(
-                            width: 20.0,
-                            height: 20.0,
-                            child: CircularProgressIndicator(
-                              value: event == null
-                                  ? 0
-                                  : event.cumulativeBytesLoaded / event
-                                  .expectedTotalBytes,
-                            ),
-                          ),
+                    itemCount:
+                        widget.product.Image.toString().split(",").length,
+                    loadingBuilder: (context, event) => Center(
+                      child: Container(
+                        width: 20.0,
+                        height: 20.0,
+                        child: CircularProgressIndicator(
+                          value: event == null
+                              ? 0
+                              : event.cumulativeBytesLoaded /
+                                  event.expectedTotalBytes,
                         ),
-                    backgroundDecoration: BoxDecoration(
-                        color: Colors.transparent
+                      ),
                     ),
+                    backgroundDecoration:
+                        BoxDecoration(color: Colors.transparent),
                     pageController: PageController(
                       initialPage: 0,
                       keepPage: true,
@@ -182,8 +180,7 @@ class _ProductViewState extends State<ProductView> {
                     onPageChanged: (INDEX) {
                       currentPhoto = INDEX;
                     },
-                  )
-              ),
+                  )),
               Flexible(
                 flex: 3,
                 child: Card(
@@ -212,13 +209,13 @@ class _ProductViewState extends State<ProductView> {
                               children: [
                                 Row(
                                   mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Flexible(
                                       fit: FlexFit.loose,
                                       child: Padding(
                                         padding:
-                                        const EdgeInsets.only(left: 30),
+                                            const EdgeInsets.only(left: 30),
                                         child: Text(
                                           widget.product.Name,
                                           textAlign: TextAlign.left,
@@ -261,24 +258,19 @@ class _ProductViewState extends State<ProductView> {
                                   flex: 3,
                                   child: CustomRadioButton(
                                     width: 85,
-                                    spacing: MediaQuery
-                                        .of(context)
-                                        .size
-                                        .height,
+                                    spacing: MediaQuery.of(context).size.height,
                                     elevation: 5,
                                     customShape: RoundedRectangleBorder(
                                       borderRadius:
-                                      BorderRadius.all(Radius.circular(20)),
+                                          BorderRadius.all(Radius.circular(20)),
                                     ),
                                     absoluteZeroSpacing: true,
                                     unSelectedColor:
-                                    Theme
-                                        .of(context)
-                                        .canvasColor,
+                                        Theme.of(context).canvasColor,
                                     buttonLables:
-                                    widget.product.Color.split(","),
+                                        widget.product.Color.split(","),
                                     buttonValues:
-                                    widget.product.Color.split(","),
+                                        widget.product.Color.split(","),
                                     buttonTextStyle: ButtonTextStyle(
                                         selectedColor: selectedColor == "Yellow"
                                             ? Colors.white
@@ -324,17 +316,13 @@ class _ProductViewState extends State<ProductView> {
                                     elevation: 5,
                                     customShape: RoundedRectangleBorder(
                                       borderRadius:
-                                      BorderRadius.all(Radius.circular(20)),
+                                          BorderRadius.all(Radius.circular(20)),
                                     ),
                                     absoluteZeroSpacing: true,
                                     unSelectedColor:
-                                    Theme
-                                        .of(context)
-                                        .canvasColor,
-                                    buttonLables:
-                                    getLabels(),
-                                    buttonValues:
-                                    getLabels(),
+                                        Theme.of(context).canvasColor,
+                                    buttonLables: getLabels(),
+                                    buttonValues: getLabels(),
                                     buttonTextStyle: ButtonTextStyle(
                                         selectedColor: Colors.black,
                                         unSelectedColor: Colors.black,
@@ -346,7 +334,6 @@ class _ProductViewState extends State<ProductView> {
                                     selectedColor: Styles.Log_sign,
                                   ),
                                 ),
-
 
                                 Flexible(
                                   flex: 3,
@@ -391,12 +378,12 @@ class _ProductViewState extends State<ProductView> {
                                               elevation: 0,
                                               color: Styles.bg_color,
                                               child: Padding(
-                                                padding: const EdgeInsets.all(
-                                                    8.0),
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
                                                 child: Text(
                                                   widget.quantity.toString(),
-                                                  style: TextStyle(
-                                                      fontSize: 16),
+                                                  style:
+                                                      TextStyle(fontSize: 16),
                                                 ),
                                               ))),
                                       Flexible(
@@ -480,14 +467,25 @@ class _ProductViewState extends State<ProductView> {
         widget.product.Name,
         widget.product.Id));
     print("KI");
-    widget.parent.show();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Product Added'),
+      action: SnackBarAction(
+        label: 'Next',
+        onPressed: () {
+          setState(() {
+            widget.fragNav.putPosit(key: 'Cart');
+          });
+        },
+      ),
+    ));
   }
 
   getLabels() {
     var list = widget.product.Color.split(",");
     print(list);
     print(selectedColor);
-    int i= list.indexOf(selectedColor==null?"MUSTARD YELLOW":selectedColor);
+    int i =
+        list.indexOf(selectedColor == null ? "MUSTARD YELLOW" : selectedColor);
     print("INDEX: $i");
     var lst = widget.product.Size.split(".");
     print("LIST: $lst");

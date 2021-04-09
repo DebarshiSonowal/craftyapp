@@ -37,18 +37,18 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void _onRefresh() async {
     var a = await pr.show();
-    print("ref"+a.toString());
+    print("ref"+Provider.of<CartData>(context,listen: false).user.id);
     UsersModel usersModel = UsersModel();
     // Profile profile = Provider.of<CartData>(context, listen: false).profile;
     try {
       profile = await usersModel.getProf(Provider.of<CartData>(context,listen: false).user.id);
-      print(profile.address);
+      print("Address ${profile.address}");
       _refreshController.refreshCompleted();
       pr.hide().then((isHidden) {
         print(isHidden);
       });
     } catch (e) {
-      print(e);
+      print("error ${e}");
       _refreshController.refreshFailed();
       pr.hide().then((isHidden) {
         print(isHidden);

@@ -212,6 +212,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "8.12.0"
+  fragment_navigate:
+    dependency: "direct main"
+    description:
+      name: fragment_navigate
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.0+2"
   google_fonts:
     dependency: "direct main"
     description:
@@ -408,6 +415,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.5"
+  rxdart:
+    dependency: transitive
+    description:
+      name: rxdart
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.25.0"
   shared_preferences:
     dependency: "direct main"
     description:

@@ -1,15 +1,14 @@
 import 'package:crafty/Helper/CartData.dart';
+import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/UI/Activity/Host.dart';
 import 'package:crafty/UI/CustomWidgets/CombineRecyclerviewHorizontal.dart';
 import 'package:flutter/material.dart';
+import 'package:fragment_navigate/navigate-bloc.dart';
 import 'package:provider/provider.dart';
 
-
-
 class WomenProducts extends StatefulWidget {
-  final HostState parent;
 
-  WomenProducts(this.parent);
+  WomenProducts();
 
   @override
   _WomenProductsState createState() => _WomenProductsState();
@@ -47,7 +46,12 @@ class _WomenProductsState extends State<WomenProducts> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    CombinerRecyclerView(buttonSize: buttonSize,name: "Shirt",list: Provider.of<CartData>(context, listen: false).women,parent: widget.parent,),
+                    CombinerRecyclerView(
+                      buttonSize: buttonSize,
+                      name: "Shirt",
+                      list: Provider.of<CartData>(context, listen: false).women,
+                      fragNav: Test.fragNavigate,
+                    ),
                     // CombinerRecyclerView(buttonSize: buttonSize,name: "Shirt",list: Test.bihuProducts,),
                     // CombinerRecyclerView(buttonSize: buttonSize,name: "Pant",list: Test.bihuProducts,),
                   ],

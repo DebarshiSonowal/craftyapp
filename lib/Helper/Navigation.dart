@@ -2,6 +2,7 @@
 import 'package:crafty/UI/Activity/Login.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:fragment_navigate/navigate-bloc.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../UI/Activity/Host.dart';
@@ -11,9 +12,9 @@ import 'CartData.dart';
 import 'Test.dart';
 
 class NavDrawer extends StatelessWidget {
-  final HostState parent;
+  final FragNavigate _fragNavigate;
 
-  NavDrawer(this.parent);
+  NavDrawer(this._fragNavigate);
 
   @override
   Widget build(BuildContext context) {
@@ -44,17 +45,17 @@ class NavDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.home),
             title: Text('Home'),
-            onTap: () => {this.parent.selectedindex(0)},
+            onTap: () => { _fragNavigate.putPosit(key: 'Home',force: true)},
           ),
           ListTile(
             leading: Icon(Icons.verified_user),
             title: Text('Profile'),
-            onTap: () => {this.parent.selectedindex(1)},
+            onTap: () => { _fragNavigate.putPosit(key: 'Profile',force: true)},
           ),
           ListTile(
             leading: Icon(Icons.add_shopping_cart),
             title: Text('Cart'),
-            onTap: () => {this.parent.selectedindex(2)},
+            onTap: () => { _fragNavigate.putPosit(key: 'Cart',force: true)},
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -65,13 +66,13 @@ class NavDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(FontAwesomeIcons.mars),
-            title: Text('Man'),
-            onTap: () => {this.parent.selectedindex(5)},
+            title: Text('Men'),
+            onTap: () => { _fragNavigate.putPosit(key: 'Men',force: true)},
           ),
           ListTile(
             leading: Icon(FontAwesomeIcons.venus),
             title: Text('Women'),
-            onTap: () => {this.parent.selectedindex(6)},
+            onTap: () => { _fragNavigate.putPosit(key: 'Women',force: true)},
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -83,12 +84,12 @@ class NavDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(FontAwesomeIcons.list),
             title: Text('WishList'),
-            onTap: () => {this.parent.selectedindex(7)},
+            onTap: () => { _fragNavigate.putPosit(key: 'WishList',force: true)},
           ),
           ListTile(
             leading: Icon(FontAwesomeIcons.box),
             title: Text('Orders'),
-            onTap: () => {this.parent.selectedindex(4)},
+            onTap: () => { _fragNavigate.putPosit(key: 'Orders',force: true)},
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -101,14 +102,13 @@ class NavDrawer extends StatelessWidget {
             leading: Icon(FontAwesomeIcons.headphones),
             title: Text('Contact Us'),
             onTap: () => {
-              this.parent.selectedindex(3)},
+              _fragNavigate.putPosit(key: 'Contact Us',force: true)},
           ),
           ListTile(
             leading: Icon(Icons.exit_to_app),
             title: Text('Logout'),
             onTap: () => {
               clearTokens(context)
-
             },
           ),
         ],

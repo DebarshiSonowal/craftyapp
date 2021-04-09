@@ -274,9 +274,8 @@ class _LoginState extends State<Login> {
   void LogIn(String email, String password) async {
     UsersModel usersModel = UsersModel();
     var b= LoginData(password, email, null);
-    print(b.toString());
+    print("${b.email},${b.password}");
     var data = await usersModel.login(b);
-    print(data);
     if (data != null && data != "User not found" && data != "Server Error") {
       Test.accessToken = data["accessToken"];
       Test.refreshToken = data["refreshToken"];

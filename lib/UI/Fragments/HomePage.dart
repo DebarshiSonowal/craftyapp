@@ -1,7 +1,9 @@
-
 import 'package:crafty/Helper/CartData.dart';
 import 'package:crafty/Helper/Test.dart';
+import 'package:crafty/Models/Ads.dart';
+import 'package:crafty/Models/Categories.dart';
 import 'package:crafty/Models/Products.dart';
+import 'package:crafty/Models/Razorpay.dart';
 import 'package:crafty/UI/Activity/Host.dart';
 import 'package:crafty/UI/CustomWidgets/CategoryItemView.dart';
 import 'package:crafty/UI/CustomWidgets/ProductItemView.dart';
@@ -10,6 +12,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:fragment_navigate/navigate-bloc.dart';
 import 'package:lottie/lottie.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -17,47 +20,78 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'ProductView.dart';
 
-
-
 //Carolina Cajazeira
 class HomePage extends StatefulWidget {
-  final HostState parent;
+
   @override
   _HomePageState createState() => _HomePageState();
 
-  HomePage(this.parent);
+  HomePage();
 }
 
 class _HomePageState extends State<HomePage> {
   RefreshController _refreshController =
-  RefreshController(initialRefresh: Test.bihu==null?true:false);
+      RefreshController(initialRefresh: Test.bihu == null ? true : false);
+
   get buttonSize => 20.0;
-  void _onRefresh() async{
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    super.dispose();
+
+  }
+
+  @override
+  void didChangeDependencies() {
+
+    super.didChangeDependencies();
+  }
+
+  void _onRefresh() async {
     UsersModel usersModel = UsersModel();
+    UsersModel usersModel1 = UsersModel();
     var Data = await usersModel.getAll();
-    if(Data.toString()=="Server Error"||Data.toString()=="Products not found"){
+    if (Data.toString() != "Server Error" ||
+        Data.toString() != "Products not found") {
       List<Products> data = Data;
-      if(data!=null){
+      if (data != null) {
+        print("Data");
         setState(() {
           print("Here");
           Provider.of<CartData>(context, listen: false).setAllProduct(data);
           Test.bihu = data;
           _refreshController.refreshCompleted();
         });
-      }else{
+      } else {
         print("nkn");
         _refreshController.refreshFailed();
       }
-    }else{
+    } else {
       _refreshController.refreshFailed();
     }
-
+    var data = await usersModel1.getRequired();
+    var data1 = data['require'] as List;
+    print("HCA ${data1}");
+    List<Categories> categories =
+        data1.map((e) => Categories.fromJson(e)).toList();
+    Provider.of<CartData>(context, listen: false).setCategory(categories);
+    var data2 = data['ads'] as List;
+    List<Ads> ads = data2.map((e) => Ads.fromJson(e)).toList();
+    Provider.of<CartData>(context, listen: false).setAds(ads);
+    var data3 = data['razorpay'];
+    Provider.of<CartData>(context, listen: false)
+        .setRazorpay(Razorpay.fromJson(data3));
   }
 
-  void _onLoading() async{
+  void _onLoading() async {
     _refreshController.loadComplete();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -68,26 +102,22 @@ class _HomePageState extends State<HomePage> {
         enablePullUp: false,
         header: WaterDropHeader(),
         footer: CustomFooter(
-          builder: (BuildContext context,LoadStatus mode){
-            Widget body ;
-            if(mode==LoadStatus.idle){
-              body =  Text("pull up load");
-            }
-            else if(mode==LoadStatus.loading){
-              body =  CupertinoActivityIndicator();
-            }
-            else if(mode == LoadStatus.failed){
+          builder: (BuildContext context, LoadStatus mode) {
+            Widget body;
+            if (mode == LoadStatus.idle) {
+              body = Text("pull up load");
+            } else if (mode == LoadStatus.loading) {
+              body = CupertinoActivityIndicator();
+            } else if (mode == LoadStatus.failed) {
               body = Text("Load Failed!Click retry!");
-            }
-            else if(mode == LoadStatus.canLoading){
+            } else if (mode == LoadStatus.canLoading) {
               body = Text("release to load more");
-            }
-            else{
+            } else {
               body = Text("No more Data");
             }
             return Container(
               height: 75.0,
-              child: Center(child:body),
+              child: Center(child: body),
             );
           },
         ),
@@ -112,20 +142,16 @@ class _HomePageState extends State<HomePage> {
                 child: ListView.builder(
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
-                  itemCount: Test.list.length,
+                  itemCount: Provider.of<CartData>(context, listen: true)
+                      .getCateg()
+                      .length,
                   itemBuilder: (BuildContext ctxt, int index) {
                     return CategoryItemView(
-                      list: Test.list,
+                      list: Provider.of<CartData>(context, listen: true)
+                          .getCateg(),
                       index: index,
                       OnTap: () {
-                        Fluttertoast.showToast(
-                            msg: "This is Center Short Toast",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.CENTER,
-                            timeInSecForIosWeb: 1,
-                            backgroundColor: Colors.red,
-                            textColor: Colors.black,
-                            fontSize: 16.0);
+                        Test.fragNavigate.putPosit(key: 'Men',force: true);
                       },
                     );
                   },
@@ -144,23 +170,41 @@ class _HomePageState extends State<HomePage> {
                   enableInfiniteScroll: true,
                   reverse: false,
                 ),
-                items: [
-                  "https://homepages.cae.wisc.edu/~ece533/images/airplane.png",
-                  "https://homepages.cae.wisc.edu/~ece533/images/arctichare.png",
-                  "https://homepages.cae.wisc.edu/~ece533/images/baboon.png"
-                ].map((i) {
+                items: Provider.of<CartData>(context, listen: false)
+                    .getAdImage()
+                    .map((i) {
                   return Builder(
                     builder: (BuildContext context) {
-                      return Container(
-                          width: MediaQuery.of(context).size.width,
-                          margin: EdgeInsets.symmetric(horizontal: 5.0),
-                          decoration: BoxDecoration(color: Colors.transparent),
-                          child: FadeInImage.assetNetwork(
-                              placeholder: "assets/images/404.png", image: i));
+                      return GestureDetector(
+                        onTap: () {
+                          var index =
+                              Provider.of<CartData>(context, listen: false)
+                                  .getAdImage()
+                                  .indexOf(i);
+                          Fluttertoast.showToast(
+                              msg:
+                                  "Clicked ${Provider.of<CartData>(context, listen: false).getAds()[index].Id}",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.CENTER,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: Colors.red,
+                              textColor: Colors.black,
+                              fontSize: 16.0);
+                        },
+                        child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            margin: EdgeInsets.symmetric(horizontal: 5.0),
+                            decoration:
+                                BoxDecoration(color: Colors.transparent),
+                            child: FadeInImage.assetNetwork(
+                                placeholder: "assets/images/404.png",
+                                image: i)),
+                      );
                     },
                   );
                 }).toList(),
               ),
+
               SizedBox(
                 height: 15,
               ),
@@ -197,36 +241,6 @@ class _HomePageState extends State<HomePage> {
               SizedBox(
                 height: 15,
               ),
-              // Padding(
-              //   padding: const EdgeInsets.all(8.0),
-              //   child: Text(
-              //     "Bihu:",
-              //     style: TextStyle(fontSize: 18),
-              //   ),
-              // ),
-              // Container(
-              //   color: Colors.transparent,
-              //   height: 220,
-              //   child: ListView.builder(
-              //     shrinkWrap: true,
-              //     scrollDirection: Axis.horizontal,
-              //     itemCount: widget.bihus.length,
-              //     itemBuilder: (BuildContext ctxt, int index) {
-              //       return ProductItemVIew(
-              //         buttonSize: buttonSize,
-              //         list: widget.bihus,
-              //         Index: index,
-              //         OnTap: () {
-              //           Navigator.push(
-              //               context,
-              //               PageTransition(
-              //                   type: PageTransitionType.fade,
-              //                   child: ProductView(widget.bihus[index])));
-              //         },
-              //       );
-              //     },
-              //   ),
-              // ),
               Padding(
                 padding: const EdgeInsets.all(3.0),
                 child: Card(
@@ -270,13 +284,13 @@ class _HomePageState extends State<HomePage> {
                 child: ListView.builder(
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
-                  itemCount: Provider.of<CartData>(context, listen: false)
+                  itemCount: Provider.of<CartData>(context, listen: true)
                       .allproducts
                       .length,
                   itemBuilder: (BuildContext ctxt, int index) {
                     return ProductItemVIew(
                       buttonSize: buttonSize,
-                      list: Provider.of<CartData>(context, listen: false)
+                      list: Provider.of<CartData>(context, listen: true)
                           .allproducts,
                       Index: index,
                       OnTap: () {
@@ -284,9 +298,11 @@ class _HomePageState extends State<HomePage> {
                             context,
                             PageTransition(
                                 type: PageTransitionType.fade,
-                                child: ProductView(product:
-                                    Provider.of<CartData>(context, listen: false)
-                                        .allproducts[index],parent: widget.parent)));
+                                child: ProductView(
+                                    product: Provider.of<CartData>(context,
+                                            listen: false)
+                                        .allproducts[index],
+                                    fragNav:Test.fragNavigate)));
                       },
                     );
                   },

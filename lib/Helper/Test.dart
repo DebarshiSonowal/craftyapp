@@ -1,11 +1,14 @@
 import 'package:crafty/Models/CartProduct.dart';
 import 'package:crafty/Models/Categories.dart';
 import 'package:crafty/Models/Products.dart';
+import 'package:fragment_navigate/navigate-bloc.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Test {
   static var bihu;
+
+
 
   static saveKeys() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -25,22 +28,20 @@ class Test {
 
   static String accessToken, refreshToken;
   var message;
-
+  static var fragNavigate;
 //Lists
-  static List<Categories> list = [
-    Categories(
-        "Men",
-        "https://miro.medium.com/max/1200/1*mk1-6aYaf_Bes1E3Imhc0A.jpeg",
-        "_tag"),
-    Categories(
-        "Women",
-        "https://www.wpexplorer.com/wp-content/uploads/wordpress-image-optimization-guide.jpg",
-        "tag"),
-    Categories(
-        "Products",
-        "https://cdn.arstechnica.net/wp-content/uploads/2016/02/5718897981_10faa45ac3_b-640x624.jpg",
-        "ADa")
-  ];
+//   static List<Categories> list = [
+//     Categories(
+//         "Men",
+//         "https://miro.medium.com/max/1200/1*mk1-6aYaf_Bes1E3Imhc0A.jpeg",
+//     ),
+//     Categories(
+//         "Women",
+//         "https://www.wpexplorer.com/wp-content/uploads/wordpress-image-optimization-guide.jpg",),
+//     Categories(
+//         "Products",
+//         "https://cdn.arstechnica.net/wp-content/uploads/2016/02/5718897981_10faa45ac3_b-640x624.jpg",)
+//   ];
 
   static List<CartProduct> cart = null;
 

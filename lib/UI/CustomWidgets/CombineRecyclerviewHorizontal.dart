@@ -3,6 +3,7 @@ import 'package:crafty/Models/Products.dart';
 import 'package:crafty/UI/Activity/Host.dart';
 import 'package:crafty/UI/Fragments/ProductView.dart';
 import 'package:flutter/material.dart';
+import 'package:fragment_navigate/navigate-bloc.dart';
 import 'package:page_transition/page_transition.dart';
 
 import 'ProductItemView.dart';
@@ -13,9 +14,9 @@ class CombinerRecyclerView extends StatelessWidget {
   const CombinerRecyclerView({
     @required this.buttonSize,
     @required this.list,
-    @required this.name, this.parent,
+    @required this.name, this.fragNav,
   });
-  final HostState parent;
+  final FragNavigate fragNav;
   final double buttonSize;
   final List<Products>list;
   final String name;
@@ -50,7 +51,7 @@ class CombinerRecyclerView extends StatelessWidget {
                       PageTransition(
                           type: PageTransitionType.fade,
                           child:
-                          ProductView(product: list[index],parent: parent,)));
+                          ProductView(product: list[index],fragNav: fragNav,)));
                 },
               );
             },

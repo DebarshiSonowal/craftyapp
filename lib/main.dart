@@ -16,6 +16,8 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (BuildContext context) => CartData(),
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+
         title: 'Flutter Demo',
         theme: ThemeData(
           // primarySwatch: Colors.yellow,

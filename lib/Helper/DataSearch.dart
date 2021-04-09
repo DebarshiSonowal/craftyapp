@@ -5,6 +5,7 @@ import 'package:crafty/UI/Activity/Host.dart';
 import 'package:crafty/UI/Fragments/ProductView.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:fragment_navigate/navigate-bloc.dart';
 import 'package:provider/provider.dart';
 
 import 'CartData.dart';
@@ -12,7 +13,7 @@ import 'CartData.dart';
 class DataSearch extends SearchDelegate {
   var name, INDEX = 0;
   var suggestionList;
-  final HostState parent;
+  final FragNavigate _fragNav;
   final cities = [
     "Kokrajhar",
     "Sivsagar",
@@ -29,7 +30,7 @@ class DataSearch extends SearchDelegate {
     "Mumbai",
   ];
 
-  DataSearch(this.parent);
+  DataSearch(this._fragNav);
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -69,7 +70,7 @@ class DataSearch extends SearchDelegate {
     }
     return Container(
       height: MediaQuery.of(context).size.height,
-      child: Center(child: ProductView(parent: parent,product: product,)),
+      child: Center(child: ProductView(fragNav: _fragNav,product: product,)),
       // color: Colors.amber,
       // child: Text(Test.bihuProducts[INDEX].Name),
     );
