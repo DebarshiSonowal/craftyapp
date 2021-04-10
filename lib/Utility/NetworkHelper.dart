@@ -146,7 +146,7 @@ class NetworkHelper {
       }
     }
     if (response.statusCode == 200) {
-      print("Respone : ${response.data}");
+      print("Response : ${response.data}");
       return response.data;
     } else if (response.statusCode == 500) {
       return "Server Error";

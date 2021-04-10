@@ -34,6 +34,7 @@ class Host extends StatefulWidget {
 class HostState extends State<Host> {
   static int o = 0;
   static var id;
+  static var bottom;
   static final _fragNav = FragNavigate(
     firstKey: 'Home',
     drawerContext: null,
@@ -51,16 +52,9 @@ class HostState extends State<Host> {
           title: 'Profile',
           fragment: ProfilePage(),
           icon: Icons.accessibility),
+      Posit(key: 'Cart', title: 'Cart', fragment: Cart(), icon: Icons.ac_unit),
       Posit(
-          key: 'Cart',
-          title: 'Cart',
-          fragment: Cart(),
-          icon: Icons.ac_unit),
-      Posit(
-          key: 'Men',
-          title: 'Men',
-          fragment: MenProducts(),
-          icon: Icons.code),
+          key: 'Men', title: 'Men', fragment: MenProducts(), icon: Icons.code),
       Posit(
           key: 'Women',
           title: 'Women',
@@ -68,7 +62,7 @@ class HostState extends State<Host> {
           icon: Icons.code),
       Posit(
           key: 'WishList',
-          title: 'WishList',
+          title: 'Wishlist',
           fragment: WishList(),
           icon: Icons.code),
       Posit(
@@ -170,6 +164,32 @@ class HostState extends State<Host> {
                           bottom: s.data.bottom.child,
                         ),
                         drawer: NavDrawer(_fragNav),
+                        bottomNavigationBar: BottomNavigationBar(
+                          items: const <BottomNavigationBarItem>[
+                            BottomNavigationBarItem(
+                              icon: Icon(Icons.home),
+                              label: 'Home',
+                            ),
+                            BottomNavigationBarItem(
+                              icon: Icon(Icons.verified_user),
+                              label: 'Profile',
+                            ),
+                            BottomNavigationBarItem(
+                              icon: Icon(Icons.add_shopping_cart),
+                              label: 'Cart',
+                            ),
+                          ],
+                          currentIndex: bottom == null ? 0 : bottom,
+                          selectedItemColor: Colors.black,
+                          backgroundColor: Colors.white70,
+                          onTap: (index) {
+                            setState(() {
+                              bottom = index;
+                              var b = _fragNav.screenList.keys.toList();
+                              _fragNav.putPosit(key: b[index]);
+                            });
+                          },
+                        ),
                         body: ScreenNavigate(
                             child: s.data.fragment, bloc: _fragNav),
                       ),

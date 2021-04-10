@@ -93,7 +93,7 @@ class NavDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(FontAwesomeIcons.list),
-            title: Text('WishList'),
+            title: Text('Wishlist'),
             onTap: (){_fragNavigate.putPosit(key: 'WishList', force: true);},
           ),
           ListTile(

@@ -12,7 +12,6 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class ProfilePage extends StatefulWidget {
-
   ProfilePage();
 
   @override
@@ -30,18 +29,17 @@ class _ProfilePageState extends State<ProfilePage> {
   var pinT = TextEditingController();
   var phT = TextEditingController();
   var addT = TextEditingController();
-
   var o = 0;
   ProgressDialog pr;
-  String _gender,def;
+  String _gender, def;
 
   void _onRefresh() async {
-    var a = await pr.show();
-    print("ref"+Provider.of<CartData>(context,listen: false).user.id);
+    await pr.show();
     UsersModel usersModel = UsersModel();
     // Profile profile = Provider.of<CartData>(context, listen: false).profile;
     try {
-      profile = await usersModel.getProf(Provider.of<CartData>(context,listen: false).user.id);
+      profile = await usersModel
+          .getProf(Provider.of<CartData>(context, listen: false).user.id);
       print("Address ${profile.address}");
       _refreshController.refreshCompleted();
       pr.hide().then((isHidden) {
@@ -62,19 +60,7 @@ class _ProfilePageState extends State<ProfilePage> {
             fontSize: 16.0);
       });
     }
-    nT.text = profile.name.toString();
-    email = profile.email.toString();
-    nm = profile.name.toString();
-    print(profile.id);
-    ids = profile.id.toString();
-    setState(() {
-      def = profile.gender;
-      _gender = profile.gender;
-      print(profile.gender);
-    });
-    addT.text = profile.address == null ? "" : profile.address.toString();
-    pinT.text = profile.pincode == null ? "" : profile.pincode.toString();
-    phT.text = profile.phone == null ? "" : profile.phone.toString();
+    setDataToFields(profile);
   }
 
   void _onLoading() async {
@@ -85,9 +71,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     pr = ProgressDialog(context,
-        type: ProgressDialogType.Normal,
-        isDismissible: false,
-        showLogs: true);
+        type: ProgressDialogType.Normal, isDismissible: true, showLogs: true);
     pr.style(
         message: 'Please Wait....',
         borderRadius: 10.0,
@@ -98,20 +82,20 @@ class _ProfilePageState extends State<ProfilePage> {
         progress: 0.0,
         maxProgress: 100.0,
         progressTextStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 13.0,
-            fontWeight: FontWeight.w400),
+            color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w400),
         messageTextStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 19.0,
-            fontWeight: FontWeight.w600));
+            color: Colors.black, fontSize: 19.0, fontWeight: FontWeight.w600));
 
     nT = TextEditingController();
     pinT = TextEditingController();
     phT = TextEditingController();
     addT = TextEditingController();
-    Timer(Duration(milliseconds: 2000),(){
-      _onRefresh();
+    Timer(Duration(milliseconds: 500), () {
+      if (Provider.of<CartData>(context, listen: false).profile == null) {
+        _onRefresh();
+      } else {
+        setDataToFields(Provider.of<CartData>(context, listen: false).profile);
+      }
     });
   }
 
@@ -175,14 +159,15 @@ class _ProfilePageState extends State<ProfilePage> {
                         nm == null ? "Name" : nm,
                         textAlign: TextAlign.center,
                         textScaleFactor: 1.5,
-
                       ),
                       SizedBox(
                         height: 10,
                       ),
-                      Text(email==null?"":email,
+                      Text(
+                        email == null ? "" : email,
                         textAlign: TextAlign.center,
-                        textScaleFactor: 1.5,),
+                        textScaleFactor: 1.5,
+                      ),
                     ],
                   )
                 ],
@@ -294,9 +279,10 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               TextButton(
                 onPressed: () {},
-                child: Text("Forgot Password",style: TextStyle(
-                  color: Styles.log_sign_text
-                ),),
+                child: Text(
+                  "Forgot Password",
+                  style: TextStyle(color: Styles.log_sign_text),
+                ),
               ),
               Padding(
                   padding: EdgeInsets.only(bottom: 10),
@@ -307,7 +293,6 @@ class _ProfilePageState extends State<ProfilePage> {
                       _gender = value;
                       print(value);
                     },
-
                   )),
               Padding(
                 padding: const EdgeInsets.only(
@@ -323,7 +308,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   onPressed: () {
                     print(pinT.text);
                     if (nT.text.isNotEmpty &&
-                        email != null&&
+                        email != null &&
                         phT.text.isNotEmpty &&
                         pinT.text.isNotEmpty &&
                         addT.text.isNotEmpty) {
@@ -397,7 +382,6 @@ class _ProfilePageState extends State<ProfilePage> {
     pinT.dispose();
     phT.dispose();
     addT.dispose();
-
   }
 
   void getProfileDatat(id) async {
@@ -418,11 +402,11 @@ class _ProfilePageState extends State<ProfilePage> {
       nm = data.name.toString();
       print(data.id);
       ids = data.id.toString();
-     setState(() {
-       def = data.gender;
-       _gender = data.gender;
-       print(data.gender);
-     });
+      setState(() {
+        def = data.gender;
+        _gender = data.gender;
+        print(data.gender);
+      });
       addT.text = data.address == null ? "" : data.address.toString();
       pinT.text = data.pincode == null ? "" : data.pincode.toString();
       phT.text = data.phone == null ? "" : data.phone.toString();
@@ -459,14 +443,18 @@ class _ProfilePageState extends State<ProfilePage> {
             backgroundColor: Colors.red,
             textColor: Colors.black,
             fontSize: 16.0);
-        Provider.of<CartData>(context,listen: false).updateProfile(Profile(ids, nT.text, email, addT.text,
-            int.parse(phT.text), int.parse(pinT.text), _gender));
-        print("Vxvz ${Provider.of<CartData>(context, listen: false)
-            .profile
-            .address}");
+        Provider.of<CartData>(context, listen: false).updateProfile(Profile(
+            ids,
+            nT.text,
+            email,
+            addT.text,
+            int.parse(phT.text),
+            int.parse(pinT.text),
+            _gender));
+        print(
+            "Vxvz ${Provider.of<CartData>(context, listen: false).profile.address}");
         _onRefresh();
       });
-
     } else {
       pr.hide().then((isHidden) {
         print(isHidden);
@@ -479,7 +467,20 @@ class _ProfilePageState extends State<ProfilePage> {
             textColor: Colors.black,
             fontSize: 16.0);
       });
-
     }
+  }
+
+  void setDataToFields(Profile profile) {
+    nT.text = profile.name.toString();
+    email = profile.email.toString();
+    nm = profile.name.toString();
+    ids = profile.id.toString();
+    setState(() {
+      def = profile.gender;
+      _gender = profile.gender;
+    });
+    addT.text = profile.address == null ? "" : profile.address.toString();
+    pinT.text = profile.pincode == null ? "" : profile.pincode.toString();
+    phT.text = profile.phone == null ? "" : profile.phone.toString();
   }
 }

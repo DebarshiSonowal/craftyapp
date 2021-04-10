@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:crafty/Models/Products.dart';
 import 'package:crafty/UI/Activity/Host.dart';
 import 'package:crafty/UI/Fragments/ProductView.dart';
+import 'package:empty_widget/empty_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fragment_navigate/navigate-bloc.dart';
@@ -63,14 +64,31 @@ class DataSearch extends SearchDelegate {
     print(name);
     Products product;
     for(var i in Provider.of<CartData>(context, listen: false).allproducts){
-      if(suggestionList[INDEX] == i.Name){
-        product = i;
-        break;
+      try {
+        if(suggestionList[INDEX] == i.Name){
+                product = i;
+                break;
+              }
+      } catch (e) {
+        print(e);
       }
     }
     return Container(
       height: MediaQuery.of(context).size.height,
-      child: Center(child: ProductView(fragNav: _fragNav,product: product,)),
+      child: product==null?EmptyListWidget(
+          title: 'No Found',
+          subTitle: 'Search with something else',
+          image: 'assets/images/404.png',
+          titleTextStyle: Theme.of(context)
+              .typography
+              .dense
+              .headline4
+              .copyWith(color: Color(0xff9da9c7)),
+          subtitleTextStyle: Theme.of(context)
+              .typography
+              .dense
+              .bodyText1
+              .copyWith(color: Color(0xffabb8d6))):Center(child: ProductView(fragNav: _fragNav,product: product,)),
       // color: Colors.amber,
       // child: Text(Test.bihuProducts[INDEX].Name),
     );
