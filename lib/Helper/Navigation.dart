@@ -51,7 +51,7 @@ class NavDrawer extends StatelessWidget {
             onTap: (){
               print(_fragNavigate.currentKey);
               try {
-                _fragNavigate.putPosit(key: 'Home', force: true);
+                _fragNavigate.putAndReplace(key: 'Home', force: true);
               } catch (e) {
                 _fragNavigate.jumpBackTo('Home');
                 print("hee $e");
@@ -60,12 +60,12 @@ class NavDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.verified_user),
             title: Text('Profile'),
-            onTap: (){ _fragNavigate.putPosit(key: 'Profile', force: true);},
+            onTap: (){ _fragNavigate.putAndReplace(key: 'Profile', force: true);},
           ),
           ListTile(
             leading: Icon(Icons.add_shopping_cart),
             title: Text('Cart'),
-            onTap: (){_fragNavigate.putPosit(key: 'Cart', force: true);},
+            onTap: (){_fragNavigate.putAndReplace(key: 'Cart', force: true);},
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -77,12 +77,12 @@ class NavDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(FontAwesomeIcons.mars),
             title: Text('Men'),
-            onTap: (){_fragNavigate.putPosit(key: 'Men', force: true);},
+            onTap: (){_fragNavigate.putAndReplace(key: 'Men', force: true);},
           ),
           ListTile(
             leading: Icon(FontAwesomeIcons.venus),
             title: Text('Women'),
-            onTap: (){_fragNavigate.putPosit(key: 'Women', force: true);},
+            onTap: (){_fragNavigate.putAndReplace(key: 'Women', force: true);},
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -94,12 +94,12 @@ class NavDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(FontAwesomeIcons.list),
             title: Text('Wishlist'),
-            onTap: (){_fragNavigate.putPosit(key: 'WishList', force: true);},
+            onTap: (){_fragNavigate.putAndReplace(key: 'WishList');},
           ),
           ListTile(
             leading: Icon(FontAwesomeIcons.box),
             title: Text('Orders'),
-            onTap: (){_fragNavigate.putPosit(key: 'Orders');},
+            onTap: (){_fragNavigate.putAndReplace(key: 'Orders');},
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -112,13 +112,13 @@ class NavDrawer extends StatelessWidget {
             leading: Icon(FontAwesomeIcons.headphones),
             title: Text('Contact Us'),
             onTap: ()
-                {_fragNavigate.putPosit(key: 'Contact Us', force: true);},
+                {_fragNavigate.putAndReplace(key: 'Contact Us', force: true);},
           ),
           ListTile(
             leading: Icon(FontAwesomeIcons.info),
             title: Text('About'),
             onTap: (){
-              _fragNavigate.putPosit(key: 'About', force: true);
+              _fragNavigate.putAndReplace(key: 'About', force: true);
             },
           ),
           ListTile(
@@ -136,7 +136,7 @@ class NavDrawer extends StatelessWidget {
     await prefs.clear();
     Test.accessToken = null;
     Test.refreshToken = null;
-    Navigator.push(
-        context, PageTransition(type: PageTransitionType.fade, child: Login()));
+    print("D");
+    _fragNavigate.putAndReplace(key: 'Login', force: true);
   }
 }

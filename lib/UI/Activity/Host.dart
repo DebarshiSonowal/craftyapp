@@ -4,15 +4,17 @@ import 'package:crafty/Helper/CartData.dart';
 import 'package:crafty/Helper/DataSearch.dart';
 import 'package:crafty/Helper/Navigation.dart';
 import 'package:crafty/Helper/Test.dart';
-import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/Models/Products.dart';
 import 'package:crafty/UI/Fragments/About.dart';
 import 'package:crafty/UI/Fragments/Cart.dart';
 import 'package:crafty/UI/Fragments/Contact_Us.dart';
 import 'package:crafty/UI/Fragments/HomePage.dart';
+import 'package:crafty/UI/Fragments/Login.dart';
 import 'package:crafty/UI/Fragments/Men.dart';
 import 'package:crafty/UI/Fragments/Orders.dart';
 import 'package:crafty/UI/Fragments/Profile.dart';
+import 'package:crafty/UI/Fragments/Result.dart';
+import 'package:crafty/UI/Fragments/Signup.dart';
 import 'package:crafty/UI/Fragments/WishList.dart';
 import 'package:crafty/UI/Fragments/Women.dart';
 import 'package:crafty/UI/Styling/Styles.dart';
@@ -35,46 +37,7 @@ class HostState extends State<Host> {
   static int o = 0;
   static var id;
   static var bottom;
-  static final _fragNav = FragNavigate(
-    firstKey: 'Home',
-    drawerContext: null,
-    screens: <Posit>[
-      Posit(
-          key: 'Home',
-          title: 'Home',
-          fragment: Container(
-            color: Styles.bg_color,
-            child: HomePage(),
-          ),
-          icon: Icons.add),
-      Posit(
-          key: 'Profile',
-          title: 'Profile',
-          fragment: ProfilePage(),
-          icon: Icons.accessibility),
-      Posit(key: 'Cart', title: 'Cart', fragment: Cart(), icon: Icons.ac_unit),
-      Posit(
-          key: 'Men', title: 'Men', fragment: MenProducts(), icon: Icons.code),
-      Posit(
-          key: 'Women',
-          title: 'Women',
-          fragment: WomenProducts(),
-          icon: Icons.code),
-      Posit(
-          key: 'WishList',
-          title: 'Wishlist',
-          fragment: WishList(),
-          icon: Icons.code),
-      Posit(
-          key: 'Orders', title: 'Orders', fragment: Orders(), icon: Icons.code),
-      Posit(
-          key: 'Contact Us',
-          title: 'Contact Us',
-          fragment: ContactUs(),
-          icon: Icons.code),
-      Posit(key: 'About', title: 'About', fragment: About(), icon: Icons.code),
-    ],
-  );
+  static FragNavigate _fragNav;
 
   Future<bool> _onWillPop() async {
     return (await showDialog(
@@ -88,8 +51,8 @@ class HostState extends State<Host> {
                 child: new Text('No'),
               ),
               new FlatButton(
-                onPressed: () => {
-                  SystemChannels.platform.invokeMethod('SystemNavigator.pop')
+                onPressed: () {
+                  SystemChannels.platform.invokeMethod('SystemNavigator.pop');
                 },
                 child: new Text('Yes'),
               ),
@@ -104,9 +67,25 @@ class HostState extends State<Host> {
 
   @override
   void initState() {
+    _fragNav = FragNavigate(
+      firstKey: 'Home',
+      drawerContext: null,
+      screens: getList(),
+    );
+    print("CClll");
+    new Future.delayed(Duration.zero, () {
+      print("CCbbb2");
+      _fragNav.setDrawerContext = context;
+      getEverything(context);
+    });
+    print("DDccc");
     super.initState();
+  }
 
-    getEverything();
+  @override
+  void dispose() {
+    _fragNav.dispose();
+    super.dispose();
   }
 
   @override
@@ -114,6 +93,7 @@ class HostState extends State<Host> {
     try {
       Test.fragNavigate = _fragNav;
       _fragNav.setDrawerContext = context;
+      print("DD");
     } catch (e) {
       print("pROBLEM $e");
     }
@@ -145,52 +125,70 @@ class HostState extends State<Host> {
                 stream: _fragNav.outStreamFragment,
                 builder: (con, s) {
                   if (s.data != null) {
-                    return DefaultTabController(
-                      length: s.data.bottom.length,
-                      child: Scaffold(
-                        key: _fragNav.drawerKey,
-                        appBar: AppBar(
-                          title: Text(s.data.title),
-                          actions: [
-                            IconButton(
-                              icon: Icon(Icons.search),
-                              onPressed: () {
-                                showSearch(
-                                    context: context,
-                                    delegate: DataSearch(_fragNav));
-                              },
-                            )
-                          ],
-                          bottom: s.data.bottom.child,
-                        ),
-                        drawer: NavDrawer(_fragNav),
-                        bottomNavigationBar: BottomNavigationBar(
-                          items: const <BottomNavigationBarItem>[
-                            BottomNavigationBarItem(
-                              icon: Icon(Icons.home),
-                              label: 'Home',
-                            ),
-                            BottomNavigationBarItem(
-                              icon: Icon(Icons.verified_user),
-                              label: 'Profile',
-                            ),
-                            BottomNavigationBarItem(
-                              icon: Icon(Icons.add_shopping_cart),
-                              label: 'Cart',
-                            ),
-                          ],
-                          currentIndex: bottom == null ? 0 : bottom,
-                          selectedItemColor: Colors.black,
-                          backgroundColor: Colors.white70,
-                          onTap: (index) {
-                            setState(() {
-                              bottom = index;
-                              var b = _fragNav.screenList.keys.toList();
-                              _fragNav.putPosit(key: b[index]);
-                            });
-                          },
-                        ),
-                        body: ScreenNavigate(
+                    return Scaffold(
+                      key: _fragNav.drawerKey,
+                      appBar: AppBar(
+                        title: Text(s.data.title),
+                        actions: [
+                          IconButton(
+                            icon: Icon(Icons.search),
+                            onPressed: () {
+                              showSearch(
+                                  context: context,
+                                  delegate: DataSearch(_fragNav));
+                            },
+                          )
+                        ],
+                        bottom: s.data.bottom.child,
+                      ),
+                      drawer: NavDrawer(_fragNav),
+                      bottomNavigationBar: BottomNavigationBar(
+                        items: const <BottomNavigationBarItem>[
+                          BottomNavigationBarItem(
+                            icon: Icon(Icons.home),
+                            label: 'Home',
+                          ),
+                          BottomNavigationBarItem(
+                            icon: Icon(Icons.verified_user),
+                            label: 'Profile',
+                          ),
+                          BottomNavigationBarItem(
+                            icon: Icon(Icons.add_shopping_cart),
+                            label: 'Cart',
+                          ),
+                        ],
+                        currentIndex: _fragNav.screenList.keys
+                            .toList()
+                            .indexOf(_fragNav.currentKey)>2
+                            ? 0
+                            : _fragNav.screenList.keys
+                                .toList()
+                                .indexOf(_fragNav.currentKey),
+                        selectedItemColor: Colors.black,
+                        backgroundColor: Colors.white70,
+                        onTap: (index) {
+                          setState(() {
+                            bottom = index;
+                            var b = _fragNav.screenList.keys.toList();
+                            var c = _fragNav.actionsList;
+                            print("BBB $c");
+                            if (c != null) {
+                              _fragNav.putAndReplace(key: b[index]);
+                            } else {
+                              initialize();
+                              try {
+                                _fragNav.putAndReplace(key: b[index]);
+                              } catch (e) {
+                                print("cc ${_fragNav.actionsList}");
+                                print("GGOt $e");
+                              }
+                            }
+                          });
+                        },
+                      ),
+                      body: DefaultTabController(
+                        length: s.data.bottom.length,
+                        child: ScreenNavigate(
                             child: s.data.fragment, bloc: _fragNav),
                       ),
                     );
@@ -201,7 +199,7 @@ class HostState extends State<Host> {
           );
   }
 
-  void getEverything() async {
+  void getEverything(BuildContext context) async {
     print("run");
     UsersModel usersModel = UsersModel();
     UsersModel usersModel1 = UsersModel();
@@ -289,5 +287,64 @@ class HostState extends State<Host> {
 
   void set() async {
     var a = await _fragNav;
+  }
+
+  getList() {
+    return <Posit>[
+      Posit(
+          key: 'Home',
+          title: 'Home',
+          fragment: Container(
+            color: Styles.bg_color,
+            child: HomePage(),
+          ),
+          icon: Icons.add),
+      Posit(
+          key: 'Profile',
+          title: 'Profile',
+          fragment: ProfilePage(),
+          icon: Icons.accessibility),
+      Posit(key: 'Cart', title: 'Cart', fragment: Cart(), icon: Icons.ac_unit),
+      Posit(
+          key: 'Men', title: 'Men', fragment: MenProducts(), icon: Icons.code),
+      Posit(
+          key: 'Women',
+          title: 'Women',
+          fragment: WomenProducts(),
+          icon: Icons.code),
+      Posit(
+          key: 'WishList',
+          title: 'Wishlist',
+          fragment: WishList(),
+          icon: Icons.code),
+      Posit(
+          key: 'Orders', title: 'Orders', fragment: Orders(), icon: Icons.code),
+      Posit(
+          key: 'Contact Us',
+          title: 'Contact Us',
+          fragment: ContactUs(),
+          icon: Icons.code),
+      Posit(key: 'About', title: 'About', fragment: About(), icon: Icons.code),
+      Posit(
+          key: 'Login',
+          title: 'Login',
+          fragment: Login(_fragNav),
+          icon: Icons.code),
+      Posit(
+          key: 'Signup', title: 'Signup', fragment: Signup(), icon: Icons.code),
+      Posit(
+          key: 'Result', title: 'Crafty', fragment: Result(), icon: Icons.code),
+    ];
+  }
+
+  void initialize() {
+    _fragNav = FragNavigate(
+      firstKey: 'Home',
+      drawerContext: null,
+      screens: getList(),
+    );
+    print("cc ${_fragNav.actionsList}");
+    Test.fragNavigate = _fragNav;
+    _fragNav.setDrawerContext = context;
   }
 }

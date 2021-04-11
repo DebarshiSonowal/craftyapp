@@ -29,6 +29,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  BuildContext customcontext;
   RefreshController _refreshController =
       RefreshController(initialRefresh: Test.bihu == null ? true : false);
 
@@ -37,6 +38,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    new Future.delayed(Duration.zero,() {
+      customcontext = context;
+    });
   }
 
   @override
@@ -51,39 +55,60 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _onRefresh() async {
-    UsersModel usersModel = UsersModel();
-    UsersModel usersModel1 = UsersModel();
-    var Data = await usersModel.getAll();
-    if (Data.toString() != "Server Error" ||
-        Data.toString() != "Products not found") {
-      List<Products> data = Data;
-      if (data != null) {
-        print("Data");
-        setState(() {
-          print("Here");
-          Provider.of<CartData>(context, listen: false).setAllProduct(data);
-          Test.bihu = data;
-          _refreshController.refreshCompleted();
-        });
-      } else {
-        print("nkn");
-        _refreshController.refreshFailed();
-      }
+    if ( Test.accessToken!=null &&  Test.refreshToken !=null) {
+      UsersModel usersModel = UsersModel();
+      UsersModel usersModel1 = UsersModel();
+      var Data = await usersModel.getAll();
+      if (Data.toString() != "Server Error" ||
+              Data.toString() != "Products not found") {
+            List<Products> data = Data;
+            if (data != null) {
+              setState(() {
+                print("Here");
+                new Future.delayed(Duration.zero,() {
+                  Provider.of<CartData>(customcontext, listen: false).setAllProduct(data);
+                });
+                Test.bihu = data;
+                _refreshController.refreshCompleted();
+              });
+            } else {
+              print("nkn");
+              _refreshController.refreshFailed();
+            }
+          } else {
+            _refreshController.refreshFailed();
+          }
+      var data = await usersModel1.getRequired();
+
+      var data1 = data['require'] as List;
+      List<Categories> categories =
+              data1.map((e) => Categories.fromJson(e)).toList();
+
+      var data2 = data['ads'] as List;
+      List<Ads> ads = data2.map((e) => Ads.fromJson(e)).toList();
+      var data3 = data['razorpay'];
+
+      new Future.delayed(Duration.zero,() {
+            Provider.of<CartData>(customcontext, listen: false).setCategory(categories);
+            Provider.of<CartData>(customcontext, listen: false).setAds(ads);
+            Provider.of<CartData>(customcontext, listen: false)
+                .setRazorpay(Razorpay.fromJson(data3));
+          });
     } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Please Login first'),
+        action: SnackBarAction(
+          label: 'Next',
+          onPressed: () {
+            setState(() {
+              Test.fragNavigate.putPosit(key:'Login');
+
+            });
+          },
+        ),
+      ));
       _refreshController.refreshFailed();
     }
-    var data = await usersModel1.getRequired();
-    var data1 = data['require'] as List;
-    print("HCA ${data1}");
-    List<Categories> categories =
-        data1.map((e) => Categories.fromJson(e)).toList();
-    Provider.of<CartData>(context, listen: false).setCategory(categories);
-    var data2 = data['ads'] as List;
-    List<Ads> ads = data2.map((e) => Ads.fromJson(e)).toList();
-    Provider.of<CartData>(context, listen: false).setAds(ads);
-    var data3 = data['razorpay'];
-    Provider.of<CartData>(context, listen: false)
-        .setRazorpay(Razorpay.fromJson(data3));
   }
 
   void _onLoading() async {
@@ -148,7 +173,8 @@ class _HomePageState extends State<HomePage> {
                           .getCateg(),
                       index: index,
                       OnTap: () {
-                        Test.fragNavigate.putPosit(key: 'Men', force: true);
+                        Test.fragNavigate.putPosit(key: Provider.of<CartData>(context, listen:  false)
+                            .getCateg()[index].name.toString(), force: true);
                       },
                     );
                   },

@@ -292,6 +292,7 @@ class _LoginState extends State<Login> {
           fontSize: 16.0);
       pr.hide().then((isHidden) {
         print(isHidden);
+        // Navigator.of(context).pop();
         Navigator.pushAndRemoveUntil(
             context,
             PageTransition(type: PageTransitionType.fade, child: Host()),

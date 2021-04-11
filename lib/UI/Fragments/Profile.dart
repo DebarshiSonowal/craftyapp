@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:crafty/Helper/CartData.dart';
+import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/Models/Profile.dart';
 import 'package:crafty/UI/CustomWidgets/Gender.dart';
 import 'package:crafty/UI/Styling/Styles.dart';
@@ -34,33 +35,48 @@ class _ProfilePageState extends State<ProfilePage> {
   String _gender, def;
 
   void _onRefresh() async {
-    await pr.show();
-    UsersModel usersModel = UsersModel();
-    // Profile profile = Provider.of<CartData>(context, listen: false).profile;
-    try {
-      profile = await usersModel
-          .getProf(Provider.of<CartData>(context, listen: false).user.id);
-      print("Address ${profile.address}");
-      _refreshController.refreshCompleted();
-      pr.hide().then((isHidden) {
-        print(isHidden);
-      });
-    } catch (e) {
-      print("error ${e}");
+    if (Test.accessToken != null && Test.refreshToken != null) {
+      await pr.show();
+      UsersModel usersModel = UsersModel();
+      // Profile profile = Provider.of<CartData>(context, listen: false).profile;
+      try {
+        profile = await usersModel
+            .getProf(Provider.of<CartData>(context, listen: false).user.id);
+        print("Address ${profile.address}");
+        _refreshController.refreshCompleted();
+        pr.hide().then((isHidden) {
+          print(isHidden);
+        });
+      } catch (e) {
+        print("error ${e}");
+        _refreshController.refreshFailed();
+        pr.hide().then((isHidden) {
+          print(isHidden);
+          Fluttertoast.showToast(
+              msg: "Something is wrong. Please try again later",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.black,
+              fontSize: 16.0);
+        });
+      }
+      setDataToFields(profile);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Please Login first'),
+        action: SnackBarAction(
+          label: 'Next',
+          onPressed: () {
+            setState(() {
+              Test.fragNavigate.putPosit(key:'Login');
+            });
+          },
+        ),
+      ));
       _refreshController.refreshFailed();
-      pr.hide().then((isHidden) {
-        print(isHidden);
-        Fluttertoast.showToast(
-            msg: "Something is wrong. Please try again later",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.black,
-            fontSize: 16.0);
-      });
     }
-    setDataToFields(profile);
   }
 
   void _onLoading() async {
@@ -315,7 +331,23 @@ class _ProfilePageState extends State<ProfilePage> {
                       if (phT.text.length == 10) {
                         if (pinT.text.length == 6) {
                           if (_gender != null) {
-                            saveProfile(context);
+                            if (Test.accessToken != null &&
+                                Test.refreshToken != null) {
+                              saveProfile(context);
+                            } else {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Text('Please Login first'),
+                                action: SnackBarAction(
+                                  label: 'Next',
+                                  onPressed: () {
+                                    setState(() {
+                                      Test.fragNavigate.putPosit(key:'Login');
+                                    });
+                                  },
+                                ),
+                              ));
+                            }
                           } else {
                             Fluttertoast.showToast(
                                 msg: "Please select a gender",

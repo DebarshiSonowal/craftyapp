@@ -6,10 +6,10 @@ import 'package:crafty/Helper/DioError.dart';
 import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/Models/CartProduct.dart';
 import 'package:crafty/Models/Order.dart';
-import 'package:crafty/Models/Profile.dart';
 import 'package:crafty/Models/ServerOrder.dart';
+import 'package:crafty/UI/Activity/Payment.dart';
+import 'package:crafty/UI/CustomWidgets/BottomCard.dart';
 import 'package:crafty/UI/CustomWidgets/CartItems.dart';
-import 'package:crafty/UI/Styling/Styles.dart';
 import 'package:crafty/Utility/Users.dart';
 import 'package:dio/dio.dart';
 import 'package:empty_widget/empty_widget.dart';
@@ -42,16 +42,18 @@ class _CartState extends State<Cart> {
   double price = 0.00;
   ServerOrder order;
   var id;
+  EmptyListWidget emptyListWidget;
+  var pinT = TextEditingController();
+  var phT = TextEditingController();
+  var addT = TextEditingController();
+
+  get buttonSize => 20.0;
 
   Future<ServerOrder> getEveryThing(double price) async {
     UsersModel usersModel = UsersModel();
     print("HEREczccz");
     return await usersModel.getOrder(price);
   }
-
-  var pinT = TextEditingController();
-  var phT = TextEditingController();
-  var addT = TextEditingController();
 
   double calculatePriceAndItems(var bihuProducts) {
     setState(() {
@@ -69,34 +71,57 @@ class _CartState extends State<Cart> {
     return price;
   }
 
-  get buttonSize => 20.0;
-
   @override
   void initState() {
     _razorpay = Razorpay();
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
-    pr = ProgressDialog(context,
-        type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
-    pr.style(
-        message: 'Please Wait....',
-        borderRadius: 10.0,
-        backgroundColor: Colors.white,
-        progressWidget: CircularProgressIndicator(),
-        elevation: 10.0,
-        insetAnimCurve: Curves.easeInOut,
-        progress: 0.0,
-        maxProgress: 100.0,
-        progressTextStyle: TextStyle(
-            color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w400),
-        messageTextStyle: TextStyle(
-            color: Colors.black, fontSize: 19.0, fontWeight: FontWeight.w600));
-    super.initState();
     read("cartitems");
     pinT = TextEditingController();
     phT = TextEditingController();
     addT = TextEditingController();
+    new Future.delayed(Duration.zero, () {
+      _context = context;
+      pr = ProgressDialog(context,
+          type: ProgressDialogType.Normal,
+          isDismissible: false,
+          showLogs: true);
+      pr.style(
+          message: 'Please Wait....',
+          borderRadius: 10.0,
+          backgroundColor: Colors.white,
+          progressWidget: CircularProgressIndicator(),
+          elevation: 10.0,
+          insetAnimCurve: Curves.easeInOut,
+          progress: 0.0,
+          maxProgress: 100.0,
+          progressTextStyle: TextStyle(
+              color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w400),
+          messageTextStyle: TextStyle(
+              color: Colors.black,
+              fontSize: 19.0,
+              fontWeight: FontWeight.w600));
+      setState(() {
+        emptyListWidget = EmptyListWidget(
+            title: 'No Items',
+            subTitle: 'No Items added to the cart',
+            image: 'assets/images/404.png',
+            titleTextStyle: Theme.of(context)
+                .typography
+                .dense
+                .headline4
+                .copyWith(color: Color(0xff9da9c7)),
+            subtitleTextStyle: Theme.of(context)
+                .typography
+                .dense
+                .bodyText1
+                .copyWith(color: Color(0xffabb8d6)));
+      });
+      print("Done");
+    });
+    print("C");
+    super.initState();
   }
 
   @override
@@ -116,20 +141,7 @@ class _CartState extends State<Cart> {
     _context = context;
     return Container(
       child: Provider.of<CartData>(context).listLength == 0
-          ? EmptyListWidget(
-              title: 'No Items',
-              subTitle: 'No Items added to the cart',
-              image: 'assets/images/404.png',
-              titleTextStyle: Theme.of(context)
-                  .typography
-                  .dense
-                  .headline4
-                  .copyWith(color: Color(0xff9da9c7)),
-              subtitleTextStyle: Theme.of(context)
-                  .typography
-                  .dense
-                  .bodyText1
-                  .copyWith(color: Color(0xffabb8d6)))
+          ? emptyListWidget
           : buildColumn(context),
     );
   }
@@ -233,193 +245,198 @@ class _CartState extends State<Cart> {
             padding: EdgeInsets.all(8),
             color: Colors.deepOrangeAccent,
             onPressed: () {
-              if (checkIfempty(context)) {
-                Dialogs.materialDialog(
-                    msg: 'Select how do you want to pay?',
-                    title: "Payment Mode",
-                    color: Colors.white,
-                    context: context,
-                    actions: [
-                      IconsButton(
-                        onPressed: () async {
-                          UsersModel usersModel = UsersModel();
-                          const _chars =
-                              'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
-                          Random _rnd = Random();
-                          String getRandomString(int length) =>
-                              String.fromCharCodes(Iterable.generate(
-                                  length,
-                                  (_) => _chars.codeUnitAt(
-                                      _rnd.nextInt(_chars.length))));
-                          Navigator.pop(context);
-                          Fluttertoast.showToast(
-                              msg: "Successful",
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.CENTER,
-                              timeInSecForIosWeb: 1,
-                              backgroundColor: Colors.red,
-                              textColor: Colors.black,
-                              fontSize: 16.0);
-
-                          var id = "order_cod_" + getRandomString(5);
-                          try {
-                            var a = await usersModel.saveOrderDatabase(
-                                saveToDatabase(
-                                    id,
-                                    Provider.of<CartData>(_context,
-                                                listen: false)
-                                            .getPrice() *
-                                        100,
-                                    "COD",
-                                    _context));
-                            if (a != null && a != "Unable to save order") {
-                              Provider.of<CartData>(context, listen: false)
-                                  .removeAll(
-                                      0,
-                                      Provider.of<CartData>(context,
-                                              listen: false)
-                                          .listLength);
-                              Navigator.pushAndRemoveUntil(
-                                  _context,
-                                  PageTransition(
-                                      type: PageTransitionType.fade,
-                                      child: Result()),
-                                  (r) => false);
-                              setState(() {
-                                Provider.of<CartData>(_context, listen: false)
-                                    .RESULT = "assets/raw/successful.json";
-                                Provider.of<CartData>(_context, listen: false)
-                                    .TXT = id;
-                                print("Success");
-                              });
-                            } else {
-                              Navigator.pushAndRemoveUntil(
-                                  _context,
-                                  PageTransition(
-                                      type: PageTransitionType.fade,
-                                      child: Result()),
-                                  (r) => false);
-                              setState(() {
-                                Provider.of<CartData>(_context, listen: false)
-                                    .RESULT = "assets/raw/failed.json";
-                                Provider.of<CartData>(_context, listen: false)
-                                    .TXT = id;
-                              });
-                            }
-                          } on DioError catch (e) {
-                            final errorMessage =
-                                DioExceptions.fromDioError(e).toString();
-                            print(errorMessage);
-                          }
-                          // var c = usersModel1.saveOrderDatabase()
-                          // usersModel1.saveOrderDatabase();
-                        },
-                        text: 'COD',
-                        iconData: FontAwesomeIcons.box,
-                        color: Colors.red,
-                        textStyle: TextStyle(color: Colors.white),
-                        iconColor: Colors.white,
-                      ),
-                      IconsButton(
-                        onPressed: () async {
-                          var cx = Provider.of<CartData>(context, listen: false)
-                              .razorpay
-                              .Key
-                              .toString();
-                          print("KEY $cx");
-                          if (Provider.of<CartData>(context, listen: false)
-                                  .razorpay !=
-                              null) {
+              if (Test.accessToken != null && Test.refreshToken != null) {
+                if (checkIfempty(context)) {
+                  Dialogs.materialDialog(
+                      msg: 'Select how do you want to pay?',
+                      title: "Payment Mode",
+                      color: Colors.white,
+                      context: context,
+                      actions: [
+                        IconsButton(
+                          onPressed: () async {
                             Navigator.pop(context);
-                            products =
-                                Provider.of<CartData>(context, listen: false)
-                                    .list;
-                            try {
-                              id = await getEveryThing(Provider.of<CartData>(
-                                          context,
-                                          listen: false)
-                                      .getPrice())
-                                  .then((value) {
-                                return value.id;
-                              });
-                            } catch (e) {
-                              print(e);
-                            }
-                            var size =
-                                Provider.of<CartData>(context, listen: false)
-                                    .Sizes;
-                            var amount =
-                                Provider.of<CartData>(context, listen: false)
-                                        .getPrice() *
-                                    100;
-                            var items =
-                                Provider.of<CartData>(context, listen: false)
-                                    .names;
-                            Test.currentCartItems =
-                                Provider.of<CartData>(context, listen: false)
-                                    .list;
-                            print(Test.currentCartItems);
-                            print(
-                                "DDDDD ${Provider.of<CartData>(context, listen: false).razorpay.Id}");
+                            await pr.show();
+                            UsersModel usersModel = UsersModel();
+                            const _chars =
+                                'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+                            Random _rnd = Random();
+                            String getRandomString(int length) =>
+                                String.fromCharCodes(Iterable.generate(
+                                    length,
+                                    (_) => _chars.codeUnitAt(
+                                        _rnd.nextInt(_chars.length))));
 
-                            var options = {
-                              'key':
-                                  Provider.of<CartData>(context, listen: false)
-                                      .razorpay
-                                      .Id
-                                      .toString(),
-                              'amount': amount,
-                              'order_id': '$id',
-                              'name': 'Crafty',
-                              'description': items,
-                              'external': {
-                                'wallets': ['paytm']
-                              }
-                            };
-                            print("INFOM ${id}");
-                            try {
-                              _razorpay.open(options);
-                            } catch (e) {
-                              print("VVVV $e");
-                            }
-                          } else {
                             Fluttertoast.showToast(
-                                msg: "Failed Please Log out",
+                                msg: "Successful",
                                 toastLength: Toast.LENGTH_SHORT,
                                 gravity: ToastGravity.CENTER,
                                 timeInSecForIosWeb: 1,
                                 backgroundColor: Colors.red,
                                 textColor: Colors.black,
                                 fontSize: 16.0);
-                          }
-                        },
-                        text: 'PAY',
-                        iconData: FontAwesomeIcons.dollarSign,
-                        color: Colors.green,
-                        textStyle: TextStyle(color: Colors.white),
-                        iconColor: Colors.white,
-                      ),
-                    ]);
-                //
-                // pr.show();
 
-                // Provider.of<CartData>(context, listen: false).removeAll(0, Test.currentCartItems.length);
+                            var id = "order_cod_" + getRandomString(5);
+                            try {
+                              var a = await usersModel.saveOrderDatabase(
+                                  saveToDatabase(
+                                      id,
+                                      Provider.of<CartData>(_context,
+                                                  listen: false)
+                                              .getPrice() *
+                                          100,
+                                      "COD",
+                                      _context));
+                              if (a != null && a != "Unable to save order") {
+                                Provider.of<CartData>(context, listen: false)
+                                    .removeAll(0, CartData.listLengths);
+                                setState(() {
+                                  pr.hide().then((isHidden) {
+                                    CartData.RESULT =
+                                        "assets/raw/successful.json";
+                                    CartData.TXT = id;
+                                    print("Success");
+                                    Test.fragNavigate.putPosit(key: 'Result');
+                                  });
+                                });
+                              } else {
+                                pr.hide().then((isHidden) {
+                                  CartData.RESULT = "assets/raw/failed.json";
+                                  CartData.TXT = id;
+                                  Test.fragNavigate.putPosit(key: 'Result');
+                                });
+                              }
+                            } on DioError catch (e) {
+                              final errorMessage =
+                                  DioExceptions.fromDioError(e).toString();
+                              print(errorMessage);
+                            }
+                            // var c = usersModel1.saveOrderDatabase()
+                            // usersModel1.saveOrderDatabase();
+                          },
+                          text: 'COD',
+                          iconData: FontAwesomeIcons.box,
+                          color: Colors.red,
+                          textStyle: TextStyle(color: Colors.white),
+                          iconColor: Colors.white,
+                        ),
+                        IconsButton(
+                          onPressed: () async {
+                            Navigator.pop(context);
+                            await pr.show();
+                            var cx =
+                                Provider.of<CartData>(context, listen: false)
+                                    .razorpay
+                                    .Key
+                                    .toString();
+                            print("KEY $cx");
+                            if (Provider.of<CartData>(context, listen: false)
+                                    .razorpay !=
+                                null) {
+
+                              products =
+                                  Provider.of<CartData>(context, listen: false)
+                                      .list;
+                              try {
+                                id = await getEveryThing(Provider.of<CartData>(
+                                            context,
+                                            listen: false)
+                                        .getPrice())
+                                    .then((value) {
+                                  return value.id;
+                                });
+                              } catch (e) {
+                                print(e);
+                              }
+                              var size =
+                                  Provider.of<CartData>(context, listen: false)
+                                      .Sizes;
+                              var amount =
+                                  Provider.of<CartData>(context, listen: false)
+                                          .getPrice() *
+                                      100;
+                              var items =
+                                  Provider.of<CartData>(context, listen: false)
+                                      .names;
+                              Test.currentCartItems =
+                                  Provider.of<CartData>(context, listen: false)
+                                      .list;
+                              print(Test.currentCartItems);
+                              print(
+                                  "DDDDD ${Provider.of<CartData>(context, listen: false).razorpay.Id}");
+
+                              var options = {
+                                'key': Provider.of<CartData>(context,
+                                        listen: false)
+                                    .razorpay
+                                    .Id
+                                    .toString(),
+                                'amount': amount,
+                                'order_id': '$id',
+                                'name': 'Crafty',
+                                'description': items,
+                                'external': {
+                                  'wallets': ['paytm']
+                                }
+                              };
+                              print("INFOM ${id}");
+                              try {
+                                _razorpay.open(options);
+                              } catch (e) {
+                                print("VVVV $e");
+                              }
+                            } else {
+                              Fluttertoast.showToast(
+                                  msg: "Failed Please Log out",
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.CENTER,
+                                  timeInSecForIosWeb: 1,
+                                  backgroundColor: Colors.red,
+                                  textColor: Colors.black,
+                                  fontSize: 16.0);
+                            }
+                          },
+                          text: 'PAY',
+                          iconData: FontAwesomeIcons.dollarSign,
+                          color: Colors.green,
+                          textStyle: TextStyle(color: Colors.white),
+                          iconColor: Colors.white,
+                        ),
+                      ]);
+                  //
+                  // pr.show();
+
+                  // Provider.of<CartData>(context, listen: false).removeAll(0, Test.currentCartItems.length);
+                } else {
+                  Fluttertoast.showToast(
+                      msg: "First add address,pincode and phone no in profile",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.CENTER,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: Colors.red,
+                      textColor: Colors.black,
+                      fontSize: 16.0);
+                  showModalBottomSheet(
+                      context: context,
+                      isDismissible: true,
+                      isScrollControlled: true,
+                      builder: (BuildContext context) {
+                        return BottomCard(addT, phT, pinT);
+                      });
+                }
               } else {
-                Fluttertoast.showToast(
-                    msg: "First add address,pincode and phone no in profile",
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.CENTER,
-                    timeInSecForIosWeb: 1,
-                    backgroundColor: Colors.red,
-                    textColor: Colors.black,
-                    fontSize: 16.0);
-                showModalBottomSheet(
-                    context: context,
-                    isDismissible: true,
-                    isScrollControlled: true,
-                    builder: (BuildContext context) {
-                      return BottomCard(context);
-                    });
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text('Please Login first'),
+                  action: SnackBarAction(
+                    label: 'Next',
+                    onPressed: () {
+                      setState(() {
+                        print("GG ${Test.fragNavigate}");
+                        Test.fragNavigate.putPosit(key: 'Login');
+                      });
+                    },
+                  ),
+                ));
               }
             },
             child: Text(
@@ -433,143 +450,6 @@ class _CartState extends State<Cart> {
           ),
         ),
       ],
-    );
-  }
-
-  Card BottomCard(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
-      child: Container(
-        color: Styles.bg_color,
-        height: MediaQuery.of(context).size.height / 2,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Center(
-                child: Text(
-                  "Enter the required details",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: TextField(
-                controller: addT,
-                keyboardType: TextInputType.text,
-                style: TextStyle(color: Colors.black),
-                decoration: InputDecoration(
-                  labelStyle: TextStyle(color: Styles.log_sign_text),
-                  labelText: "Delivery Address",
-                  filled: true,
-                  fillColor: Colors.white,
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: TextField(
-                controller: phT,
-                keyboardType: TextInputType.phone,
-                style: TextStyle(color: Colors.black),
-                decoration: InputDecoration(
-                  labelStyle: TextStyle(color: Styles.log_sign_text),
-                  labelText: "Phone",
-                  filled: true,
-                  fillColor: Colors.white,
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding:
-                  const EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
-              child: TextField(
-                controller: pinT,
-                keyboardType: TextInputType.number,
-                maxLength: 6,
-                style: TextStyle(color: Colors.black),
-                decoration: InputDecoration(
-                  labelStyle: TextStyle(color: Styles.log_sign_text),
-                  labelText: "Pincode",
-                  filled: true,
-                  fillColor: Colors.white,
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton(
-                  onPressed: () {
-                    if (addT.text.isNotEmpty &&
-                        pinT.text.isNotEmpty &&
-                        phT.text.isNotEmpty) {
-                      if (pinT.text.length == 6) {
-                        if (phT.text.length == 10) {
-                          saveDetails(context);
-                        } else {
-                          Fluttertoast.showToast(
-                              msg: "Please enter valid phone no",
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.CENTER,
-                              timeInSecForIosWeb: 1,
-                              backgroundColor: Colors.red,
-                              textColor: Colors.black,
-                              fontSize: 16.0);
-                        }
-                      } else {
-                        Fluttertoast.showToast(
-                            msg: "Please enter valid pincode",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.CENTER,
-                            timeInSecForIosWeb: 1,
-                            backgroundColor: Colors.red,
-                            textColor: Colors.black,
-                            fontSize: 16.0);
-                      }
-                    } else {
-                      Fluttertoast.showToast(
-                          msg: "Please enter required fields",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.CENTER,
-                          timeInSecForIosWeb: 1,
-                          backgroundColor: Colors.red,
-                          textColor: Colors.black,
-                          fontSize: 16.0);
-                    }
-                  },
-                  child: Text('Save')),
-            )
-          ],
-        ),
-      ),
     );
   }
 
@@ -597,48 +477,7 @@ class _CartState extends State<Cart> {
     prefs.remove(key);
   }
 
-  void saveDetails(BuildContext context) async {
-    await pr.show();
-    UsersModel usersModel = new UsersModel();
-    var data = await usersModel.saveProf(Profile(
-        Provider.of<CartData>(context, listen: false).profile.id,
-        Provider.of<CartData>(context, listen: false).profile.name,
-        Provider.of<CartData>(context, listen: false).profile.email,
-        addT.text,
-        int.parse(phT.text),
-        int.parse(pinT.text),
-        null));
-    print("MOCM ${data.toString()}");
-    if (data != null) {
-      pr.hide().then((isHidden) {
-        print(isHidden);
-        Fluttertoast.showToast(
-            msg: "Successful",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.black,
-            fontSize: 16.0);
-        Provider.of<CartData>(context, listen: false)
-            .updateProfile(Profile.fromJson(data));
-        Navigator.pop(context);
-      });
-    } else {
-      pr.hide().then((isHidden) {
-        print(isHidden);
-        Navigator.pop(context);
-        Fluttertoast.showToast(
-            msg: "Failed",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.black,
-            fontSize: 16.0);
-      });
-    }
-  }
+  saveit(dynamic response) async {}
 
   bool checkIfempty(BuildContext context) {
     print(Provider.of<CartData>(context, listen: false).profile.address);
@@ -662,8 +501,6 @@ void _handlePaymentSuccess(PaymentSuccessResponse response) async {
       backgroundColor: Colors.red,
       textColor: Colors.black,
       fontSize: 16.0);
-  Navigator.push(
-      _context, PageTransition(type: PageTransitionType.fade, child: Result()));
   Map data = {
     'orderId': response.orderId,
     'paymentId': response.paymentId,
@@ -675,33 +512,25 @@ void _handlePaymentSuccess(PaymentSuccessResponse response) async {
   var b = await usersModel.saveOrder(body);
   if (b != "Failed to save" && b != "Server Error") {
     if (b["result"].toString() == "Successful") {
+      print("je ${_context.widget}");
       try {
+        UsersModel usersModel = UsersModel();
         var a = await usersModel.saveOrderDatabase(saveToDatabase(
             response.orderId,
             Provider.of<CartData>(_context, listen: false).getPrice() * 100,
             response.paymentId,
             _context));
         if (a != null && a != "Unable to save order") {
-          Provider.of<CartData>(_context, listen: false).removeAll(
-              0, Provider.of<CartData>(_context, listen: false).listLength);
-          Navigator.pushAndRemoveUntil(
-              _context,
-              PageTransition(type: PageTransitionType.fade, child: Result()),
-              (r) => false);
-
-          Provider.of<CartData>(_context, listen: false).RESULT =
-              "assets/raw/successful.json";
-          Provider.of<CartData>(_context, listen: false).TXT =
-              response.paymentId;
+          CartData.removeALL(0, CartData.listLengths);
+          CartData.RESULT = "assets/raw/successful.json";
+          CartData.TXT = response.paymentId;
           print("Success");
+          Test.fragNavigate.putPosit(key: 'Result');
         } else {
-          Navigator.pushAndRemoveUntil(
-              _context,
-              PageTransition(type: PageTransitionType.fade, child: Result()),
-              (r) => false);
-          Provider.of<CartData>(_context, listen: false).RESULT =
-              "assets/raw/failed.json";
-          Provider.of<CartData>(_context, listen: false).TXT = response.orderId;
+          Test.fragNavigate.putPosit(key: 'Result');
+          CartData.RESULT = "assets/raw/failed.json";
+          CartData.TXT = response.orderId;
+          Test.fragNavigate.putPosit(key: 'Result');
         }
       } on DioError catch (e) {
         final errorMessage = DioExceptions.fromDioError(e).toString();
@@ -709,15 +538,17 @@ void _handlePaymentSuccess(PaymentSuccessResponse response) async {
       }
       // var c = usersModel1.saveOrderDatabase()
       // usersModel1.saveOrderDatabase();
-      Provider.of<CartData>(_context, listen: false).RESULT =
-          "assets/raw/successful.json";
-      Provider.of<CartData>(_context, listen: false).TXT =
-          "Payment ID" + response.paymentId;
+      pr.hide().then((isHidden) {
+        CartData.RESULT = "assets/raw/successful.json";
+        CartData.TXT = "Payment ID" + response.paymentId;
+        Test.fragNavigate.putPosit(key: 'Result');
+      });
     } else {
-      Provider.of<CartData>(_context, listen: false).RESULT =
-          "assets/raw/failed.json";
-      Provider.of<CartData>(_context, listen: false).TXT =
-          "Payment ID" + response.orderId;
+      pr.hide().then((isHidden) {
+        CartData.RESULT = "assets/raw/failed.json";
+        CartData.TXT = "Payment ID" + response.orderId;
+        Test.fragNavigate.putPosit(key: 'Result');
+      });
     }
   }
 }

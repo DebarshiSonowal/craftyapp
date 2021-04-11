@@ -1,5 +1,6 @@
 
 import 'package:crafty/Helper/CartData.dart';
+import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/UI/Activity/Host.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -26,7 +27,10 @@ class _ResultState extends State<Result> {
 var RESULT;
   @override
   Widget build(BuildContext context) {
-    RESULT = Provider.of<CartData>(context, listen: true).RESULT;
+   setState(() {
+     RESULT =CartData.RESULT;
+   });
+    print(CartData.RESULT);
     return Material(
       child: Container(
           color: Colors.white,
@@ -38,12 +42,12 @@ var RESULT;
               children: [
                 Flexible(
                     flex: 3,
-                    child: Lottie.asset(Provider.of<CartData>(context, listen: true).RESULT)),
+                    child: Lottie.asset(CartData.RESULT)),
                 Flexible(
                     flex: 1,
                     child: Center(
                       child: Text(
-                        "The Reference ID is ${Provider.of<CartData>(context, listen: true).TXT}",
+                        "The Reference ID is ${CartData.TXT}",
                         style: TextStyle(
                           fontSize: 14,
                         ),
@@ -66,8 +70,8 @@ var RESULT;
                       child:
                           ElevatedButton(onPressed: () {
                             if (RESULT!="assets/raw/loading.json") {
-                              Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: Host()));
-                              Provider.of<CartData>(context, listen: false).RESULT="assets/raw/loading.json";
+                              Test.fragNavigate.putPosit(key: 'Home');
+                              RESULT="assets/raw/loading.json";
                             } else {
                               Fluttertoast.showToast(
                                   msg: "Please Wait",
@@ -87,11 +91,11 @@ var RESULT;
   }
 
   String getAsset() {
-    if(Provider.of<CartData>(context, listen: false).RESULT == "Successful") {
+    if(CartData.RESULT == "Successful") {
       setState(() {
         return "assets/raw/successful.json";
       });
-    }else if(Provider.of<CartData>(context, listen: false).RESULT == "Please Wait"){
+    }else if(CartData.RESULT == "Please Wait"){
       setState(() {
         return "assets/raw/failed.json";
       });

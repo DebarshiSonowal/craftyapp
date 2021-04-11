@@ -1,3 +1,4 @@
+import 'package:crafty/UI/Activity/Login.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,7 +18,9 @@ class MyApp extends StatelessWidget {
       create: (BuildContext context) => CartData(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-
+        routes: {
+          'login': (context) => Login(),
+        },
         title: 'Flutter Demo',
         theme: ThemeData(
           // primarySwatch: Colors.yellow,

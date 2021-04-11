@@ -14,35 +14,34 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CartData extends ChangeNotifier {
-  List<CartProduct> _list = [];
+  static List<CartProduct> _list = [];
   User _user = null;
   Profile _profile = null;
   List<Order> _order = [];
   List<Products> _allproducts = [];
   List<Products> _men = [];
   List<Products> _women = [];
-  String RESULT = "assets/raw/loading.json", TXT = "Please Wait";
+  static String RESULT = "assets/raw/loading.json", TXT = "Please Wait";
   Razorpay _razorpay = null;
-  List<Categories>_categ=[];
-  List<Ads>_ads=[];
-
+  List<Categories> _categ = [];
+  List<Ads> _ads = [];
 
 //Set
-  void setCategory(List<Categories>list ){
+  void setCategory(List<Categories> list) {
     _categ = list;
     notifyListeners();
   }
-  void setRazorpay(Razorpay razorpay){
+
+  void setRazorpay(Razorpay razorpay) {
     _razorpay = razorpay;
     print("RAzor ${_razorpay.Key}");
     notifyListeners();
   }
 
-  void setAds(List<Ads> ads){
+  void setAds(List<Ads> ads) {
     _ads = ads;
     notifyListeners();
   }
-
 
   void setAllProduct(List<Products> product) {
     _allproducts = product;
@@ -113,7 +112,7 @@ class CartData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void saveInfo() async {
+  static void saveInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString("cartitems", listString);
     print("DOne");
@@ -130,21 +129,20 @@ class CartData extends ChangeNotifier {
 
   Razorpay get razorpay => _razorpay;
 
-  List<Ads> getAds(){
+  List<Ads> getAds() {
     return List<Ads>.unmodifiable(_ads);
   }
 
-  List<String> getAdImage(){
+  List<String> getAdImage() {
     List<String> list = [];
-    for(var i in getAds()){
+    for (var i in getAds()) {
       list.add(i.picture);
     }
     print("Size ${list.length}");
     return list;
-
   }
 
-  List<Categories> getCateg(){
+  List<Categories> getCateg() {
     return List<Categories>.unmodifiable(_categ);
   }
 
@@ -154,7 +152,7 @@ class CartData extends ChangeNotifier {
     return List<CartProduct>.unmodifiable(_list);
   }
 
-  String get listString {
+  static String get listString {
     List<Map<String, dynamic>> jsonData =
         _list.map((word) => word.toJson()).toList();
     return jsonEncode(jsonData);
@@ -180,6 +178,10 @@ class CartData extends ChangeNotifier {
     return UnmodifiableListView(_list);
   }
 
+  static int get listLengths {
+    return _list.length;
+  }
+
   int get listLength {
     return _list.length;
   }
@@ -191,6 +193,7 @@ class CartData extends ChangeNotifier {
     }
     return price;
   }
+
   String get Colours {
     List<String> col = [];
     for (var i in _list) {
@@ -245,6 +248,11 @@ class CartData extends ChangeNotifier {
   List<Products> get women => _women;
 
   //Remove
+  static void removeALL(int first, int second) {
+    _list.removeRange(first, second);
+    saveInfo();
+  }
+
   void removeAll(int first, int second) {
     _list.removeRange(first, second);
     saveInfo();
@@ -255,5 +263,4 @@ class CartData extends ChangeNotifier {
     _list.removeAt(index);
     notifyListeners();
   }
-
 }
