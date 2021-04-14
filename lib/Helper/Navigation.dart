@@ -136,7 +136,8 @@ class NavDrawer extends StatelessWidget {
     await prefs.clear();
     Test.accessToken = null;
     Test.refreshToken = null;
-    print("D");
+    Provider.of<CartData>(context, listen: false).removeOrders(Provider.of<CartData>(context, listen: false).order.length);
+    Provider.of<CartData>(context, listen: false).removeProfile();
     _fragNavigate.putAndReplace(key: 'Login', force: true);
   }
 }

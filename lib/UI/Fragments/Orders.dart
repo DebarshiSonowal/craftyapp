@@ -1,5 +1,6 @@
-
 import 'package:crafty/Helper/CartData.dart';
+import 'package:crafty/Helper/Test.dart';
+import 'package:crafty/UI/Styling/Styles.dart';
 import 'package:crafty/Utility/Users.dart';
 import 'package:empty_widget/empty_widget.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,35 +19,33 @@ class Orders extends StatefulWidget {
 class _OrdersState extends State<Orders> {
   UsersModel usersModel = new UsersModel();
   RefreshController _refreshController =
-  RefreshController(initialRefresh: false);
+      RefreshController(initialRefresh: false);
   var s = null;
-  void _onRefresh() async{
-    print("ZCZC");
-    // Provider.of<CartData>(context, listen: false).orders());
-    s = await usersModel.getOrdersforUser(Provider.of<CartData>(context, listen: false).user.id);
-    print(s);
-    // monitor network fetch
-    // await Future.delayed(Duration(milliseconds: 1000));
-    // if failed,use refreshFailed()
-        if(s!=null){
-          Provider.of<CartData>(context, listen: false).orders(s);
-          _refreshController.refreshCompleted();
-        }
 
+  void _onRefresh() async {
+    if (Test.accessToken != null && Test.refreshToken != null) {
+      s = await usersModel.getOrdersforUser(
+              Provider.of<CartData>(context, listen: false).user.id);
+      if (s != null) {
+            Provider.of<CartData>(context, listen: false).orders(s);
+            _refreshController.refreshCompleted();
+          }
+    }else {
+      Styles.showSnackBar(context, Styles.Log_sign, Duration(seconds: 5),
+          'Please Login first', Colors.black, () {
+            setState(() {
+              Test.fragNavigate.putPosit(key: 'Login');
+            });
+          });
+      _refreshController.refreshFailed();
+    }
   }
 
-  void _onLoading() async{
-    // monitor network fetch
-    print("ZCZC");
+  void _onLoading() async {
     await Future.delayed(Duration(milliseconds: 1000));
-    // if failed,use loadFailed(),if no data return,use LoadNodata()
-    // items.add((items.length+1).toString());
-    // if(mounted)
-    //   setState(() {
-    //
-    //   });
     _refreshController.loadComplete();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,26 +54,22 @@ class _OrdersState extends State<Orders> {
         enablePullUp: true,
         header: WaterDropHeader(),
         footer: CustomFooter(
-          builder: (BuildContext context,LoadStatus mode){
-            Widget body ;
-            if(mode==LoadStatus.idle){
-              body =  Text("pull up load");
-            }
-            else if(mode==LoadStatus.loading){
-              body =  CupertinoActivityIndicator();
-            }
-            else if(mode == LoadStatus.failed){
+          builder: (BuildContext context, LoadStatus mode) {
+            Widget body;
+            if (mode == LoadStatus.idle) {
+              body = Text("pull up load");
+            } else if (mode == LoadStatus.loading) {
+              body = CupertinoActivityIndicator();
+            } else if (mode == LoadStatus.failed) {
               body = Text("Load Failed!Click retry!");
-            }
-            else if(mode == LoadStatus.canLoading){
+            } else if (mode == LoadStatus.canLoading) {
               body = Text("release to load more");
-            }
-            else{
+            } else {
               body = Text("No more Data");
             }
             return Container(
               height: 75.0,
-              child: Center(child:body),
+              child: Center(child: body),
             );
           },
         ),
@@ -82,16 +77,24 @@ class _OrdersState extends State<Orders> {
         onRefresh: _onRefresh,
         onLoading: _onLoading,
         child: Container(
-          child:Provider.of<CartData>(context, listen: false).order.length == 0? EmptyListWidget(
-              title: 'No Orders',
-              subTitle: 'No  orders received yet',
-              image: 'assets/images/404.png',
-              titleTextStyle: Theme.of(context).typography.dense.headline4.copyWith(color: Color(0xff9da9c7)),
-              subtitleTextStyle: Theme.of(context).typography.dense.bodyText1.copyWith(color: Color(0xffabb8d6))
-          ):OrderItem(),
+          child: Provider.of<CartData>(context, listen: false).order.length==0
+              ? EmptyListWidget(
+                  title: 'No Orders',
+                  subTitle: 'No  orders received yet',
+                  image: 'assets/images/404.png',
+                  titleTextStyle: Theme.of(context)
+                      .typography
+                      .dense
+                      .headline4
+                      .copyWith(color: Color(0xff9da9c7)),
+                  subtitleTextStyle: Theme.of(context)
+                      .typography
+                      .dense
+                      .bodyText1
+                      .copyWith(color: Color(0xffabb8d6)))
+              : OrderItem(),
         ),
       ),
     );
   }
 }
-

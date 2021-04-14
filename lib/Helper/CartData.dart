@@ -8,9 +8,9 @@ import 'package:crafty/Models/Products.dart';
 import 'package:crafty/Models/Profile.dart';
 import 'package:crafty/Models/Razorpay.dart';
 import 'package:crafty/Models/User.dart';
+import 'package:crafty/UI/Styling/Styles.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CartData extends ChangeNotifier {
@@ -63,17 +63,17 @@ class CartData extends ChangeNotifier {
   }
 
   void updateProfile(Profile profile) {
-    print(profile);
-    print("DDone");
     _profile = profile;
-    Fluttertoast.showToast(
-        msg: "Profile Updated",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.black,
-        fontSize: 16.0);
+    Styles.showWarningToast(Colors.green, "Profile Updated", Colors.white, 15);
+    notifyListeners();
+  }
+
+  void removeProfile(){
+    _profile = null;
+    notifyListeners();
+  }
+  void removeOrders(int len){
+    _order.removeRange(0, len);
     notifyListeners();
   }
 
@@ -85,6 +85,7 @@ class CartData extends ChangeNotifier {
 
   set list(List<CartProduct> value) {
     _list = value;
+    notifyListeners();
   }
 
   void Update(List<CartProduct> List) {
@@ -95,14 +96,7 @@ class CartData extends ChangeNotifier {
   void addProduct(CartProduct cartProduct) {
     _list.add(cartProduct);
     print(cartProduct.quantity);
-    Fluttertoast.showToast(
-        msg: "Item added",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.black,
-        fontSize: 16.0);
+    Styles.showWarningToast(Colors.green, "Item added", Colors.white, 15);
     saveInfo();
     notifyListeners();
   }
@@ -114,7 +108,7 @@ class CartData extends ChangeNotifier {
 
   static void saveInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString("cartitems", listString);
+    await prefs.setString("data", listString);
     print("DOne");
   }
 

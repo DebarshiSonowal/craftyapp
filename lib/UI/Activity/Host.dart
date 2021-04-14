@@ -27,6 +27,7 @@ import 'package:fragment_navigate/navigate-support.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Host extends StatefulWidget {
   @override
@@ -72,13 +73,10 @@ class HostState extends State<Host> {
       drawerContext: null,
       screens: getList(),
     );
-    print("CClll");
     new Future.delayed(Duration.zero, () {
-      print("CCbbb2");
       _fragNav.setDrawerContext = context;
       getEverything(context);
     });
-    print("DDccc");
     super.initState();
   }
 
@@ -93,7 +91,6 @@ class HostState extends State<Host> {
     try {
       Test.fragNavigate = _fragNav;
       _fragNav.setDrawerContext = context;
-      print("DD");
     } catch (e) {
       print("pROBLEM $e");
     }
@@ -158,8 +155,9 @@ class HostState extends State<Host> {
                           ),
                         ],
                         currentIndex: _fragNav.screenList.keys
-                            .toList()
-                            .indexOf(_fragNav.currentKey)>2
+                                    .toList()
+                                    .indexOf(_fragNav.currentKey) >
+                                2
                             ? 0
                             : _fragNav.screenList.keys
                                 .toList()
@@ -171,7 +169,6 @@ class HostState extends State<Host> {
                             bottom = index;
                             var b = _fragNav.screenList.keys.toList();
                             var c = _fragNav.actionsList;
-                            print("BBB $c");
                             if (c != null) {
                               _fragNav.putAndReplace(key: b[index]);
                             } else {
@@ -179,7 +176,6 @@ class HostState extends State<Host> {
                               try {
                                 _fragNav.putAndReplace(key: b[index]);
                               } catch (e) {
-                                print("cc ${_fragNav.actionsList}");
                                 print("GGOt $e");
                               }
                             }
@@ -200,15 +196,17 @@ class HostState extends State<Host> {
   }
 
   void getEverything(BuildContext context) async {
-    print("run");
+    print("ccc");
     UsersModel usersModel = UsersModel();
     UsersModel usersModel1 = UsersModel();
     UsersModel usersModel2 = UsersModel();
     UsersModel usersModel3 = UsersModel();
     var UserData = await usersModel1.getUser();
     if (UserData != "User Not Found") {
+      print("CC");
       Provider.of<CartData>(context, listen: false).updateUser(UserData);
     } else {
+      print("CC1");
       Dialogs.materialDialog(
           msg: 'Sorry Something is wrong',
           title: "Server Error",
@@ -216,7 +214,13 @@ class HostState extends State<Host> {
           context: context,
           actions: [
             IconsButton(
-              onPressed: () {
+              onPressed: () async {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                await prefs.clear();
+                Test.accessToken = null;
+                Test.refreshToken = null;
+                Provider.of<CartData>(context, listen: false).removeOrders(Provider.of<CartData>(context, listen: false).order.length);
+                Provider.of<CartData>(context, listen: false).removeProfile();
                 Navigator.pop(context);
                 SystemChannels.platform.invokeMethod('SystemNavigator.pop');
               },
@@ -233,13 +237,11 @@ class HostState extends State<Host> {
     if (profile != "Server Error" && profile != null) {
       Provider.of<CartData>(context, listen: false).updateProfile(profile);
     }
-
     var order = await usersModel3.getOrdersforUser(
         Provider.of<CartData>(context, listen: false).user.id);
     if (order != "Server Error" && order != "Orders  not found") {
       Provider.of<CartData>(context, listen: false).orders(order);
     }
-
     var Data = await usersModel.getAll();
     List<Products> data = [];
     if (Data.toString() == "Server Error" ||
@@ -278,15 +280,9 @@ class HostState extends State<Host> {
           Provider.of<CartData>(context, listen: false).setMen(men);
           Provider.of<CartData>(context, listen: false).setWomen(women);
         });
-      } else {
-        print("empty");
       }
       o = 4;
     }
-  }
-
-  void set() async {
-    var a = await _fragNav;
   }
 
   getList() {
@@ -343,7 +339,6 @@ class HostState extends State<Host> {
       drawerContext: null,
       screens: getList(),
     );
-    print("cc ${_fragNav.actionsList}");
     Test.fragNavigate = _fragNav;
     _fragNav.setDrawerContext = context;
   }

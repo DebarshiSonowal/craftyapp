@@ -15,16 +15,11 @@ class About extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Flexible(
-                flex: 2,
-                child: Image(
-                    image: AssetImage('assets/images/crafty.png')),
-              ),
-              Flexible(
                 flex: 1,
                 child: Center(
                     child: Text(
                   "Our Team",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 )),
               ),
               Flexible(
@@ -51,20 +46,41 @@ class About extends StatelessWidget {
                     )),
               ),
               Flexible(
-                flex: 1,
-                child: Center(
-                    child: Text(
-                      "Carolina Cajazeira at Lottiefiles.com",
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-                    )),
-              ),
-              Flexible(
-                flex: 1,
-                child: Center(
-                    child: Text(
-                      "Freepik at Flaticon.com",
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-                    )),
+                flex: 2,
+                child: Column(
+                  children: [
+                    Center(
+                        child: Text(
+                          "Developers from pub.dev",
+                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                        )),
+                    Center(
+                        child: Text(
+                          "Developers from Github",
+                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                        )),
+                    Center(
+                        child: Text(
+                          "Carolina Cajazeira at Lottiefiles.com",
+                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                        )),
+                    Center(
+                        child: Text(
+                          "Freepik at Flaticon.com",
+                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                        )),
+                    Center(
+                        child: Text(
+                          "utsav at Lottiefiles.com",
+                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                        )),
+                    Center(
+                        child: Text(
+                          "Abby Ambrogi at Lottiefiles.com",
+                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                        )),
+                  ],
+                ),
               ),
               Flexible(
                 flex: 1,

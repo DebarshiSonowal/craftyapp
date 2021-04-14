@@ -37,7 +37,7 @@ class CartItem extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: FadeInImage.assetNetwork(
                     placeholder: "assets/images/404.png",
-                    image: list[index].picture,
+                    image: list[index].picture.split(",")[0],
                     height: 100,
                     width: 100,
                   ),

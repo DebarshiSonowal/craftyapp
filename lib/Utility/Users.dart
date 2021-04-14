@@ -56,12 +56,15 @@ class UsersModel {
 
   Future<dynamic> getUser() async {
     NetworkHelper networkHelper = NetworkHelper(url);
+    print('c');
     var user1 = await networkHelper.getuser();
     if (user1 != "User not found" && user1 != "Server Error") {
+      print("DFg");
       User user =
           User(user1["name"], user1["_id"], user1["email"], user1["googleId"]);
       return user;
     }
+    print("DFg1 $user1");
     return "User Not Found";
   }
 

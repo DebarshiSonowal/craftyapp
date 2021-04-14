@@ -1,9 +1,9 @@
 import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/Models/LoginData.dart';
+import 'package:crafty/UI/Styling/Styles.dart';
 import 'package:crafty/Utility/Users.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:progress_dialog/progress_dialog.dart';
@@ -120,10 +120,11 @@ class _LoginState extends State<Login> {
               ),
               TextButton(
                 onPressed: () {},
-                child: Text("Forgot Password",style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold
-                ),),
+                child: Text(
+                  "Forgot Password",
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold),
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.all(12.0),
@@ -157,15 +158,7 @@ class _LoginState extends State<Login> {
                             fontSize: 19.0,
                             fontWeight: FontWeight.w600));
                     if (email == null && password == null) {
-                      Fluttertoast.showToast(
-                          msg: "Please enter required fields",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          timeInSecForIosWeb: 1,
-                          backgroundColor: Colors.red,
-                          textColor: Colors.black,
-                          fontSize: 16.0);
-                      print("ADAD");
+                      Styles.showWarningToast(Colors.red, "Please enter required fields", Colors.white, 15);
                       // LogIn(email,password);
 
                     } else {
@@ -202,10 +195,11 @@ class _LoginState extends State<Login> {
                           PageTransition(
                               type: PageTransitionType.fade, child: Signup()));
                     },
-                    child: Text("Signup",style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold
-                    ),),
+                    child: Text(
+                      "Signup",
+                      style: TextStyle(
+                          color: Colors.black, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ],
               ),
@@ -247,14 +241,7 @@ class _LoginState extends State<Login> {
                   splashColor: Colors.grey,
                   icon: Icon(FontAwesomeIcons.google),
                   onPressed: () {
-                    Fluttertoast.showToast(
-                        msg: "Coming soon",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.BOTTOM,
-                        timeInSecForIosWeb: 1,
-                        backgroundColor: Colors.red,
-                        textColor: Colors.black,
-                        fontSize: 16.0);
+                    Styles.showWarningToast(Colors.deepOrange, "Coming Soon", Colors.white, 15);
                   },
                 ),
               ),
@@ -273,8 +260,7 @@ class _LoginState extends State<Login> {
 
   void LogIn(String email, String password) async {
     UsersModel usersModel = UsersModel();
-    var b= LoginData(password, email, null);
-    print("${b.email},${b.password}");
+    var b = LoginData(password, email, null);
     var data = await usersModel.login(b);
     if (data != null && data != "User not found" && data != "Server Error") {
       Test.accessToken = data["accessToken"];
@@ -282,61 +268,29 @@ class _LoginState extends State<Login> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString("access", data["accessToken"]);
       await prefs.setString("refresh", data["refreshToken"]);
-      Fluttertoast.showToast(
-          msg: "Successful",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.black,
-          fontSize: 16.0);
+      Styles.showWarningToast(Colors.green, "Successful", Colors.white, 15);
       pr.hide().then((isHidden) {
-        print(isHidden);
         // Navigator.of(context).pop();
         Navigator.pushAndRemoveUntil(
             context,
             PageTransition(type: PageTransitionType.fade, child: Host()),
-                (r) => false);
+            (r) => false);
       });
-    } else if(data == "Server Error"){
+    } else if (data == "Server Error") {
       pr.hide().then((isHidden) {
-        print(isHidden);
-        Fluttertoast.showToast(
-            msg: "Something is wrong. Please try again later",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.black,
-            fontSize: 16.0);
+        Styles.showWarningToast(Colors.red, "Something is wrong. Please try again later", Colors.white, 15);
       });
-    }else {
+    } else {
       pr.hide().then((isHidden) {
-        print(isHidden);
         print("Password or email is wrong");
-        Fluttertoast.showToast(
-            msg: "Email or password is wrong",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.black,
-            fontSize: 16.0);
+        Styles.showWarningToast(Colors.red, "Email or password is wrong", Colors.white, 15);
       });
     }
   }
-  void hidePr(){
+
+  void hidePr() {
     pr.hide().then((isHidden) {
-      print(isHidden);
-      print("Password or email is wrong");
-      Fluttertoast.showToast(
-          msg: "Email or password is wrong",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.black,
-          fontSize: 16.0);
+      Styles.showWarningToast(Styles.bg_color, "Email or password is wrong", Colors.white, 15);
     });
   }
 }

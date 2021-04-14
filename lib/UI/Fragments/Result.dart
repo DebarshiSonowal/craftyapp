@@ -2,6 +2,7 @@
 import 'package:crafty/Helper/CartData.dart';
 import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/UI/Activity/Host.dart';
+import 'package:crafty/UI/Styling/Styles.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lottie/lottie.dart';
@@ -73,14 +74,7 @@ var RESULT;
                               Test.fragNavigate.putPosit(key: 'Home');
                               RESULT="assets/raw/loading.json";
                             } else {
-                              Fluttertoast.showToast(
-                                  msg: "Please Wait",
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.BOTTOM,
-                                  timeInSecForIosWeb: 1,
-                                  backgroundColor: Colors.red,
-                                  textColor: Colors.black,
-                                  fontSize: 16.0);
+                              Styles.showWarningToast(Styles.bg_color, "Please Wait", Colors.black, 15);
                             }
                           }, child: Text("Next")),
                     )),

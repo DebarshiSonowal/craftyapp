@@ -7,25 +7,22 @@ import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/Models/CartProduct.dart';
 import 'package:crafty/Models/Order.dart';
 import 'package:crafty/Models/ServerOrder.dart';
-import 'package:crafty/UI/Activity/Payment.dart';
 import 'package:crafty/UI/CustomWidgets/BottomCard.dart';
 import 'package:crafty/UI/CustomWidgets/CartItems.dart';
+import 'package:crafty/UI/Styling/Styles.dart';
 import 'package:crafty/Utility/Users.dart';
 import 'package:dio/dio.dart';
 import 'package:empty_widget/empty_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'Result.dart';
 
 BuildContext _context;
 ProgressDialog pr;
@@ -51,7 +48,6 @@ class _CartState extends State<Cart> {
 
   Future<ServerOrder> getEveryThing(double price) async {
     UsersModel usersModel = UsersModel();
-    print("HEREczccz");
     return await usersModel.getOrder(price);
   }
 
@@ -64,7 +60,6 @@ class _CartState extends State<Cart> {
       for (int i = 0; i < bihuProducts.length; i++) {
         setState(() {
           price += double.parse(bihuProducts[i].payment);
-          print(price);
         });
       }
     }
@@ -77,7 +72,7 @@ class _CartState extends State<Cart> {
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
-    read("cartitems");
+    read("data");
     pinT = TextEditingController();
     phT = TextEditingController();
     addT = TextEditingController();
@@ -118,9 +113,7 @@ class _CartState extends State<Cart> {
                 .bodyText1
                 .copyWith(color: Color(0xffabb8d6)));
       });
-      print("Done");
     });
-    print("C");
     super.initState();
   }
 
@@ -131,6 +124,7 @@ class _CartState extends State<Cart> {
         .map((e) => e.toJson())
         .toList());
     save("data", json);
+    print("LISt $json");
     _razorpay.clear();
     super.dispose();
   }
@@ -169,7 +163,7 @@ class _CartState extends State<Cart> {
                   setState(() {
                     Provider.of<CartData>(context, listen: false)
                         .removeAll(0, item);
-                    print("Done");
+                    Styles.showWarningToast(Styles.Log_sign,"All items removed", Colors.black, 15);
                   });
                 },
                 enableFeedback: true,
@@ -192,15 +186,31 @@ class _CartState extends State<Cart> {
               return Dismissible(
                 key: UniqueKey(),
                 onDismissed: (item) {
-                  Provider.of<CartData>(context, listen: false)
-                      .removeProduct(index);
+                  Styles.showWarningToast(Styles.Log_sign,"Item removed", Colors.black, 15);
+                 setState(() {
+                   Provider.of<CartData>(context, listen: false)
+                       .removeProduct(index);
+                   var json = jsonEncode(Provider.of<CartData>(context, listen: false)
+                       .list
+                       .map((e) => e.toJson())
+                       .toList());
+                   save("data", json);
+                 });
                 },
                 child: CartItem(
                   index: index,
                   list: Provider.of<CartData>(context).list,
                   callback: () {
-                    Provider.of<CartData>(context, listen: false)
-                        .removeProduct(index);
+                    Styles.showWarningToast(Styles.Log_sign,"Item removed", Colors.black, 15);
+                    setState(() {
+                      Provider.of<CartData>(context, listen: false)
+                          .removeProduct(index);
+                      var json = jsonEncode(Provider.of<CartData>(context, listen: false)
+                          .list
+                          .map((e) => e.toJson())
+                          .toList());
+                      save("data", json);
+                    });
                   },
                 ),
               );
@@ -266,15 +276,7 @@ class _CartState extends State<Cart> {
                                     length,
                                     (_) => _chars.codeUnitAt(
                                         _rnd.nextInt(_chars.length))));
-
-                            Fluttertoast.showToast(
-                                msg: "Successful",
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.CENTER,
-                                timeInSecForIosWeb: 1,
-                                backgroundColor: Colors.red,
-                                textColor: Colors.black,
-                                fontSize: 16.0);
+                            Styles.showWarningToast(Colors.green,"Successful", Colors.white, 15);
 
                             var id = "order_cod_" + getRandomString(5);
                             try {
@@ -295,7 +297,6 @@ class _CartState extends State<Cart> {
                                     CartData.RESULT =
                                         "assets/raw/successful.json";
                                     CartData.TXT = id;
-                                    print("Success");
                                     Test.fragNavigate.putPosit(key: 'Result');
                                   });
                                 });
@@ -329,7 +330,6 @@ class _CartState extends State<Cart> {
                                     .razorpay
                                     .Key
                                     .toString();
-                            print("KEY $cx");
                             if (Provider.of<CartData>(context, listen: false)
                                     .razorpay !=
                                 null) {
@@ -361,9 +361,6 @@ class _CartState extends State<Cart> {
                               Test.currentCartItems =
                                   Provider.of<CartData>(context, listen: false)
                                       .list;
-                              print(Test.currentCartItems);
-                              print(
-                                  "DDDDD ${Provider.of<CartData>(context, listen: false).razorpay.Id}");
 
                               var options = {
                                 'key': Provider.of<CartData>(context,
@@ -379,21 +376,13 @@ class _CartState extends State<Cart> {
                                   'wallets': ['paytm']
                                 }
                               };
-                              print("INFOM ${id}");
                               try {
                                 _razorpay.open(options);
                               } catch (e) {
                                 print("VVVV $e");
                               }
                             } else {
-                              Fluttertoast.showToast(
-                                  msg: "Failed Please Log out",
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.CENTER,
-                                  timeInSecForIosWeb: 1,
-                                  backgroundColor: Colors.red,
-                                  textColor: Colors.black,
-                                  fontSize: 16.0);
+                              Styles.showWarningToast(Colors.red,"Failed Please Log out", Colors.white, 15);
                             }
                           },
                           text: 'PAY',
@@ -408,14 +397,7 @@ class _CartState extends State<Cart> {
 
                   // Provider.of<CartData>(context, listen: false).removeAll(0, Test.currentCartItems.length);
                 } else {
-                  Fluttertoast.showToast(
-                      msg: "First add address,pincode and phone no in profile",
-                      toastLength: Toast.LENGTH_SHORT,
-                      gravity: ToastGravity.CENTER,
-                      timeInSecForIosWeb: 1,
-                      backgroundColor: Colors.red,
-                      textColor: Colors.black,
-                      fontSize: 16.0);
+                  Styles.showWarningToast(Styles.Log_sign,"First add address,pincode and phone no in profile", Colors.white, 15);
                   showModalBottomSheet(
                       context: context,
                       isDismissible: true,
@@ -461,14 +443,12 @@ class _CartState extends State<Cart> {
   void read(String key) async {
     final prefs = await SharedPreferences.getInstance();
     var v = prefs.getString(key);
-    print("HER");
     if (v != null) {
       List<CartProduct> list = [];
       for (var i in jsonDecode(v)) {
         list.add(CartProduct.fromJson(i));
       }
       Provider.of<CartData>(context, listen: false).list = list;
-      print("Data ${list}");
     }
   }
 
@@ -480,7 +460,6 @@ class _CartState extends State<Cart> {
   saveit(dynamic response) async {}
 
   bool checkIfempty(BuildContext context) {
-    print(Provider.of<CartData>(context, listen: false).profile.address);
     if (Provider.of<CartData>(context, listen: false).profile != null &&
         Provider.of<CartData>(context, listen: false).profile.address != null &&
         Provider.of<CartData>(context, listen: false).profile.phone != null &&
@@ -493,26 +472,17 @@ class _CartState extends State<Cart> {
 }
 
 void _handlePaymentSuccess(PaymentSuccessResponse response) async {
-  Fluttertoast.showToast(
-      msg: "Successful",
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.CENTER,
-      timeInSecForIosWeb: 1,
-      backgroundColor: Colors.red,
-      textColor: Colors.black,
-      fontSize: 16.0);
+  Styles.showWarningToast(Colors.green, "Successful", Colors.white, 15);
   Map data = {
     'orderId': response.orderId,
     'paymentId': response.paymentId,
     'signature': response.signature,
   };
   var body = json.encode(data);
-  print("ADAD");
   UsersModel usersModel = UsersModel();
   var b = await usersModel.saveOrder(body);
   if (b != "Failed to save" && b != "Server Error") {
     if (b["result"].toString() == "Successful") {
-      print("je ${_context.widget}");
       try {
         UsersModel usersModel = UsersModel();
         var a = await usersModel.saveOrderDatabase(saveToDatabase(
@@ -554,11 +524,10 @@ void _handlePaymentSuccess(PaymentSuccessResponse response) async {
 }
 
 void _handlePaymentError(PaymentFailureResponse response) {
-  print("ERRROR " + response.message + " " + response.code.toString() + "");
   pr.hide().then((isHidden) {
-    print(isHidden);
+    Styles.showWarningToast(Colors.red, response.message, Colors.white, 15);
   });
-  print("DDDD");
+
 }
 
 Order saveToDatabase(id, double amount, String status, BuildContext context) {
@@ -587,13 +556,5 @@ Order saveToDatabase(id, double amount, String status, BuildContext context) {
 }
 
 void _handleExternalWallet(ExternalWalletResponse response) {
-  print("My respones is ${response.walletName}");
-  Fluttertoast.showToast(
-      msg: "Successful ${response}",
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.CENTER,
-      timeInSecForIosWeb: 1,
-      backgroundColor: Colors.red,
-      textColor: Colors.black,
-      fontSize: 16.0);
+  Styles.showWarningToast(Colors.green,"Successful ${response}", Colors.white, 15);
 }

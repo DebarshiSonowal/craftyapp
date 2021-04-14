@@ -1,7 +1,7 @@
 
 import 'package:crafty/UI/CustomWidgets/ContactIconButton.dart';
+import 'package:crafty/UI/Styling/Styles.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -131,14 +131,7 @@ class _ContactUsState extends State<ContactUs> {
   }
 
   void notavailable() {
-    Fluttertoast.showToast(
-        msg: "Coming Soon",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.black,
-        fontSize: 16.0);
+    Styles.showWarningToast(Colors.deepOrange, "Coming Soon", Colors.white, 15);
   }
 
   void _sendWhatsapp() async {

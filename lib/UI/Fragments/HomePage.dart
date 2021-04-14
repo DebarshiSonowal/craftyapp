@@ -7,6 +7,7 @@ import 'package:crafty/Models/Razorpay.dart';
 import 'package:crafty/UI/Activity/Host.dart';
 import 'package:crafty/UI/CustomWidgets/CategoryItemView.dart';
 import 'package:crafty/UI/CustomWidgets/ProductItemView.dart';
+import 'package:crafty/UI/Styling/Styles.dart';
 import 'package:crafty/Utility/Users.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +39,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    new Future.delayed(Duration.zero,() {
+    new Future.delayed(Duration.zero, () {
       customcontext = context;
     });
   }
@@ -55,58 +56,54 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _onRefresh() async {
-    if ( Test.accessToken!=null &&  Test.refreshToken !=null) {
+    if (Test.accessToken != null && Test.refreshToken != null) {
       UsersModel usersModel = UsersModel();
       UsersModel usersModel1 = UsersModel();
       var Data = await usersModel.getAll();
       if (Data.toString() != "Server Error" ||
-              Data.toString() != "Products not found") {
-            List<Products> data = Data;
-            if (data != null) {
-              setState(() {
-                print("Here");
-                new Future.delayed(Duration.zero,() {
-                  Provider.of<CartData>(customcontext, listen: false).setAllProduct(data);
-                });
-                Test.bihu = data;
-                _refreshController.refreshCompleted();
-              });
-            } else {
-              print("nkn");
-              _refreshController.refreshFailed();
-            }
-          } else {
-            _refreshController.refreshFailed();
-          }
+          Data.toString() != "Products not found") {
+        List<Products> data = Data;
+        if (data != null) {
+          setState(() {
+            print("Here");
+            new Future.delayed(Duration.zero, () {
+              Provider.of<CartData>(customcontext, listen: false)
+                  .setAllProduct(data);
+            });
+            Test.bihu = data;
+            _refreshController.refreshCompleted();
+          });
+        } else {
+          print("nkn");
+          _refreshController.refreshFailed();
+        }
+      } else {
+        _refreshController.refreshFailed();
+      }
       var data = await usersModel1.getRequired();
 
       var data1 = data['require'] as List;
       List<Categories> categories =
-              data1.map((e) => Categories.fromJson(e)).toList();
+          data1.map((e) => Categories.fromJson(e)).toList();
 
       var data2 = data['ads'] as List;
       List<Ads> ads = data2.map((e) => Ads.fromJson(e)).toList();
       var data3 = data['razorpay'];
 
-      new Future.delayed(Duration.zero,() {
-            Provider.of<CartData>(customcontext, listen: false).setCategory(categories);
-            Provider.of<CartData>(customcontext, listen: false).setAds(ads);
-            Provider.of<CartData>(customcontext, listen: false)
-                .setRazorpay(Razorpay.fromJson(data3));
-          });
+      new Future.delayed(Duration.zero, () {
+        Provider.of<CartData>(customcontext, listen: false)
+            .setCategory(categories);
+        Provider.of<CartData>(customcontext, listen: false).setAds(ads);
+        Provider.of<CartData>(customcontext, listen: false)
+            .setRazorpay(Razorpay.fromJson(data3));
+      });
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Please Login first'),
-        action: SnackBarAction(
-          label: 'Next',
-          onPressed: () {
-            setState(() {
-              Test.fragNavigate.putPosit(key:'Login');
-
-            });
-          },
-        ),
-      ));
+      Styles.showSnackBar(context, Styles.Log_sign, Duration(seconds: 5),
+          'Please Login first', Colors.black, () {
+        setState(() {
+          Test.fragNavigate.putPosit(key: 'Login');
+        });
+      });
       _refreshController.refreshFailed();
     }
   }
@@ -173,8 +170,12 @@ class _HomePageState extends State<HomePage> {
                           .getCateg(),
                       index: index,
                       OnTap: () {
-                        Test.fragNavigate.putPosit(key: Provider.of<CartData>(context, listen:  false)
-                            .getCateg()[index].name.toString(), force: true);
+                        Test.fragNavigate.putPosit(
+                            key: Provider.of<CartData>(context, listen: false)
+                                .getCateg()[index]
+                                .name
+                                .toString(),
+                            force: true);
                       },
                     );
                   },
@@ -204,15 +205,6 @@ class _HomePageState extends State<HomePage> {
                               Provider.of<CartData>(context, listen: false)
                                   .getAdImage()
                                   .indexOf(i);
-                          Fluttertoast.showToast(
-                              msg:
-                                  "Clicked ${Provider.of<CartData>(context, listen: false).getAds()[index].Id}",
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.CENTER,
-                              timeInSecForIosWeb: 1,
-                              backgroundColor: Colors.red,
-                              textColor: Colors.black,
-                              fontSize: 16.0);
                         },
                         child: Container(
                             width: MediaQuery.of(context).size.width,
@@ -322,7 +314,7 @@ class _HomePageState extends State<HomePage> {
                                 type: PageTransitionType.fade,
                                 child: ProductView(
                                     product: Provider.of<CartData>(context,
-                                            listen: false)
+                                        listen: false)
                                         .allproducts[index],
                                     fragNav: Test.fragNavigate)));
                       },

@@ -62,7 +62,6 @@ class _MenProductsState extends State<MenProducts> {
   @override
   void initState() {
     super.initState();
-    print("VVV");
   }
 }
 

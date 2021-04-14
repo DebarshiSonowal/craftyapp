@@ -118,8 +118,9 @@ class NetworkHelper {
       'googleId': loginData.googleId
     };
     var body = json.encode(data);
+    print(body);
     BaseOptions option =
-        new BaseOptions(connectTimeout: 7000, receiveTimeout: 3000, headers: {
+        new BaseOptions(connectTimeout: 10000, receiveTimeout: 3000, headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     });
@@ -385,9 +386,11 @@ class NetworkHelper {
   }
 
   Future getuser() async {
+    print("ICCC");
     if (Test.accessToken != null) {
+      print("ICCcC");
       BaseOptions options =
-          new BaseOptions(connectTimeout: 10000, receiveTimeout: 3000, headers: {
+          new BaseOptions(connectTimeout: 10000, receiveTimeout: 7000, headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': 'Bearer ${Test.accessToken}',
@@ -404,19 +407,30 @@ class NetworkHelper {
       Response response;
       try {
         response = await dio.get(url + "user");
+        print(response);
       } on DioError catch (e) {
         if (e.type == DioErrorType.CONNECT_TIMEOUT) {
+          print(e);
           response = Response(statusCode: 500);
+        }else{
+          print("Else $e");
         }
       }
-      if (response.statusCode == 200) {
-        var data = response.data;
-        return data;
-      } else if (response.statusCode == 500) {
-        return "Server Error";
-      } else {
+      try {
+        if (response.statusCode == 200) {
+                var data = response.data;
+                return data;
+              } else if (response.statusCode == 500) {
+                return "Server Error";
+              } else {
+                return "User not found";
+              }
+      } catch (e) {
+        print(e);
         return "User not found";
       }
+    }else{
+      print("CCCvbbb");
     }
   }
 

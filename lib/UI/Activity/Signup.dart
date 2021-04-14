@@ -1,16 +1,14 @@
-
 import 'package:crafty/Models/SignUpData.dart';
 import 'package:crafty/UI/CustomWidgets/Gender.dart';
 import 'package:crafty/UI/Styling/Styles.dart';
 import 'package:crafty/Utility/Users.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
 import 'Login.dart';
-
 
 class Signup extends StatefulWidget {
   @override
@@ -43,7 +41,7 @@ class _SignUpState extends State<Signup> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Image(
-                  height: 150,
+                  height: 120,
                   width: 150,
                   image: AssetImage('assets/images/crafty.png')),
               Padding(
@@ -57,9 +55,6 @@ class _SignUpState extends State<Signup> {
                         fontSize: 26),
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 10,
               ),
               Padding(
                 padding: const EdgeInsets.all(5.0),
@@ -187,7 +182,7 @@ class _SignUpState extends State<Signup> {
                     },
                   ),
                   TextButton(
-                    onPressed: (){
+                    onPressed: () {
                       _launchURL();
                     },
                     child: Text(
@@ -232,8 +227,7 @@ class _SignUpState extends State<Signup> {
                     genderList: ['Male', 'Female'],
                     callback: (value) {
                       _gender = value;
-                    }
-                ),
+                    }),
               ),
               Padding(
                 padding: const EdgeInsets.all(5.0),
@@ -246,56 +240,44 @@ class _SignUpState extends State<Signup> {
                   color: Styles.button_color,
                   onPressed: () async {
                     initLoader();
-
                     if (name != null &&
                         password != null &&
                         email != null &&
                         cnfpass != null) {
                       if (password == cnfpass) {
                         if (_agree == true) {
-                          await pr.show();
                           if (_gender != null) {
-                            signUp(name, password, email);
+                            if (EmailValidator.validate(email)) {
+                              await pr.show();
+                              signUp(name, password, email);
+                            } else {
+                              Styles.showWarningToast(Colors.red,
+                                  "Enter a valid Email", Colors.white, 15);
+                            }
                           } else {
-                            Fluttertoast.showToast(
-                                msg: "Select a gender",
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM,
-                                timeInSecForIosWeb: 1,
-                                backgroundColor: Colors.red,
-                                textColor: Colors.black,
-                                fontSize: 16.0);
+                            Styles.showWarningToast(Colors.red,
+                                "Select a gender", Colors.white, 15);
                           }
                         } else {
-                          Fluttertoast.showToast(
-                              msg: "Please agree to our terms and conditions",
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              timeInSecForIosWeb: 1,
-                              backgroundColor: Colors.red,
-                              textColor: Colors.black,
-                              fontSize: 16.0);
+                          Styles.showWarningToast(
+                              Colors.red,
+                              "Please agree to our terms and conditions",
+                              Colors.white,
+                              15);
                         }
                       } else {
-                        Fluttertoast.showToast(
-                            msg:
+                        Styles.showWarningToast(
+                            Colors.red,
                             "Password and confirm password are not matching",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.BOTTOM,
-                            timeInSecForIosWeb: 1,
-                            backgroundColor: Colors.red,
-                            textColor: Colors.black,
-                            fontSize: 16.0);
+                            Colors.white,
+                            15);
                       }
                     } else {
-                      Fluttertoast.showToast(
-                          msg: "Please fill all the necessary fields",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          timeInSecForIosWeb: 1,
-                          backgroundColor: Colors.red,
-                          textColor: Colors.black,
-                          fontSize: 16.0);
+                      Styles.showWarningToast(
+                          Colors.red,
+                          "Please fill all the necessary fields",
+                          Colors.white,
+                          15);
                     }
                   },
                   child: Text(
@@ -308,9 +290,6 @@ class _SignUpState extends State<Signup> {
                   ),
                 ),
               ),
-              SizedBox(
-                height: 20,
-              )
             ],
           ),
         ),
@@ -332,48 +311,28 @@ class _SignUpState extends State<Signup> {
 
   void signUp(name, password, email) async {
     UsersModel usersModel = UsersModel();
-    var data = await usersModel.signuP(SignUpData(password, email, name, null,_gender));
+    var data = await usersModel
+        .signuP(SignUpData(password, email, name, null, _gender));
     if (data != null) {
       if (data != "409") {
         pr.hide().then((isHidden) {
-          print(isHidden);
         });
-        Fluttertoast.showToast(
-            msg: "SignUp Successful ${data["name"]}",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.black,
-            fontSize: 16.0);
+        Styles.showWarningToast(Colors.green,
+            "SignUp Successful ${data["name"]}", Colors.white, 15);
         Navigator.push(context,
             PageTransition(type: PageTransitionType.fade, child: Login()));
       } else {
         pr.hide().then((isHidden) {
-          print(isHidden);
         });
-        Fluttertoast.showToast(
-            msg: "User Already Exists",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.black,
-            fontSize: 16.0);
+        Styles.showWarningToast(
+            Colors.red, "User Already Exists", Colors.white, 15);
         clearTexts();
       }
     } else {
       pr.hide().then((isHidden) {
-        print(isHidden);
       });
-      Fluttertoast.showToast(
-          msg: "Please Try Again Later",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.black,
-          fontSize: 16.0);
+      Styles.showWarningToast(
+          Colors.red, "Please Try Again Later", Colors.white, 15);
     }
   }
 
@@ -410,6 +369,7 @@ class _SignUpState extends State<Signup> {
     pass.clear();
     cnf.clear();
   }
+
   void _launchURL() async {
     const urls =
         'https://www.freeprivacypolicy.com/live/2bed81fc-8c4f-4fe6-8015-8fcdcb5cc8e0';

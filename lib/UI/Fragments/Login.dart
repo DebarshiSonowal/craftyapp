@@ -1,12 +1,13 @@
+import 'package:crafty/Helper/CartData.dart';
 import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/Models/LoginData.dart';
 import 'package:crafty/UI/Styling/Styles.dart';
 import 'package:crafty/Utility/Users.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fragment_navigate/navigate-bloc.dart';
 import 'package:progress_dialog/progress_dialog.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
@@ -151,14 +152,7 @@ class _LoginState extends State<Login> {
                               fontSize: 19.0,
                               fontWeight: FontWeight.w600));
                       if (email == null && password == null) {
-                        Fluttertoast.showToast(
-                            msg: "Please enter required fields",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.BOTTOM,
-                            timeInSecForIosWeb: 1,
-                            backgroundColor: Colors.red,
-                            textColor: Colors.black,
-                            fontSize: 16.0);
+                        Styles.showWarningToast(Colors.red, "Please enter required fields", Colors.white, 15);
                         print("ADAD");
                         // LogIn(email,password);
 
@@ -237,14 +231,7 @@ class _LoginState extends State<Login> {
                     splashColor: Colors.grey,
                     icon: Icon(FontAwesomeIcons.google),
                     onPressed: () {
-                      Fluttertoast.showToast(
-                          msg: "Coming soon",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          timeInSecForIosWeb: 1,
-                          backgroundColor: Colors.red,
-                          textColor: Colors.black,
-                          fontSize: 16.0);
+                      Styles.showWarningToast(Colors.deepOrange, "Coming Soon", Colors.white, 15);
                     },
                   ),
                 ),
@@ -271,14 +258,18 @@ class _LoginState extends State<Login> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString("access", data["accessToken"]);
       await prefs.setString("refresh", data["refreshToken"]);
-      Fluttertoast.showToast(
-          msg: "Successful",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.black,
-          fontSize: 16.0);
+      var UserData = await usersModel.getUser();
+      if (UserData != "User Not Found") {
+        print("V: ${UserData.name}");
+        Provider.of<CartData>(context, listen: false).updateUser(UserData);
+      }
+      var order = await usersModel.getOrdersforUser(
+          Provider.of<CartData>(context, listen: false).user.id);
+      if (order != "Server Error" && order != "Orders  not found") {
+        Provider.of<CartData>(context, listen: false).orders(order);
+      }
+
+      Styles.showWarningToast(Colors.green, "Successful", Colors.white, 15);
       pr.hide().then((isHidden) {
         print(isHidden);
         Test.fragNavigate.putPosit(key:'Home');
@@ -286,27 +277,13 @@ class _LoginState extends State<Login> {
     } else if (data == "Server Error") {
       pr.hide().then((isHidden) {
         print(isHidden);
-        Fluttertoast.showToast(
-            msg: "Something is wrong. Please try again later",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.black,
-            fontSize: 16.0);
+        Styles.showWarningToast(Colors.red, "Something is wrong. Please try again later", Colors.white, 15);
       });
     } else {
       pr.hide().then((isHidden) {
         print(isHidden);
         print("Password or email is wrong");
-        Fluttertoast.showToast(
-            msg: "Email or password is wrong",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.black,
-            fontSize: 16.0);
+        Styles.showWarningToast(Colors.red, "Email or password is wrong", Colors.white, 15);
       });
     }
   }
@@ -314,15 +291,7 @@ class _LoginState extends State<Login> {
   void hidePr() {
     pr.hide().then((isHidden) {
       print(isHidden);
-      print("Password or email is wrong");
-      Fluttertoast.showToast(
-          msg: "Email or password is wrong",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.black,
-          fontSize: 16.0);
+      Styles.showWarningToast(Styles.bg_color, "Email or password is wrong", Colors.white, 15);
     });
   }
 }

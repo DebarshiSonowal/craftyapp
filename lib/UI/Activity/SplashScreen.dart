@@ -127,7 +127,6 @@ class _SplashScreenState extends State<SplashScreen> {
           PageTransition(type: PageTransitionType.fade, child: Host()),(r)=>false):Navigator.pushAndRemoveUntil(context,
           PageTransition(type: PageTransitionType.fade, child: NoInternet()),(r)=>false);
     }else{
-      print("Here");
       status==true?Navigator.pushAndRemoveUntil(context,
           PageTransition(type: PageTransitionType.fade, child: Login()),(r)=>false):Navigator.pushAndRemoveUntil(context,
           PageTransition(type: PageTransitionType.fade, child: NoInternet()),(r)=>false);

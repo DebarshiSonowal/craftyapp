@@ -25,12 +25,6 @@ class ProductView extends StatefulWidget {
 //                   height: 300,
 //                 )
   int quantity = 1;
-  List<size> list = [
-    size(6, "UK 6"),
-    size(7, "UK 7"),
-    size(8, "UK 8"),
-    size(9, "UK 9"),
-  ];
 
   final Products product;
 
@@ -45,20 +39,6 @@ class _ProductViewState extends State<ProductView> {
   int currentPhoto = 0;
   List<int> lst = [1, 22, 3];
 
-  MaterialColor getSelectedColor(String color) {
-    switch (color) {
-      case "RED":
-        return Colors.red;
-      case "WHITE":
-        return Colors.white;
-      case "BLACK":
-        return Colors.black;
-      case "BULE":
-        return Colors.blue;
-      default:
-        return Colors.yellow;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,14 +59,7 @@ class _ProductViewState extends State<ProductView> {
           print(widget.product.Image);
           (selectedSize != null && selectedColor != null)
               ? show()
-              : Fluttertoast.showToast(
-                  msg: "Must add size and color",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.CENTER,
-                  timeInSecForIosWeb: 1,
-                  backgroundColor: Colors.red,
-                  textColor: Colors.black,
-                  fontSize: 16.0);
+              : Styles.showWarningToast(Colors.red, "Must add size and color", Colors.white, 15);
         },
         backgroundColor: Styles.Log_sign,
         splashColor: Colors.orange,
@@ -280,22 +253,13 @@ class _ProductViewState extends State<ProductView> {
                                     radioButtonValue: (value) {
                                       setState(() {
                                         selectedColor = value;
+                                        selectedSize = null;
                                       });
                                       print(value);
                                     },
                                     selectedColor: Styles.Log_sign,
                                   ),
                                 ),
-                                // Flexible(
-                                //   flex: 1,
-                                //   child: RatingBar.readOnly(
-                                //     initialRating: 3.5,
-                                //     isHalfAllowed: true,
-                                //     halfFilledIcon: Icons.star_half,
-                                //     filledIcon: Icons.star,
-                                //     emptyIcon: Icons.star_border,
-                                //   ),
-                                // ),
                                 Flexible(
                                   flex: 3,
                                   child: Padding(
@@ -365,7 +329,7 @@ class _ProductViewState extends State<ProductView> {
                                             onPressed: () {
                                               setState(() {
                                                 widget.quantity == 1
-                                                    ? toast()
+                                                    ? Styles.showWarningToast(Colors.yellow, "Minimum is one", Colors.black, 15)
                                                     : widget.quantity--;
                                               });
                                             },
@@ -397,7 +361,7 @@ class _ProductViewState extends State<ProductView> {
                                             onPressed: () {
                                               setState(() {
                                                 widget.quantity == 5
-                                                    ? null
+                                                    ? Styles.showWarningToast(Colors.yellow, "Miximum is 5", Colors.black, 15)
                                                     : widget.quantity++;
                                               });
                                             },
@@ -437,26 +401,6 @@ class _ProductViewState extends State<ProductView> {
       ),
     );
   }
-
-  getSizeList() {
-    // var a = await widget.product.Size.split(",");
-    String a = widget.product.Size;
-    var b = a.split(",");
-    print(b);
-    return ["UK 6", "UK 7", "UK 8", "UK 9"];
-  }
-
-  toast() {
-    Fluttertoast.showToast(
-        msg: "Minimum is one",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.black,
-        fontSize: 16.0);
-  }
-
   show() {
     Provider.of<CartData>(context, listen: false).addProduct(CartProduct(
         selectedColor,
@@ -466,30 +410,21 @@ class _ProductViewState extends State<ProductView> {
         selectedSize,
         widget.product.Name,
         widget.product.Id));
-    print("KI");
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text('Product Added'),
-      action: SnackBarAction(
-        label: 'Next',
-        onPressed: () {
-          setState(() {
-            Navigator.pop(context);
-            widget.fragNav.putPosit(key: 'Cart');
-          });
-        },
-      ),
-    ));
+    Styles.showSnackBar(context, Colors.green, Duration(seconds: 5), 'Product Added', Colors.white, () {
+      setState(() {
+        Navigator.pop(context);
+        widget.fragNav.putPosit(key: 'Cart');
+      });
+    });
   }
 
   getLabels() {
     var list = widget.product.Color.split(",");
     print(list);
-    print(selectedColor);
     int i =
-        list.indexOf(selectedColor == null ? "MUSTARD YELLOW" : selectedColor);
-    print("INDEX: $i");
+        list.indexOf(selectedColor == null ? list[0].toString() : selectedColor.toString());
+    print(list.indexOf(selectedColor == null ? list[0].toString() : selectedColor).toString());
     var lst = widget.product.Size.split(".");
-    print("LIST: $lst");
     return lst[i].toString().split(",");
   }
 }

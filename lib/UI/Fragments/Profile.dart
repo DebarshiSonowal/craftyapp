@@ -42,39 +42,30 @@ class _ProfilePageState extends State<ProfilePage> {
       try {
         profile = await usersModel
             .getProf(Provider.of<CartData>(context, listen: false).user.id);
-        print("Address ${profile.address}");
-        _refreshController.refreshCompleted();
+
         pr.hide().then((isHidden) {
           print(isHidden);
+          _refreshController.refreshCompleted();
+          Provider.of<CartData>(context, listen: false).updateProfile(profile);
+          setDataToFields(profile);
         });
       } catch (e) {
         print("error ${e}");
         _refreshController.refreshFailed();
         pr.hide().then((isHidden) {
           print(isHidden);
-          Fluttertoast.showToast(
-              msg: "Something is wrong. Please try again later",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.BOTTOM,
-              timeInSecForIosWeb: 1,
-              backgroundColor: Colors.red,
-              textColor: Colors.black,
-              fontSize: 16.0);
+          Styles.showWarningToast(Colors.red,
+              "Something is wrong. Please try again later", Colors.black, 15);
         });
       }
-      setDataToFields(profile);
+
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Please Login first'),
-        action: SnackBarAction(
-          label: 'Next',
-          onPressed: () {
-            setState(() {
-              Test.fragNavigate.putPosit(key:'Login');
-            });
-          },
-        ),
-      ));
+      Styles.showSnackBar(context, Styles.Log_sign, Duration(seconds: 5),
+          'Please Login first', Colors.black, () {
+        setState(() {
+          Test.fragNavigate.putPosit(key: 'Login');
+        });
+      });
       _refreshController.refreshFailed();
     }
   }
@@ -244,6 +235,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: TextField(
+                  maxLength: 10,
                   controller: phT,
                   keyboardType: TextInputType.phone,
                   style: TextStyle(color: Colors.black),
@@ -335,59 +327,32 @@ class _ProfilePageState extends State<ProfilePage> {
                                 Test.refreshToken != null) {
                               saveProfile(context);
                             } else {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
-                                content: Text('Please Login first'),
-                                action: SnackBarAction(
-                                  label: 'Next',
-                                  onPressed: () {
-                                    setState(() {
-                                      Test.fragNavigate.putPosit(key:'Login');
-                                    });
-                                  },
-                                ),
-                              ));
+                              Styles.showSnackBar(
+                                  context,
+                                  Styles.Log_sign,
+                                  Duration(seconds: 5),
+                                  'Please Login first',
+                                  Colors.black, () {
+                                setState(() {
+                                  Test.fragNavigate.putPosit(key: 'Login');
+                                });
+                              });
                             }
                           } else {
-                            Fluttertoast.showToast(
-                                msg: "Please select a gender",
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.CENTER,
-                                timeInSecForIosWeb: 1,
-                                backgroundColor: Colors.red,
-                                textColor: Colors.black,
-                                fontSize: 16.0);
+                            Styles.showWarningToast(Colors.yellow,
+                                "Please select a gender", Colors.black, 15);
                           }
                         } else {
-                          Fluttertoast.showToast(
-                              msg: "Please enter a valid pincode",
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.CENTER,
-                              timeInSecForIosWeb: 1,
-                              backgroundColor: Colors.red,
-                              textColor: Colors.black,
-                              fontSize: 16.0);
+                          Styles.showWarningToast(Colors.yellow,
+                              "Please enter a valid pincode", Colors.black, 15);
                         }
                       } else {
-                        Fluttertoast.showToast(
-                            msg: "Enter a valid phone no",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.CENTER,
-                            timeInSecForIosWeb: 1,
-                            backgroundColor: Colors.red,
-                            textColor: Colors.black,
-                            fontSize: 16.0);
+                        Styles.showWarningToast(Colors.yellow,
+                            "Enter a valid phone no", Colors.black, 15);
                       }
                     } else {
-                      print("DD");
-                      Fluttertoast.showToast(
-                          msg: "Please enter required fields",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.CENTER,
-                          timeInSecForIosWeb: 1,
-                          backgroundColor: Colors.red,
-                          textColor: Colors.black,
-                          fontSize: 16.0);
+                      Styles.showWarningToast(Colors.yellow,
+                          "Please enter required fields", Colors.black, 15);
                     }
                   },
                   child: Text(
@@ -445,36 +410,19 @@ class _ProfilePageState extends State<ProfilePage> {
       Provider.of<CartData>(context, listen: false).updateProfile(data);
       o++;
     } else {
-      Fluttertoast.showToast(
-          msg: "Server Error",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.black,
-          fontSize: 16.0);
+      Styles.showWarningToast(Colors.red, "Server Error", Colors.white, 15);
     }
   }
 
   void saveProfile(BuildContext context) async {
     await pr.show();
     UsersModel usersModel = new UsersModel();
-    print(_gender);
-    print("CCCcc");
     var data = await usersModel.saveProf(Profile(ids, nT.text, email, addT.text,
         int.parse(phT.text), int.parse(pinT.text), _gender));
-    print(data);
     if (data != null) {
       pr.hide().then((isHidden) {
         print(isHidden);
-        Fluttertoast.showToast(
-            msg: "Successful",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.black,
-            fontSize: 16.0);
+        Styles.showWarningToast(Colors.green, "Successful", Colors.white, 15);
         Provider.of<CartData>(context, listen: false).updateProfile(Profile(
             ids,
             nT.text,
@@ -483,21 +431,13 @@ class _ProfilePageState extends State<ProfilePage> {
             int.parse(phT.text),
             int.parse(pinT.text),
             _gender));
-        print(
-            "Vxvz ${Provider.of<CartData>(context, listen: false).profile.address}");
         _onRefresh();
       });
     } else {
       pr.hide().then((isHidden) {
         print(isHidden);
-        Fluttertoast.showToast(
-            msg: "Failed",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.black,
-            fontSize: 16.0);
+        Styles.showWarningToast(Colors.red, "Failed", Colors.white, 15);
+
       });
     }
   }

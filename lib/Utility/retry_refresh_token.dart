@@ -15,7 +15,7 @@ class RetryOnAccessTokenInterceptor extends Interceptor {
   static const url = "https://officialcraftybackend.herokuapp.com/users/";
  // static const url = "http://10.0.2.2:3000/users/";
  //  static const url = "http://localhost:3000/users/";
-
+  static int cse=0;
   final DioConnectivityRequestRetrier requestRetrier;
   Dio dio;
   Response response;
@@ -31,6 +31,9 @@ class RetryOnAccessTokenInterceptor extends Interceptor {
       } catch (e) {
         return e;
       }
+    }
+    if(err.response ==null){
+      return err.type=DioErrorType.CONNECT_TIMEOUT;
     }
     // Let the error pass through if it's not the error we're looking for
     if(err.type==DioErrorType.RESPONSE&&err.response.statusCode==403){
@@ -81,9 +84,14 @@ class RetryOnAccessTokenInterceptor extends Interceptor {
   }
 
   bool _shouldRetry(DioError err) {
-    return err.type == DioErrorType.DEFAULT &&
-        err.error != null &&
-        err.error is SocketException;
+    if (cse<3) {
+      cse++;
+      return err.type == DioErrorType.DEFAULT &&
+              err.error != null &&
+              err.error is SocketException;
+    } else {
+        return false;
+    }
   }
 
   void setToken(token) async{

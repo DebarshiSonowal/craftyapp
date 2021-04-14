@@ -1,3 +1,4 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 
 import 'package:crafty/Helper/Test.dart';
@@ -251,49 +252,38 @@ class _SignUpState extends State<Signup> {
                           cnfpass != null) {
                         if (password == cnfpass) {
                           if (_agree == true) {
-                            await pr.show();
                             if (_gender != null) {
-                              signUp(name, password, email);
+                              if (EmailValidator.validate(email)) {
+                                await pr.show();
+                                signUp(name, password, email);
+                              }else {
+                                Styles.showWarningToast(Colors.red,
+                                    "Enter a valid Email", Colors.white, 15);
+                              }
                             } else {
-                              Fluttertoast.showToast(
-                                  msg: "Select a gender",
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.BOTTOM,
-                                  timeInSecForIosWeb: 1,
-                                  backgroundColor: Colors.red,
-                                  textColor: Colors.black,
-                                  fontSize: 16.0);
+                              Styles.showWarningToast(Colors.red,
+                                  "Select a gender", Colors.white, 15);
                             }
                           } else {
-                            Fluttertoast.showToast(
-                                msg: "Please agree to our terms and conditions",
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM,
-                                timeInSecForIosWeb: 1,
-                                backgroundColor: Colors.red,
-                                textColor: Colors.black,
-                                fontSize: 16.0);
+                            Styles.showWarningToast(
+                                Colors.red,
+                                "Please agree to our terms and conditions",
+                                Colors.white,
+                                15);
                           }
                         } else {
-                          Fluttertoast.showToast(
-                              msg:
-                                  "Password and confirm password are not matching",
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              timeInSecForIosWeb: 1,
-                              backgroundColor: Colors.red,
-                              textColor: Colors.black,
-                              fontSize: 16.0);
+                          Styles.showWarningToast(
+                              Colors.red,
+                              "Password and confirm password are not matching",
+                              Colors.white,
+                              15);
                         }
                       } else {
-                        Fluttertoast.showToast(
-                            msg: "Please fill all the necessary fields",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.BOTTOM,
-                            timeInSecForIosWeb: 1,
-                            backgroundColor: Colors.red,
-                            textColor: Colors.black,
-                            fontSize: 16.0);
+                        Styles.showWarningToast(
+                            Colors.red,
+                            "Please fill all the necessary fields",
+                            Colors.white,
+                            15);
                       }
                     },
                     child: Text(
@@ -338,41 +328,23 @@ class _SignUpState extends State<Signup> {
         pr.hide().then((isHidden) {
           print(isHidden);
         });
-        Fluttertoast.showToast(
-            msg: "SignUp Successful ${data["name"]}",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.black,
-            fontSize: 16.0);
+        Styles.showWarningToast(Colors.green,
+            "SignUp Successful ${data["name"]}", Colors.white, 15);
         Test.fragNavigate.putPosit(key: 'Login');
       } else {
         pr.hide().then((isHidden) {
           print(isHidden);
         });
-        Fluttertoast.showToast(
-            msg: "User Already Exists",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.black,
-            fontSize: 16.0);
+        Styles.showWarningToast(
+            Colors.red, "User Already Exists", Colors.white, 15);
         clearTexts();
       }
     } else {
       pr.hide().then((isHidden) {
         print(isHidden);
       });
-      Fluttertoast.showToast(
-          msg: "Please Try Again Later",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.black,
-          fontSize: 16.0);
+      Styles.showWarningToast(
+          Colors.red, "Please Try Again Later", Colors.white, 15);
     }
   }
 
