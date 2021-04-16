@@ -26,7 +26,7 @@ class CartItem extends StatelessWidget {
           radius: MediaQuery.of(context).size.width,
           splashColor: Colors.black54,
           onTap: () {
-            print(index);
+
           },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -37,7 +37,7 @@ class CartItem extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: FadeInImage.assetNetwork(
                     placeholder: "assets/images/404.png",
-                    image: list[index].picture.split(",")[0],
+                    image: list[index].picture,
                     height: 100,
                     width: 100,
                   ),
@@ -50,19 +50,45 @@ class CartItem extends StatelessWidget {
                   children: [
                     Text(
                       "${list[index].name}",
-                      maxLines: 1,
                       softWrap: true,
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 13,
                       ),
                     ),
-                    Text(
-                      "₹ ${list[index].payment}",
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Text('Price:'),
+                        Text(
+                          "₹ ${list[index].payment}",
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Text('Size:'),
+                        Text(
+                          "${list[index].size}",
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        Text('Color:'),
+                        Text(
+                          "${list[index].color}",
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
                     ),
                   ],
                 ),

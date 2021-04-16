@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Test {
   static var bihu;
 
+  static String url;
 
 
   static saveKeys() async {

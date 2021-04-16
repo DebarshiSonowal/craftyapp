@@ -24,10 +24,14 @@ class _OrdersState extends State<Orders> {
 
   void _onRefresh() async {
     if (Test.accessToken != null && Test.refreshToken != null) {
+      print("GIcve ${Provider.of<CartData>(context, listen: false).user.id}");
       s = await usersModel.getOrdersforUser(
               Provider.of<CartData>(context, listen: false).user.id);
+
       if (s != null) {
-            Provider.of<CartData>(context, listen: false).orders(s);
+            setState(() {
+              Provider.of<CartData>(context, listen: false).orders(s);
+            });
             _refreshController.refreshCompleted();
           }
     }else {

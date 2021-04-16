@@ -334,6 +334,7 @@ class NetworkHelper {
     try {
       response = await dio.get(url + "receiveOrders");
     } on DioError catch (e) {
+      print(e.error);
       if (e.type == DioErrorType.CONNECT_TIMEOUT) {
         response = Response(statusCode: 500);
       }

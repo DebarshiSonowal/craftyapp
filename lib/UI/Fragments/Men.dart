@@ -3,11 +3,13 @@ import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/Models/Products.dart';
 import 'package:crafty/UI/Activity/Host.dart';
 import 'package:crafty/UI/CustomWidgets/CombineRecyclerviewHorizontal.dart';
+import 'package:crafty/UI/CustomWidgets/ProductItemView.dart';
 import 'package:flutter/material.dart';
 import 'package:fragment_navigate/navigate-bloc.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
-
+import 'ProductView.dart';
 
 class MenProducts extends StatefulWidget {
   @override
@@ -48,7 +50,49 @@ class _MenProductsState extends State<MenProducts> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    CombinerRecyclerView(buttonSize: buttonSize,name: "Shirt",list: Provider.of<CartData>(context, listen: false).men,fragNav: Test.fragNavigate,),
+                    Text(
+                      "Shirt",
+                      style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: Container(
+                        height: MediaQuery.of(context).size.height / (1.6),
+                        child: GridView.count(
+                            scrollDirection: Axis.vertical,
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
+                            shrinkWrap: true,
+                            children: List.generate(
+                                Provider.of<CartData>(context, listen: false)
+                                    .men
+                                    .length, (index) {
+                              return ProductItemVIew(
+                                  buttonSize: buttonSize,
+                                  list: Provider.of<CartData>(context,
+                                          listen: false)
+                                      .men,
+                                  OnTap: () {
+                                    Navigator.push(
+                                        context,
+                                        PageTransition(
+                                            type: PageTransitionType.fade,
+                                            child: ProductView(
+                                              product: Provider.of<CartData>(
+                                                      context,
+                                                      listen: false)
+                                                  .men[index],
+                                              fragNav: Test.fragNavigate,
+                                            )));
+                                  },
+                                  Index: index);
+                            })),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -64,4 +108,3 @@ class _MenProductsState extends State<MenProducts> {
     super.initState();
   }
 }
-

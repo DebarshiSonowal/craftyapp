@@ -5,6 +5,7 @@ import 'package:crafty/Helper/DataSearch.dart';
 import 'package:crafty/Helper/Navigation.dart';
 import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/Models/Products.dart';
+import 'package:crafty/UI/CustomWidgets/Photoview.dart';
 import 'package:crafty/UI/Fragments/About.dart';
 import 'package:crafty/UI/Fragments/Cart.dart';
 import 'package:crafty/UI/Fragments/Contact_Us.dart';
@@ -240,6 +241,7 @@ class HostState extends State<Host> {
     var order = await usersModel3.getOrdersforUser(
         Provider.of<CartData>(context, listen: false).user.id);
     if (order != "Server Error" && order != "Orders  not found") {
+      print("GOR ORDER");
       Provider.of<CartData>(context, listen: false).orders(order);
     }
     var Data = await usersModel.getAll();
@@ -271,6 +273,7 @@ class HostState extends State<Host> {
         for (var i in data) {
           if (i.Gender == "MALE") {
             men.add(i);
+            print(i);
           } else {
             women.add(i);
           }
@@ -280,6 +283,8 @@ class HostState extends State<Host> {
           Provider.of<CartData>(context, listen: false).setMen(men);
           Provider.of<CartData>(context, listen: false).setWomen(women);
         });
+      }else{
+        print("empty");
       }
       o = 4;
     }
@@ -330,6 +335,8 @@ class HostState extends State<Host> {
           key: 'Signup', title: 'Signup', fragment: Signup(), icon: Icons.code),
       Posit(
           key: 'Result', title: 'Crafty', fragment: Result(), icon: Icons.code),
+      Posit(
+        key:'photo',title: 'Crafty', fragment: Photoview(Test.url), icon: Icons.code),
     ];
   }
 

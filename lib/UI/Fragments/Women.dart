@@ -2,9 +2,13 @@ import 'package:crafty/Helper/CartData.dart';
 import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/UI/Activity/Host.dart';
 import 'package:crafty/UI/CustomWidgets/CombineRecyclerviewHorizontal.dart';
+import 'package:crafty/UI/CustomWidgets/ProductItemView.dart';
 import 'package:flutter/material.dart';
 import 'package:fragment_navigate/navigate-bloc.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+
+import 'ProductView.dart';
 
 class WomenProducts extends StatefulWidget {
 
@@ -46,14 +50,46 @@ class _WomenProductsState extends State<WomenProducts> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    CombinerRecyclerView(
-                      buttonSize: buttonSize,
-                      name: "Shirt",
-                      list: Provider.of<CartData>(context, listen: false).women,
-                      fragNav: Test.fragNavigate,
+                    Text(
+                      "Shirt",
+                      style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),
                     ),
-                    // CombinerRecyclerView(buttonSize: buttonSize,name: "Shirt",list: Test.bihuProducts,),
-                    // CombinerRecyclerView(buttonSize: buttonSize,name: "Pant",list: Test.bihuProducts,),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Container(
+                      height: MediaQuery.of(context).size.height / 2,
+                      child: GridView.count(
+                          scrollDirection: Axis.vertical,
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                          shrinkWrap: true,
+                          children: List.generate(
+                              Provider.of<CartData>(context, listen: false)
+                                  .women
+                                  .length, (index) {
+                            return ProductItemVIew(
+                                buttonSize: buttonSize,
+                                list: Provider.of<CartData>(context,
+                                    listen: false)
+                                    .women,
+                                OnTap: () {
+                                  Navigator.push(
+                                      context,
+                                      PageTransition(
+                                          type: PageTransitionType.fade,
+                                          child: ProductView(
+                                            product: Provider.of<CartData>(
+                                                context,
+                                                listen: false)
+                                                .women[index],
+                                            fragNav: Test.fragNavigate,
+                                          )));
+                                },
+                                Index: index);
+                          })),
+                    ),
                   ],
                 ),
               ),
