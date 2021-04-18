@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         routes: {
           'login': (context) => Login(),
         },
-        title: 'Flutter Demo',
+        title: 'Crafty',
         theme: ThemeData(
           // primarySwatch: Colors.yellow,
           primaryColor: Styles.Log_sign,

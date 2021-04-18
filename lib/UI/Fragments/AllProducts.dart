@@ -7,14 +7,14 @@ import 'package:provider/provider.dart';
 
 import 'ProductView.dart';
 
-class MenProducts extends StatefulWidget {
+class AllProducts extends StatefulWidget {
   @override
-  _MenProductsState createState() => _MenProductsState();
+  _AllProductsState createState() => _AllProductsState();
 
-  MenProducts();
+  AllProducts();
 }
 
-class _MenProductsState extends State<MenProducts> {
+class _AllProductsState extends State<AllProducts> {
   get buttonSize => 20.0;
 
   @override
@@ -29,7 +29,7 @@ class _MenProductsState extends State<MenProducts> {
               height: 50,
               child: Center(
                 child: Text(
-                  "Men's Products",
+                  "All Products",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 25,
@@ -46,10 +46,6 @@ class _MenProductsState extends State<MenProducts> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Text(
-                      "Shirt",
-                      style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),
-                    ),
                     SizedBox(
                       height: 20,
                     ),
@@ -64,24 +60,24 @@ class _MenProductsState extends State<MenProducts> {
                             mainAxisSpacing: 10,
                             shrinkWrap: true,
                             children: List.generate(
-                                Provider.of<CartData>(context, listen: false)
-                                    .men
+                                Provider.of<CartData>(context,
+                                    listen: false)
+                                    .allproducts
                                     .length, (index) {
                               return ProductItemVIew(
                                   buttonSize: buttonSize,
                                   list: Provider.of<CartData>(context,
-                                          listen: false)
-                                      .men,
+                                      listen: false)
+                                      .allproducts,
                                   OnTap: () {
                                     Navigator.push(
                                         context,
                                         PageTransition(
                                             type: PageTransitionType.fade,
                                             child: ProductView(
-                                              product: Provider.of<CartData>(
-                                                      context,
-                                                      listen: false)
-                                                  .men[index],
+                                              product: Provider.of<CartData>(context,
+                                                  listen: false)
+                                                  .allproducts[index],
                                               fragNav: Test.fragNavigate,
                                             )));
                                   },

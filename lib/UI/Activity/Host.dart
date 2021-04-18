@@ -7,6 +7,7 @@ import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/Models/Products.dart';
 import 'package:crafty/UI/CustomWidgets/Photoview.dart';
 import 'package:crafty/UI/Fragments/About.dart';
+import 'package:crafty/UI/Fragments/AllProducts.dart';
 import 'package:crafty/UI/Fragments/Cart.dart';
 import 'package:crafty/UI/Fragments/Contact_Us.dart';
 import 'package:crafty/UI/Fragments/HomePage.dart';
@@ -297,7 +298,7 @@ class HostState extends State<Host> {
           title: 'Home',
           fragment: Container(
             color: Styles.bg_color,
-            child: HomePage(),
+            child: HomePage(Test.fragNavigate),
           ),
           icon: Icons.add),
       Posit(
@@ -337,6 +338,7 @@ class HostState extends State<Host> {
           key: 'Result', title: 'Crafty', fragment: Result(), icon: Icons.code),
       Posit(
         key:'photo',title: 'Crafty', fragment: Photoview(Test.url), icon: Icons.code),
+      Posit(key: 'All', title: 'All Products', icon: Icons.code, fragment: AllProducts()),
     ];
   }
 

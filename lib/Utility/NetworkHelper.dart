@@ -22,10 +22,6 @@ class NetworkHelper {
   http.Response response;
   Dio dio;
 
-
-
-
-
   Future getProf(String id) async {
     if (Test.accessToken != null) {
       BaseOptions option =
@@ -62,8 +58,6 @@ class NetworkHelper {
     }
   }
 
-
-
   Future saveProf(Profile profile) async {
     if (Test.accessToken != null) {
       Map data = {
@@ -73,7 +67,7 @@ class NetworkHelper {
         'phone': profile.phone,
         'address': profile.address,
         'pincode': profile.pincode,
-        'gender':profile.gender
+        'gender': profile.gender
       };
 
       var body = json.encode(data);
@@ -109,8 +103,6 @@ class NetworkHelper {
     }
   }
 
-
-
   Future log(LoginData loginData) async {
     Map data = {
       'email': loginData.email,
@@ -121,8 +113,8 @@ class NetworkHelper {
     print(body);
     BaseOptions option =
         new BaseOptions(connectTimeout: 10000, receiveTimeout: 3000, headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Accept': 'application/json'
     });
     dio = Dio(option);
     dio.interceptors.add(
@@ -139,7 +131,7 @@ class NetworkHelper {
     } on DioError catch (e) {
       if (e.type == DioErrorType.CONNECT_TIMEOUT ||
           e.type == DioErrorType.RESPONSE) {
-        if (e.response==null||e.response.statusCode!=400) {
+        if (e.response == null || e.response.statusCode != 400) {
           response = Response(statusCode: 500);
         } else {
           response = Response(statusCode: 400);
@@ -177,7 +169,7 @@ class NetworkHelper {
       'email': signUpData.email,
       'password': signUpData.password,
       'googleId': signUpData.googleId,
-      'gender':signUpData.gender
+      'gender': signUpData.gender
     };
     var body = json.encode(data);
     Response response;
@@ -236,10 +228,10 @@ class NetworkHelper {
     }
   }
 
-  Future getRequired() async{
-    if(Test.accessToken!=null){
+  Future getRequired() async {
+    if (Test.accessToken != null) {
       BaseOptions option =
-      new BaseOptions(connectTimeout: 7000, receiveTimeout: 3000, headers: {
+          new BaseOptions(connectTimeout: 7000, receiveTimeout: 3000, headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': 'Bearer ${Test.accessToken}',
@@ -270,9 +262,7 @@ class NetworkHelper {
         return "Required info not found";
       }
     }
-    }
-
-
+  }
 
   Future getorder(double price) async {
     if (Test.accessToken != null) {
@@ -311,11 +301,9 @@ class NetworkHelper {
     }
   }
 
-
-
   Future getordersforUser(dynamic id) async {
     BaseOptions options =
-    new BaseOptions(connectTimeout: 5000, receiveTimeout: 3000, headers: {
+        new BaseOptions(connectTimeout: 5000, receiveTimeout: 3000, headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'Authorization': 'Bearer ${Test.accessToken}',
@@ -390,12 +378,14 @@ class NetworkHelper {
     print("ICCC");
     if (Test.accessToken != null) {
       print("ICCcC");
-      BaseOptions options =
-          new BaseOptions(connectTimeout: 10000, receiveTimeout: 7000, headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer ${Test.accessToken}',
-      });
+      BaseOptions options = new BaseOptions(
+          connectTimeout: 10000,
+          receiveTimeout: 7000,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer ${Test.accessToken}',
+          });
       dio = Dio(options);
       dio.interceptors.add(
         RetryOnAccessTokenInterceptor(
@@ -413,24 +403,24 @@ class NetworkHelper {
         if (e.type == DioErrorType.CONNECT_TIMEOUT) {
           print(e);
           response = Response(statusCode: 500);
-        }else{
+        } else {
           print("Else $e");
         }
       }
       try {
         if (response.statusCode == 200) {
-                var data = response.data;
-                return data;
-              } else if (response.statusCode == 500) {
-                return "Server Error";
-              } else {
-                return "User not found";
-              }
+          var data = response.data;
+          return data;
+        } else if (response.statusCode == 500) {
+          return "Server Error";
+        } else {
+          return "User not found";
+        }
       } catch (e) {
         print(e);
         return "User not found";
       }
-    }else{
+    } else {
       print("CCCvbbb");
     }
   }
@@ -486,6 +476,4 @@ class NetworkHelper {
       }
     }
   }
-
-
 }

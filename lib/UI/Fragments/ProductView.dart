@@ -490,28 +490,34 @@ class _ProductViewState extends State<ProductView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  FadeInImage.assetNetwork(
-                    image: widget.product.Image
-                        .toString()
-                        .split(",")[getIndex()]
-                        .trim(),
-                    height: MediaQuery.of(context).size.width / (2.5),
-                    placeholder: "assets/images/404.png",
+                  Flexible(
+                    flex: 2,
+                    child: FadeInImage.assetNetwork(
+                      image: widget.product.Image
+                          .toString()
+                          .split(",")[getIndex()]
+                          .trim(),
+                      height: MediaQuery.of(context).size.width / (2.5),
+                      placeholder: "assets/images/404.png",
+                    ),
                   ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Text(widget.product.Name.toString()),
-                      Text(selectedColor),
-                      Text(
-                        "₹${widget.product.Price}",
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
+                  Flexible(
+                    flex: 1,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(widget.product.Name.toString(),style: TextStyle(fontWeight: FontWeight.bold),),
+                        Text(selectedColor),
+                        Text(
+                          "₹${widget.product.Price}",
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   )
                 ],
               ),
@@ -692,8 +698,10 @@ class _ProductViewState extends State<ProductView> {
 
   getIndex() {
     if (widget.product.Image.toString().split(",").length > -1 &&
-        widget.product.Image.toString().split(",").length >=
+        widget.product.Image.toString().split(",").length >
             widget.product.Color.toString().split(",").indexOf(selectedColor)) {
+      print(widget.product.Image.toString().split(",").length);
+      print(widget.product.Color.toString().split(",").indexOf(selectedColor));
       print(
           "DW ${widget.product.Color.toString().split(",").indexOf(selectedColor)}");
       return widget.product.Color.toString().split(",").indexOf(selectedColor);

@@ -1,10 +1,7 @@
 import 'package:crafty/Helper/CartData.dart';
 import 'package:crafty/Helper/Test.dart';
-import 'package:crafty/UI/Activity/Host.dart';
-import 'package:crafty/UI/CustomWidgets/CombineRecyclerviewHorizontal.dart';
 import 'package:crafty/UI/CustomWidgets/ProductItemView.dart';
 import 'package:flutter/material.dart';
-import 'package:fragment_navigate/navigate-bloc.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
@@ -58,7 +55,7 @@ class _WomenProductsState extends State<WomenProducts> {
                       height: 20,
                     ),
                     Container(
-                      height: MediaQuery.of(context).size.height / 2,
+                      height: MediaQuery.of(context).size.height / (1.6),
                       child: GridView.count(
                           scrollDirection: Axis.vertical,
                           crossAxisCount: 2,

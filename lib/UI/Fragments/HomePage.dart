@@ -23,10 +23,11 @@ import 'ProductView.dart';
 
 //Carolina Cajazeira
 class HomePage extends StatefulWidget {
+  FragNavigate _fragNavigate;
   @override
   _HomePageState createState() => _HomePageState();
 
-  HomePage();
+  HomePage(fragNavigate);
 }
 
 class _HomePageState extends State<HomePage> {
@@ -287,9 +288,24 @@ class _HomePageState extends State<HomePage> {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "All Products:",
-                  style: TextStyle(fontSize: 18),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "All Products:",
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    TextButton(onPressed: (){
+                      try {
+                        Test.fragNavigate.putPosit(key: 'All',force: true);
+                      } catch (e) {
+                        print(e);
+                      }
+                    }, child: Text(
+                      "Show All",
+                      style: TextStyle(fontSize: 18),
+                    ))
+                  ],
                 ),
               ),
               Container(
