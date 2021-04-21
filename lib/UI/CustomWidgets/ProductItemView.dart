@@ -1,4 +1,5 @@
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crafty/Models/Products.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -40,12 +41,17 @@ class ProductItemVIew extends StatelessWidget {
               SizedBox(
                 height: 4,
               ),
-              FadeInImage.assetNetwork(
-                placeholder: "assets/images/404.png",
-                image: list[Index].Image.toString().split(",")[0],
+              CachedNetworkImage(
+                imageUrl: list[Index].Image.toString().split(",")[0],
                 fit: BoxFit.fitHeight,
                 height: 100,
                 width: 120,
+                progressIndicatorBuilder: (context, url, downloadProgress) =>
+                    Padding(
+                      padding: const EdgeInsets.all(25.0),
+                      child: CircularProgressIndicator(value: downloadProgress.progress),
+                    ),
+                errorWidget: (context, url, error) => Icon(Icons.error),
               ),
               SizedBox(
                 height: 3,

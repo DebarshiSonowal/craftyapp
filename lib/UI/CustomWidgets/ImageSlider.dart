@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/Models/Products.dart';
@@ -42,14 +43,23 @@ class _CarouselWithIndicatorState extends State<CarouselWithIndicatorDemo> {
                     //       type: PageTransitionType.fade, child: Photoview(widget.item.Image.toString().split(',')[_current].trim())));
                     // });
                     // },
-                    onTap: widget.onTap(_current),
+                    onTap:()=> widget.onTap(_current),
                     child: Container(
                         width: MediaQuery.of(context).size.width,
                         margin: EdgeInsets.symmetric(horizontal: 5.0),
                         decoration: BoxDecoration(color: Colors.transparent),
-                        child: FadeInImage.assetNetwork(
-                            placeholder: "assets/images/404.png",
-                            image: i.trim())),
+                        child:
+                        CachedNetworkImage(
+                          imageUrl: i.trim(),
+                          progressIndicatorBuilder: (context, url, downloadProgress) =>
+                              Padding(
+                                padding: EdgeInsets.only(
+                                    top: 25.0, bottom: 25.0, left: 20, right: 20),
+                                child: CircularProgressIndicator(
+                                    value: downloadProgress.progress),
+                              ),
+                          errorWidget: (context, url, error) => Icon(Icons.error),
+                        ),),
                   );
                 },
               );

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crafty/Helper/CartData.dart';
 import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/Models/CartProduct.dart';
@@ -22,12 +23,6 @@ class ProductView extends StatefulWidget {
   final FragNavigate fragNav;
 
   ProductView({this.product, this.fragNav});
-
-//FadeInImage.assetNetwork(
-//                   placeholder: "assets/images/404.png",
-//                   image: widget.product.Image,
-//                   height: 300,
-//                 )
   int quantity = 1;
 
   final Products product;
@@ -148,18 +143,7 @@ class _ProductViewState extends State<ProductView> {
                 //   },
                 // ),
                 child: CarouselWithIndicatorDemo(
-                    widget.product, Test.fragNavigate, (index) {
-                  print("Tapped");
-                  Index = index;
-                  // Navigator.push(
-                  //     context,
-                  //     PageTransition(
-                  //         type: PageTransitionType.fade,
-                  //         child: Photoview(widget.product.Image
-                  //             .toString()
-                  //             .split(',')[index]
-                  //             .trim())));
-                }),
+                    widget.product, Test.fragNavigate, (index)=>onTapeed(index)),
               ),
               Flexible(
                 flex: 2,
@@ -492,13 +476,31 @@ class _ProductViewState extends State<ProductView> {
                 children: [
                   Flexible(
                     flex: 2,
-                    child: FadeInImage.assetNetwork(
-                      image: widget.product.Image
-                          .toString()
-                          .split(",")[getIndex()]
-                          .trim(),
-                      height: MediaQuery.of(context).size.width / (2.5),
-                      placeholder: "assets/images/404.png",
+                    child: GestureDetector(
+                      onTap: (){
+                        Navigator.push(
+                            context,
+                            PageTransition(
+                                type: PageTransitionType.fade, child: Photoview(widget.product.Image
+                                .toString()
+                                .split(",")[getIndex()]
+                                .trim())));
+                      },
+                      child: CachedNetworkImage(
+                        imageUrl:  widget.product.Image
+                            .toString()
+                            .split(",")[getIndex()]
+                            .trim(),
+                        height: MediaQuery.of(context).size.width / (2.5),
+                        progressIndicatorBuilder: (context, url, downloadProgress) =>
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  top: 25.0, bottom: 25.0, left: 20, right: 20),
+                              child: CircularProgressIndicator(
+                                  value: downloadProgress.progress),
+                            ),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                      ),
                     ),
                   ),
                   Flexible(
@@ -712,5 +714,18 @@ class _ProductViewState extends State<ProductView> {
       print("DW 0");
       return 0;
     }
+  }
+
+  onTapeed(int index) {
+    print("Tapped");
+    Index = index;
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.fade,
+            child: Photoview(widget.product.Image
+                .toString()
+                .split(',')[index]
+                .trim())));
   }
 }

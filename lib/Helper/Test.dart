@@ -30,19 +30,8 @@ class Test {
   static String accessToken, refreshToken;
   var message;
   static var fragNavigate;
-//Lists
-//   static List<Categories> list = [
-//     Categories(
-//         "Men",
-//         "https://miro.medium.com/max/1200/1*mk1-6aYaf_Bes1E3Imhc0A.jpeg",
-//     ),
-//     Categories(
-//         "Women",
-//         "https://www.wpexplorer.com/wp-content/uploads/wordpress-image-optimization-guide.jpg",),
-//     Categories(
-//         "Products",
-//         "https://cdn.arstechnica.net/wp-content/uploads/2016/02/5718897981_10faa45ac3_b-640x624.jpg",)
-//   ];
+
+  static List<Products> special = null;
 
   static List<CartProduct> cart = null;
 
@@ -54,6 +43,8 @@ class Test {
     cart.add(cartProduct);
     print(cartProduct);
   }
+
+
 
   static List<String> currentIds = [];
 

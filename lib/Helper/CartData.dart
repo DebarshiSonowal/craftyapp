@@ -25,10 +25,19 @@ class CartData extends ChangeNotifier {
   Razorpay _razorpay = null;
   List<Categories> _categ = [];
   List<Ads> _ads = [];
-
+  String _specialTxt;
+  List<Products> _special =[];
 //Set
   void setCategory(List<Categories> list) {
     _categ = list;
+    notifyListeners();
+  }
+  void setSpecial(List<Products>list){
+    _special = list;
+    notifyListeners();
+  }
+  void setSpecialTag(String tag){
+    _specialTxt = tag;
     notifyListeners();
   }
 
@@ -51,10 +60,12 @@ class CartData extends ChangeNotifier {
 
   void setMen(List<Products> product) {
     _men = product;
+    notifyListeners();
   }
 
   void setWomen(List<Products> product) {
     _women = product;
+    notifyListeners();
   }
 
   void orders(List<Order> value) {
@@ -121,11 +132,15 @@ class CartData extends ChangeNotifier {
     return _user;
   }
 
+
+  List<Products> get special => _special;
+
   Razorpay get razorpay => _razorpay;
 
   List<Ads> getAds() {
     return List<Ads>.unmodifiable(_ads);
   }
+
 
   List<String> getAdImage() {
     List<String> list = [];
@@ -179,6 +194,8 @@ class CartData extends ChangeNotifier {
   int get listLength {
     return _list.length;
   }
+
+  String get specialTxt => _specialTxt;
 
   double getPrice() {
     double price = 0;

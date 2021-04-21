@@ -17,6 +17,7 @@ import 'package:crafty/UI/Fragments/Orders.dart';
 import 'package:crafty/UI/Fragments/Profile.dart';
 import 'package:crafty/UI/Fragments/Result.dart';
 import 'package:crafty/UI/Fragments/Signup.dart';
+import 'package:crafty/UI/Fragments/SpecialAds.dart';
 import 'package:crafty/UI/Fragments/WishList.dart';
 import 'package:crafty/UI/Fragments/Women.dart';
 import 'package:crafty/UI/Styling/Styles.dart';
@@ -221,7 +222,8 @@ class HostState extends State<Host> {
                 await prefs.clear();
                 Test.accessToken = null;
                 Test.refreshToken = null;
-                Provider.of<CartData>(context, listen: false).removeOrders(Provider.of<CartData>(context, listen: false).order.length);
+                Provider.of<CartData>(context, listen: false).removeOrders(
+                    Provider.of<CartData>(context, listen: false).order.length);
                 Provider.of<CartData>(context, listen: false).removeProfile();
                 Navigator.pop(context);
                 SystemChannels.platform.invokeMethod('SystemNavigator.pop');
@@ -274,9 +276,10 @@ class HostState extends State<Host> {
         for (var i in data) {
           if (i.Gender == "MALE") {
             men.add(i);
-            print(i);
+            print("MEN $i");
           } else {
             women.add(i);
+            print("WOMEN $i");
           }
         }
         setState(() {
@@ -284,7 +287,7 @@ class HostState extends State<Host> {
           Provider.of<CartData>(context, listen: false).setMen(men);
           Provider.of<CartData>(context, listen: false).setWomen(women);
         });
-      }else{
+      } else {
         print("empty");
       }
       o = 4;
@@ -337,8 +340,21 @@ class HostState extends State<Host> {
       Posit(
           key: 'Result', title: 'Crafty', fragment: Result(), icon: Icons.code),
       Posit(
-        key:'photo',title: 'Crafty', fragment: Photoview(Test.url), icon: Icons.code),
-      Posit(key: 'All', title: 'All Products', icon: Icons.code, fragment: AllProducts()),
+          key: 'photo',
+          title: 'Crafty',
+          fragment: Photoview(Test.url),
+          icon: Icons.code),
+      Posit(
+          key: 'All',
+          title: 'All Products',
+          icon: Icons.code,
+          fragment: AllProducts()),
+      Posit(
+          key: 'Special',
+          title: Provider.of<CartData>(context, listen: false).specialTxt==null?'Special':Provider.of<CartData>(context, listen: false).specialTxt,
+          icon: Icons.code,
+          fragment: SpecialAds(
+          )),
     ];
   }
 

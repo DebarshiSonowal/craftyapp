@@ -58,12 +58,16 @@ class _ContactUsState extends State<ContactUs> {
                 }, Colors.blueAccent, FontAwesomeIcons.phoneAlt,
                     Color(0xff4867AA)),
                 ContactIconButton(() {
-                  notavailable();
+                  try {
+                    _launchURL("https://craftyfashions.com");
+                  } catch (e) {
+                    print(e);
+                  }
                 }, Color(0xffD93084), FontAwesomeIcons.chrome,
                     Color(0xffD64135)),
                 ContactIconButton(() {
                   try {
-                    _launchURL();
+                    _launchURL("https://play.app.goo.gl/?link=https://play.google.com/store/apps/details?id=com.craftyfashion.crafty");
                   } catch (e) {
                     print(e);
                   }
@@ -99,7 +103,11 @@ class _ContactUsState extends State<ContactUs> {
                 }, Colors.blueAccent, FontAwesomeIcons.facebookF,
                     Color(0xff4867AA)),
                 ContactIconButton(() {
-                  notavailable();
+                  try {
+                    _launchURL("https://www.instagram.com/crafty_fashions_/");
+                  } catch (e) {
+                    print(e);
+                  }
                 }, Color(0xffD93084), FontAwesomeIcons.instagram,
                     Color(0xffD93084)),
                 ContactIconButton(() {
@@ -156,10 +164,8 @@ class _ContactUsState extends State<ContactUs> {
     }
   }
 
-  void _launchURL() async {
-    const urls =
-        "https://play.app.goo.gl/?link=https://play.google.com/store/apps/details?id=com.craftyfashion.crafty";
-    var url = Uri.encodeFull(urls);
+  void _launchURL(String txt) async {
+    var url = Uri.encodeFull(txt);
     // var url = Uri.encodeComponent(urls);
     try {
       if (await canLaunch(url)) {

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crafty/Helper/CartData.dart';
 import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/Models/Ads.dart';
@@ -12,6 +13,7 @@ import 'package:crafty/Utility/Users.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:fragment_navigate/navigate-bloc.dart';
 import 'package:lottie/lottie.dart';
@@ -24,6 +26,7 @@ import 'ProductView.dart';
 //Carolina Cajazeira
 class HomePage extends StatefulWidget {
   FragNavigate _fragNavigate;
+
   @override
   _HomePageState createState() => _HomePageState();
 
@@ -70,6 +73,7 @@ class _HomePageState extends State<HomePage> {
             new Future.delayed(Duration.zero, () {
               Provider.of<CartData>(customcontext, listen: false)
                   .setAllProduct(data);
+              addData(data);
             });
             Test.bihu = data;
             _refreshController.refreshCompleted();
@@ -200,21 +204,23 @@ class _HomePageState extends State<HomePage> {
                     .map((i) {
                   return Builder(
                     builder: (BuildContext context) {
+                      print("faf ${i.trim()}");
                       return GestureDetector(
-                        onTap: () {
-                          var index =
-                              Provider.of<CartData>(context, listen: false)
-                                  .getAdImage()
-                                  .indexOf(i);
-                        },
+                        onTap: () => showIndex(
+                            Provider.of<CartData>(context, listen: false)
+                                .getAdImage()
+                                .indexOf(i)),
                         child: Container(
                             width: MediaQuery.of(context).size.width,
                             margin: EdgeInsets.symmetric(horizontal: 5.0),
                             decoration:
                                 BoxDecoration(color: Colors.transparent),
-                            child: FadeInImage.assetNetwork(
-                                placeholder: "assets/images/404.png",
-                                image: i)),
+                            child: CachedNetworkImage(
+                              imageUrl: i,
+                              progressIndicatorBuilder: (context, url, downloadProgress) =>
+                                  CircularProgressIndicator(value: downloadProgress.progress),
+                              errorWidget: (context, url, error) => Icon(Icons.error),
+                            ),),
                       );
                     },
                   );
@@ -241,18 +247,97 @@ class _HomePageState extends State<HomePage> {
                             height: 100, width: 120),
                         Flexible(
                             child: Text(
-                          'Stay Home\nStay Safe\nAnd order on Crafty😉',
+                          'Stay Home\n\nStay Safe\n\nAnd order on Crafty 😉',
                           softWrap: true,
                           style: TextStyle(
-                              fontFamily: "Shadows",
+                              fontFamily: "BEYOND",
                               fontSize: 22,
-                              color: Colors.black),
+                              color: Colors.red),
                         ))
                       ],
                     ),
                   ),
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "All Products:",
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    TextButton(
+                        onPressed: () {
+                          try {
+                            Test.fragNavigate.putPosit(key: 'All', force: true);
+                          } catch (e) {
+                            print(e);
+                          }
+                        },
+                        child: Text(
+                          "Show All",
+                          style: TextStyle(fontSize: 18),
+                        ))
+                  ],
+                ),
+              ),
+              Container(
+                color: Colors.transparent,
+                height: 220,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: Provider.of<CartData>(context, listen: true)
+                      .allproducts
+                      .sublist(
+                      0,
+                      Provider.of<CartData>(context, listen: false)
+                          .allproducts
+                          .length ~/
+                          3)
+                      .length,
+                  itemBuilder: (BuildContext ctxt, int index) {
+                    return ProductItemVIew(
+                      buttonSize: buttonSize,
+                      list: Provider.of<CartData>(context, listen: true)
+                          .allproducts
+                          .sublist(
+                          0,
+                          Provider.of<CartData>(context, listen: false)
+                              .allproducts
+                              .length ~/
+                              3),
+                      Index: index,
+                      OnTap: () {
+                        Navigator.push(
+                            context,
+                            PageTransition(
+                                type: PageTransitionType.fade,
+                                child: ProductView(
+                                    product: Provider.of<CartData>(context,
+                                        listen: false)
+                                        .allproducts
+                                        .sublist(
+                                        0,
+                                        Provider.of<CartData>(context,
+                                            listen: false)
+                                            .allproducts
+                                            .length ~/
+                                            3)[index],
+                                    fragNav: Test.fragNavigate)));
+                      },
+                    );
+                  },
+                ),
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              Image.asset('assets/images/kk.jpg',
+              width: MediaQuery.of(context).size.width-20,
+              height:MediaQuery.of(context).size.width,),
               SizedBox(
                 height: 15,
               ),
@@ -274,68 +359,17 @@ class _HomePageState extends State<HomePage> {
                             height: 100, width: 120),
                         Flexible(
                             child: Text(
-                          'Craft your own look\n with \nCrafty\'s personalized goods',
+                          'Craft your own look\n with \nCrafty',
                           softWrap: true,
+                          textAlign: TextAlign.center,
                           style: TextStyle(
-                              fontFamily: "Shadows",
-                              fontSize: 22,
+                              fontFamily: "EBGaramond",
+                              fontSize: 24,
                               color: Colors.black),
                         ))
                       ],
                     ),
                   ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "All Products:",
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    TextButton(onPressed: (){
-                      try {
-                        Test.fragNavigate.putPosit(key: 'All',force: true);
-                      } catch (e) {
-                        print(e);
-                      }
-                    }, child: Text(
-                      "Show All",
-                      style: TextStyle(fontSize: 18),
-                    ))
-                  ],
-                ),
-              ),
-              Container(
-                color: Colors.transparent,
-                height: 220,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  itemCount: Provider.of<CartData>(context, listen: true)
-                      .allproducts
-                      .length,
-                  itemBuilder: (BuildContext ctxt, int index) {
-                    return ProductItemVIew(
-                      buttonSize: buttonSize,
-                      list: Provider.of<CartData>(context, listen: true)
-                          .allproducts,
-                      Index: index,
-                      OnTap: () {
-                        Navigator.push(
-                            context,
-                            PageTransition(
-                                type: PageTransitionType.fade,
-                                child: ProductView(
-                                    product: Provider.of<CartData>(context,
-                                        listen: false)
-                                        .allproducts[index],
-                                    fragNav: Test.fragNavigate)));
-                      },
-                    );
-                  },
                 ),
               ),
               Card(
@@ -354,8 +388,8 @@ class _HomePageState extends State<HomePage> {
                         'Enjoyed shopping with us?\nRate us on playstore',
                         softWrap: true,
                         style: TextStyle(
-                            fontFamily: "Shadows",
-                            fontSize: 22,
+                            fontFamily: "Somana",
+                            fontSize: 18,
                             color: Colors.black),
                       ))
                     ],
@@ -367,5 +401,53 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  void addData(List<Products> data) {
+    List<Products> men = [];
+    List<Products> women = [];
+    if (data != null) {
+      for (var i in data) {
+        if (i.Gender == "MALE") {
+          men.add(i);
+          print("MEN $i");
+        } else {
+          women.add(i);
+          print("WOMEN $i");
+        }
+      }
+      setState(() {
+        Provider.of<CartData>(context, listen: false).setAllProduct(data);
+        Provider.of<CartData>(context, listen: false).setMen(men);
+        Provider.of<CartData>(context, listen: false).setWomen(women);
+      });
+    } else {
+      print("empty");
+    }
+  }
+
+  showIndex(int i) {
+    List<Products> list = [];
+    var tag = Provider.of<CartData>(context, listen: false).getAds()[i].tag;
+    Provider.of<CartData>(context, listen: false).setSpecialTag(tag);
+    var all = Provider.of<CartData>(context, listen: false).allproducts;
+    for (var i in all) {
+      for (var j in i.Tags.toString().split(',')) {
+        if (j.trim().toUpperCase() == tag.toString().trim().toUpperCase()) {
+          list.add(i);
+        }
+      }
+    }
+
+    if (list.isNotEmpty) {
+      setState(() {
+        Provider.of<CartData>(context, listen: false).setSpecial(list);
+      });
+    } else {
+      setState(() {
+        Provider.of<CartData>(context, listen: false).setSpecial([]);
+      });
+    }
+    Test.fragNavigate.putPosit(key: 'Special', force: true);
   }
 }

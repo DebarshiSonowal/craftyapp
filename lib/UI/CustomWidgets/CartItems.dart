@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crafty/Models/CartProduct.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -6,10 +7,8 @@ class CartItem extends StatelessWidget {
   Function callback;
   int index;
   List<CartProduct> list;
-  CartItem({this.index, this.list,this.callback});
 
-
-
+  CartItem({this.index, this.list, this.callback});
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +24,7 @@ class CartItem extends StatelessWidget {
         child: InkWell(
           radius: MediaQuery.of(context).size.width,
           splashColor: Colors.black54,
-          onTap: () {
-
-          },
+          onTap: () {},
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -35,11 +32,18 @@ class CartItem extends StatelessWidget {
                 flex: 2,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: FadeInImage.assetNetwork(
-                    placeholder: "assets/images/404.png",
-                    image: list[index].picture,
+                  child: CachedNetworkImage(
+                    imageUrl: list[index].picture,
                     height: 100,
                     width: 100,
+                    progressIndicatorBuilder:
+                        (context, url, downloadProgress) => Padding(
+                      padding: EdgeInsets.only(
+                          top: 25.0, bottom: 25.0, left: 20, right: 20),
+                      child: CircularProgressIndicator(
+                          value: downloadProgress.progress),
+                    ),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
                   ),
                 ),
               ),
@@ -54,42 +58,46 @@ class CartItem extends StatelessWidget {
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 13,
+                        fontWeight: FontWeight.bold
                       ),
                     ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Price:'),
-                        Text(
-                          "₹ ${list[index].payment}",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold),
+                        Column(
+                          children: [
+                            Text('Price:'),
+                            Text('Size:'),
+                            Text('Color:'),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text(
+                              "₹ ${list[index].payment}",
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 15,
+                              ),
+                            ),
+                            Text(
+                              "${list[index].size}",
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 15,
+                              ),
+                            ),
+                            Text(
+                              "${list[index].color}",
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 15,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Text('Size:'),
-                        Text(
-                          "${list[index].size}",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        Text('Color:'),
-                        Text(
-                          "${list[index].color}",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
+                    )
                   ],
                 ),
               ),
@@ -97,11 +105,15 @@ class CartItem extends StatelessWidget {
                 flex: 1,
                 child: Column(
                   children: [
-                    IconButton(
-                      icon: Icon(FontAwesomeIcons.minus,color: Colors.red,),
-                      onPressed: callback,
-                      iconSize: 15,
-                    ),
+                    TextButton(
+                        onPressed: callback,
+                        child: Text(
+                          'remove',
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 13,
+                          ),
+                        )),
                     Card(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15.0),
