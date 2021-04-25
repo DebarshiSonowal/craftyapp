@@ -5,7 +5,6 @@ import 'package:crafty/Models/Ads.dart';
 import 'package:crafty/Models/Categories.dart';
 import 'package:crafty/Models/Products.dart';
 import 'package:crafty/Models/Razorpay.dart';
-import 'package:crafty/UI/Activity/Host.dart';
 import 'package:crafty/UI/CustomWidgets/CategoryItemView.dart';
 import 'package:crafty/UI/CustomWidgets/ProductItemView.dart';
 import 'package:crafty/UI/Styling/Styles.dart';
@@ -14,12 +13,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/widgets.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:fragment_navigate/navigate-bloc.dart';
 import 'package:lottie/lottie.dart';
+import 'package:material_dialogs/material_dialogs.dart';
+import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:shimmer/shimmer.dart';
 
 import 'ProductView.dart';
 
@@ -35,13 +36,17 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   BuildContext customcontext;
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: Test.bihu == null ? true : false);
+  RefreshController _refreshController;
 
   get buttonSize => 20.0;
 
   @override
   void initState() {
+    _refreshController = RefreshController(
+        initialRefresh:
+            Provider.of<CartData>(context, listen: false).getCateg() == null
+                ? true
+                : false);
     super.initState();
     new Future.delayed(Duration.zero, () {
       customcontext = context;
@@ -103,14 +108,75 @@ class _HomePageState extends State<HomePage> {
             .setRazorpay(Razorpay.fromJson(data3));
       });
     } else {
-      Styles.showSnackBar(context, Styles.Log_sign, Duration(seconds: 5),
-          'Please Login first', Colors.black, () {
-        setState(() {
-          Test.fragNavigate.putPosit(key: 'Login');
-        });
-      });
-      _refreshController.refreshFailed();
+      UsersModel usersModel = UsersModel();
+      var Data = await usersModel.getAll();
+      List<Products> data = [];
+      if (Data.toString() == "Server Error" ||
+          Data.toString() == "Products not found") {
+        Dialogs.materialDialog(
+            msg: 'Sorry Something is wrong',
+            title: "Server Error",
+            color: Colors.white,
+            context: context,
+            actions: [
+              IconsButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                text: 'Accepted',
+                iconData: Icons.delete,
+                color: Colors.red,
+                textStyle: TextStyle(color: Colors.white),
+                iconColor: Colors.white,
+              ),
+            ]);
+      } else {
+        data = Data;
+        List<Products> men = [];
+        List<Products> women = [];
+        if (data != null) {
+          for (var i in data) {
+            if (i.Gender == "MALE") {
+              men.add(i);
+            } else {
+              women.add(i);
+            }
+          }
+          setState(() {
+            Provider.of<CartData>(context, listen: false).setAllProduct(data);
+            Provider.of<CartData>(context, listen: false).setMen(men);
+            Provider.of<CartData>(context, listen: false).setWomen(women);
+          });
+        } else {
+          print("empty");
+        }
+      }
     }
+    UsersModel usersModel1 = UsersModel();
+    var data = await usersModel1.getRequired();
+
+    var data1 = data['require'] as List;
+    List<Categories> categories =
+        data1.map((e) => Categories.fromJson(e)).toList();
+
+    var data2 = data['ads'] as List;
+    List<Ads> ads = data2.map((e) => Ads.fromJson(e)).toList();
+    var data3 = data['razorpay'];
+
+    new Future.delayed(Duration.zero, () {
+      Provider.of<CartData>(customcontext, listen: false)
+          .setCategory(categories);
+      Provider.of<CartData>(customcontext, listen: false).setAds(ads);
+      Provider.of<CartData>(customcontext, listen: false)
+          .setRazorpay(Razorpay.fromJson(data3));
+      _refreshController.refreshCompleted();
+    });
+    Styles.showSnackBar(context, Styles.Log_sign, Duration(seconds: 5),
+        'Please Login first', Colors.black, () {
+      setState(() {
+        Test.fragNavigate.putPosit(key: 'Login');
+      });
+    });
   }
 
   void _onLoading() async {
@@ -175,12 +241,52 @@ class _HomePageState extends State<HomePage> {
                           .getCateg(),
                       index: index,
                       OnTap: () {
-                        Test.fragNavigate.putPosit(
-                            key: Provider.of<CartData>(context, listen: false)
-                                .getCateg()[index]
-                                .name
-                                .toString(),
-                            force: true);
+                        if (Provider.of<CartData>(context, listen: false)
+                                    .getCateg()[index]
+                                    .name
+                                    .toString()
+                                    .trim() !=
+                                'Men' &&
+                            Provider.of<CartData>(context, listen: false)
+                                    .getCateg()[index]
+                                    .name
+                                    .toString()
+                                    .trim() !=
+                                'Women') {
+                          List<Products> list = [];
+                          for (var i
+                              in Provider.of<CartData>(context, listen: false)
+                                  .allproducts) {
+                            if (i.Gender.toString().trim().toUpperCase() ==
+                                Provider.of<CartData>(context, listen: false)
+                                    .getCateg()[index]
+                                    .name
+                                    .toString()
+                                    .trim()
+                                    .toUpperCase()) {
+                              list.add(i);
+                            }
+                          }
+                          setState(() {
+                            Provider.of<CartData>(context, listen: false)
+                                .setCouple(list);
+                          });
+                          Test.fragNavigate
+                              .putPosit(key: 'Couple', force: true);
+                        } else {
+                          if (Provider.of<CartData>(context, listen: false)
+                                  .getCateg()[index]
+                                  .name
+                                  .toString()
+                                  .trim() ==
+                              'Men') {
+                            print("BEER");
+                            Test.fragNavigate.putPosit(key: 'Men', force: true);
+                          } else {
+                            Test.fragNavigate
+                                .putPosit(key: 'Women', force: true);
+                          }
+                        }
                       },
                     );
                   },
@@ -211,16 +317,35 @@ class _HomePageState extends State<HomePage> {
                                 .getAdImage()
                                 .indexOf(i)),
                         child: Container(
-                            width: MediaQuery.of(context).size.width,
-                            margin: EdgeInsets.symmetric(horizontal: 5.0),
-                            decoration:
-                                BoxDecoration(color: Colors.transparent),
-                            child: CachedNetworkImage(
-                              imageUrl: i,
-                              progressIndicatorBuilder: (context, url, downloadProgress) =>
-                                  CircularProgressIndicator(value: downloadProgress.progress),
-                              errorWidget: (context, url, error) => Icon(Icons.error),
-                            ),),
+                          width: MediaQuery.of(context).size.width,
+                          margin: EdgeInsets.symmetric(horizontal: 5.0),
+                          decoration: BoxDecoration(color: Colors.transparent),
+                          child: CachedNetworkImage(
+                            imageUrl: i,
+                            progressIndicatorBuilder: (context, url, downloadProgress) =>
+                                SizedBox(
+                                  width: 50.0,
+                                  height: 50.0,
+                                  child: Shimmer.fromColors(
+                                    baseColor: Colors.red,
+                                    highlightColor: Colors.yellow,
+                                    child: Center(
+                                      child: Text(
+                                        'Please Wait',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: 15.0,
+                                          fontWeight:
+                                          FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
+                          ),
+                        ),
                       );
                     },
                   );
@@ -292,11 +417,11 @@ class _HomePageState extends State<HomePage> {
                   itemCount: Provider.of<CartData>(context, listen: true)
                       .allproducts
                       .sublist(
-                      0,
-                      Provider.of<CartData>(context, listen: false)
-                          .allproducts
-                          .length ~/
-                          3)
+                          0,
+                          Provider.of<CartData>(context, listen: false)
+                                  .allproducts
+                                  .length ~/
+                              3)
                       .length,
                   itemBuilder: (BuildContext ctxt, int index) {
                     return ProductItemVIew(
@@ -304,11 +429,11 @@ class _HomePageState extends State<HomePage> {
                       list: Provider.of<CartData>(context, listen: true)
                           .allproducts
                           .sublist(
-                          0,
-                          Provider.of<CartData>(context, listen: false)
-                              .allproducts
-                              .length ~/
-                              3),
+                              0,
+                              Provider.of<CartData>(context, listen: false)
+                                      .allproducts
+                                      .length ~/
+                                  3),
                       Index: index,
                       OnTap: () {
                         Navigator.push(
@@ -317,15 +442,15 @@ class _HomePageState extends State<HomePage> {
                                 type: PageTransitionType.fade,
                                 child: ProductView(
                                     product: Provider.of<CartData>(context,
-                                        listen: false)
+                                            listen: false)
                                         .allproducts
                                         .sublist(
-                                        0,
-                                        Provider.of<CartData>(context,
-                                            listen: false)
-                                            .allproducts
-                                            .length ~/
-                                            3)[index],
+                                            0,
+                                            Provider.of<CartData>(context,
+                                                        listen: false)
+                                                    .allproducts
+                                                    .length ~/
+                                                3)[index],
                                     fragNav: Test.fragNavigate)));
                       },
                     );
@@ -335,9 +460,11 @@ class _HomePageState extends State<HomePage> {
               SizedBox(
                 height: 15,
               ),
-              Image.asset('assets/images/kk.jpg',
-              width: MediaQuery.of(context).size.width-20,
-              height:MediaQuery.of(context).size.width,),
+              Image.asset(
+                'assets/images/kk.jpg',
+                width: MediaQuery.of(context).size.width - 20,
+                height: MediaQuery.of(context).size.width,
+              ),
               SizedBox(
                 height: 15,
               ),

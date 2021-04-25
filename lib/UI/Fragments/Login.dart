@@ -272,7 +272,7 @@ class _LoginState extends State<Login> {
       Styles.showWarningToast(Colors.green, "Successful", Colors.white, 15);
       pr.hide().then((isHidden) {
         print(isHidden);
-        Test.fragNavigate.putPosit(key:'Home');
+        Test.fragNavigate.putAndClean(key:'Home');
       });
     } else if (data == "Server Error") {
       pr.hide().then((isHidden) {

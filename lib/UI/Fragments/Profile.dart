@@ -22,14 +22,26 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-  var email, name, pin, phone, address;
+  var email,
+      name,
+      pin,
+      phone,
+      address,
+      addressline1,
+      town_village,
+      district,
+      state;
   final double paddingNo = 5.0;
   String nm, ids;
   Profile profile;
+  bool enabled = false;
   var nT = TextEditingController();
   var pinT = TextEditingController();
   var phT = TextEditingController();
-  var addT = TextEditingController();
+  var addT1 = TextEditingController();
+  var addTtown = TextEditingController();
+  var addTdis = TextEditingController();
+  var addTstate = TextEditingController();
   var o = 0;
   ProgressDialog pr;
   String _gender, def;
@@ -42,11 +54,14 @@ class _ProfilePageState extends State<ProfilePage> {
       try {
         profile = await usersModel
             .getProf(Provider.of<CartData>(context, listen: false).user.id);
-
         pr.hide().then((isHidden) {
           print(isHidden);
           _refreshController.refreshCompleted();
           Provider.of<CartData>(context, listen: false).updateProfile(profile);
+          setState(() {
+            enabled = checknull(
+                profile);
+          });
           setDataToFields(profile);
         });
       } catch (e) {
@@ -58,7 +73,6 @@ class _ProfilePageState extends State<ProfilePage> {
               "Something is wrong. Please try again later", Colors.black, 15);
         });
       }
-
     } else {
       Styles.showSnackBar(context, Styles.Log_sign, Duration(seconds: 5),
           'Please Login first', Colors.black, () {
@@ -77,6 +91,14 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
+    setState(() {
+      enabled = checknull(
+          Provider.of<CartData>(context, listen: false)
+              .profile);
+      print("CS ${checknull(
+          Provider.of<CartData>(context, listen: false)
+              .profile)}");
+    });
     pr = ProgressDialog(context,
         type: ProgressDialogType.Normal, isDismissible: true, showLogs: true);
     pr.style(
@@ -96,7 +118,10 @@ class _ProfilePageState extends State<ProfilePage> {
     nT = TextEditingController();
     pinT = TextEditingController();
     phT = TextEditingController();
-    addT = TextEditingController();
+    addT1 = TextEditingController();
+    addTtown = TextEditingController();
+    addTdis = TextEditingController();
+    addTstate = TextEditingController();
     Timer(Duration(milliseconds: 500), () {
       if (Provider.of<CartData>(context, listen: false).profile == null) {
         _onRefresh();
@@ -187,6 +212,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: TextField(
                   controller: nT,
                   onChanged: (text) {
+                    setState(() {
+                      enabled = checknull(
+                          Provider.of<CartData>(context, listen: false)
+                              .profile);
+                    });
                     name = text;
                   },
                   keyboardType: TextInputType.text,
@@ -207,18 +237,141 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               ),
+              // Padding(
+              //   padding: const EdgeInsets.all(10.0),
+              //   child: TextField(
+              //     controller: addT,
+              //     keyboardType: TextInputType.text,
+              //     style: TextStyle(color: Colors.black),
+              //     onChanged: (txt) {
+              //       setState(() {
+              //         enabled = checknull(Provider.of<CartData>(context, listen: false).profile);
+              //       });
+              //       address = txt;
+              //     },
+              //     decoration: InputDecoration(
+              //       labelStyle: TextStyle(color: Styles.log_sign_text),
+              //       labelText: "Address",
+              //       filled: true,
+              //       fillColor: Colors.white,
+              //       focusedBorder: OutlineInputBorder(
+              //         borderSide: BorderSide(color: Colors.white),
+              //         borderRadius: BorderRadius.circular(10),
+              //       ),
+              //       enabledBorder: UnderlineInputBorder(
+              //         borderSide: BorderSide(color: Colors.white),
+              //         borderRadius: BorderRadius.circular(10),
+              //       ),
+              //     ),
+              //   ),
+              // ),
               Padding(
-                padding: const EdgeInsets.all(10.0),
+                padding: const EdgeInsets.all(10),
                 child: TextField(
-                  controller: addT,
+                  controller: addT1,
                   keyboardType: TextInputType.text,
                   style: TextStyle(color: Colors.black),
                   onChanged: (txt) {
-                    address = txt;
+                    setState(() {
+                      enabled = checknull(
+                          Provider.of<CartData>(context, listen: false)
+                              .profile);
+                    });
+                    addressline1 = txt;
                   },
                   decoration: InputDecoration(
                     labelStyle: TextStyle(color: Styles.log_sign_text),
-                    labelText: "Address",
+                    labelText: "Address(House no, Building, Street, Area)",
+                    filled: true,
+                    fillColor: Colors.white,
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: TextField(
+                  controller: addTtown,
+                  keyboardType: TextInputType.text,
+                  style: TextStyle(color: Colors.black),
+                  onChanged: (txt) {
+                    setState(() {
+                      enabled = checknull(
+                          Provider.of<CartData>(context, listen: false)
+                              .profile);
+                    });
+                    town_village = txt;
+                  },
+                  decoration: InputDecoration(
+                    labelStyle: TextStyle(color: Styles.log_sign_text),
+                    labelText: "Town/Village",
+                    filled: true,
+                    fillColor: Colors.white,
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: TextField(
+                  controller: addTdis,
+                  keyboardType: TextInputType.text,
+                  style: TextStyle(color: Colors.black),
+                  onChanged: (txt) {
+                    setState(() {
+                      enabled = checknull(
+                          Provider.of<CartData>(context, listen: false)
+                              .profile);
+                    });
+                    district = txt;
+                  },
+                  decoration: InputDecoration(
+                    labelStyle: TextStyle(color: Styles.log_sign_text),
+                    labelText: "District",
+                    filled: true,
+                    fillColor: Colors.white,
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: TextField(
+                  controller: addTstate,
+                  keyboardType: TextInputType.text,
+                  style: TextStyle(color: Colors.black),
+                  onChanged: (txt) {
+                    setState(() {
+                      enabled = checknull(
+                          Provider.of<CartData>(context, listen: false)
+                              .profile);
+                    });
+                    state = txt;
+                  },
+                  decoration: InputDecoration(
+                    labelStyle: TextStyle(color: Styles.log_sign_text),
+                    labelText: "State",
                     filled: true,
                     fillColor: Colors.white,
                     focusedBorder: OutlineInputBorder(
@@ -240,6 +393,11 @@ class _ProfilePageState extends State<ProfilePage> {
                   keyboardType: TextInputType.phone,
                   style: TextStyle(color: Colors.black),
                   onChanged: (txt) {
+                    setState(() {
+                      enabled = checknull(
+                          Provider.of<CartData>(context, listen: false)
+                              .profile);
+                    });
                     phone = txt;
                   },
                   decoration: InputDecoration(
@@ -267,6 +425,11 @@ class _ProfilePageState extends State<ProfilePage> {
                   maxLength: 6,
                   style: TextStyle(color: Colors.black),
                   onChanged: (txt) {
+                    setState(() {
+                      enabled = checknull(
+                          Provider.of<CartData>(context, listen: false)
+                              .profile);
+                    });
                     pin = txt;
                   },
                   decoration: InputDecoration(
@@ -302,69 +465,87 @@ class _ProfilePageState extends State<ProfilePage> {
                       print(value);
                     },
                   )),
-              Padding(
-                padding: const EdgeInsets.only(
-                    left: 5.0, right: 5.0, bottom: 10.0, top: 5.0),
-                child: FlatButton(
-                  height: MediaQuery.of(context).size.width / 7,
-                  minWidth: MediaQuery.of(context).size.width,
-                  splashColor: Colors.white,
-                  shape: new RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(6.0)),
-                  padding: EdgeInsets.all(8),
-                  color: Styles.button_color,
-                  onPressed: () {
-                    print(pinT.text);
-                    if (nT.text.isNotEmpty &&
-                        email != null &&
-                        phT.text.isNotEmpty &&
-                        pinT.text.isNotEmpty &&
-                        addT.text.isNotEmpty) {
-                      if (phT.text.length == 10) {
-                        if (pinT.text.length == 6) {
-                          if (_gender != null) {
-                            if (Test.accessToken != null &&
-                                Test.refreshToken != null) {
-                              saveProfile(context);
+              enabled
+                  ? Container()
+                  : Padding(
+                      padding: const EdgeInsets.only(
+                          left: 5.0, right: 5.0, bottom: 10.0, top: 5.0),
+                      child: FlatButton(
+                        height: MediaQuery.of(context).size.width / 7,
+                        minWidth: MediaQuery.of(context).size.width,
+                        splashColor: Colors.white,
+                        disabledColor: Styles.bg_color,
+                        shape: new RoundedRectangleBorder(
+                            borderRadius: new BorderRadius.circular(6.0)),
+                        padding: EdgeInsets.all(8),
+                        color: Styles.button_color,
+                        onPressed: () {
+                          print(checknull(
+                              Provider.of<CartData>(context, listen: false)
+                                  .profile));
+                          if (nT.text.isNotEmpty &&
+                              email != null &&
+                              phT.text.isNotEmpty &&
+                              pinT.text.isNotEmpty &&
+                              addT1.text.isNotEmpty &&
+                              addTtown.text.isNotEmpty &&
+                              addTdis.text.isNotEmpty &&
+                              addTstate.text.isNotEmpty) {
+                            if (phT.text.length == 10) {
+                              if (pinT.text.length == 6) {
+                                if (_gender != null) {
+                                  if (Test.accessToken != null &&
+                                      Test.refreshToken != null) {
+                                    saveProfile(context);
+                                  } else {
+                                    Styles.showSnackBar(
+                                        context,
+                                        Styles.Log_sign,
+                                        Duration(seconds: 5),
+                                        'Please Login first',
+                                        Colors.black, () {
+                                      setState(() {
+                                        Test.fragNavigate
+                                            .putPosit(key: 'Login');
+                                      });
+                                    });
+                                  }
+                                } else {
+                                  Styles.showWarningToast(
+                                      Colors.yellow,
+                                      "Please select a gender",
+                                      Colors.black,
+                                      15);
+                                }
+                              } else {
+                                Styles.showWarningToast(
+                                    Colors.yellow,
+                                    "Please enter a valid pincode",
+                                    Colors.black,
+                                    15);
+                              }
                             } else {
-                              Styles.showSnackBar(
-                                  context,
-                                  Styles.Log_sign,
-                                  Duration(seconds: 5),
-                                  'Please Login first',
-                                  Colors.black, () {
-                                setState(() {
-                                  Test.fragNavigate.putPosit(key: 'Login');
-                                });
-                              });
+                              Styles.showWarningToast(Colors.yellow,
+                                  "Enter a valid phone no", Colors.black, 15);
                             }
                           } else {
-                            Styles.showWarningToast(Colors.yellow,
-                                "Please select a gender", Colors.black, 15);
+                            Styles.showWarningToast(
+                                Colors.yellow,
+                                "Please enter required fields",
+                                Colors.black,
+                                15);
                           }
-                        } else {
-                          Styles.showWarningToast(Colors.yellow,
-                              "Please enter a valid pincode", Colors.black, 15);
-                        }
-                      } else {
-                        Styles.showWarningToast(Colors.yellow,
-                            "Enter a valid phone no", Colors.black, 15);
-                      }
-                    } else {
-                      Styles.showWarningToast(Colors.yellow,
-                          "Please enter required fields", Colors.black, 15);
-                    }
-                  },
-                  child: Text(
-                    "Save",
-                    style: TextStyle(
-                      color: Styles.button_text_color,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                        },
+                        child: Text(
+                          "Save",
+                          style: TextStyle(
+                            color: Styles.button_text_color,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
             ],
           ),
         ),
@@ -374,11 +555,14 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   void dispose() {
-    super.dispose();
     nT.dispose();
     pinT.dispose();
     phT.dispose();
-    addT.dispose();
+    addT1.dispose();
+    addTdis.dispose();
+    addTtown.dispose();
+    addTstate.dispose();
+    super.dispose();
   }
 
   void getProfileDatat(id) async {
@@ -404,10 +588,14 @@ class _ProfilePageState extends State<ProfilePage> {
         _gender = data.gender;
         print(data.gender);
       });
-      addT.text = data.address == null ? "" : data.address.toString();
+      setAddress(data.address == null ? "" : data.address.toString());
       pinT.text = data.pincode == null ? "" : data.pincode.toString();
       phT.text = data.phone == null ? "" : data.phone.toString();
       Provider.of<CartData>(context, listen: false).updateProfile(data);
+      setState(() {
+        enabled = checknull(
+            data);
+      });
       o++;
     } else {
       Styles.showWarningToast(Colors.red, "Server Error", Colors.white, 15);
@@ -417,8 +605,8 @@ class _ProfilePageState extends State<ProfilePage> {
   void saveProfile(BuildContext context) async {
     await pr.show();
     UsersModel usersModel = new UsersModel();
-    var data = await usersModel.saveProf(Profile(ids, nT.text, email, addT.text,
-        int.parse(phT.text), int.parse(pinT.text), _gender));
+    var data = await usersModel.saveProf(Profile(ids, nT.text, email,
+        getAddress(), int.parse(phT.text), int.parse(pinT.text), _gender));
     if (data != null) {
       pr.hide().then((isHidden) {
         print(isHidden);
@@ -427,17 +615,21 @@ class _ProfilePageState extends State<ProfilePage> {
             ids,
             nT.text,
             email,
-            addT.text,
+            getAddress(),
             int.parse(phT.text),
             int.parse(pinT.text),
             _gender));
+        setState(() {
+          enabled = checknull(
+              Provider.of<CartData>(context, listen: false)
+                  .profile);
+        });
         _onRefresh();
       });
     } else {
       pr.hide().then((isHidden) {
         print(isHidden);
         Styles.showWarningToast(Colors.red, "Failed", Colors.white, 15);
-
       });
     }
   }
@@ -451,8 +643,44 @@ class _ProfilePageState extends State<ProfilePage> {
       def = profile.gender;
       _gender = profile.gender;
     });
-    addT.text = profile.address == null ? "" : profile.address.toString();
+    setAddress(profile.address == null ? "" : profile.address.toString());
     pinT.text = profile.pincode == null ? "" : profile.pincode.toString();
     phT.text = profile.phone == null ? "" : profile.phone.toString();
+  }
+
+  bool checknull(Profile profile) {
+    if (profile == null) {
+      print("!");
+      return true;
+    } else if (profile.address == getAddress() &&
+        profile.name == nT.text &&
+        profile.pincode.toString() == pinT.text &&
+        profile.phone.toString() == phT.text) {
+      print("1!");
+      return true;
+    } else {
+      print("caf ${profile.address.toString().trim() == getAddress()} ${profile.address.toString().trim()} == ${getAddress()}");
+      return false;
+    }
+  }
+
+  String getAddress() {
+    return addT1.text.trim() +
+        "," +
+        addTtown.text.trim() +
+        "," +
+        addTdis.text.trim() +
+        "," +
+        addTstate.text.trim();
+  }
+
+  void setAddress(String s) {
+    setState(() {
+      addT1.text = s == "" ? "" : s.split(",")[0];
+      addTtown.text = s == "" ? "" : s.split(",")[1];
+      addTdis.text = s == "" ? "" : s.split(",")[2];
+      addTstate.text = s == "" ? "" : s.split(",")[3];
+    });
+
   }
 }

@@ -18,6 +18,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ProductView extends StatefulWidget {
   final FragNavigate fragNav;
@@ -493,11 +494,24 @@ class _ProductViewState extends State<ProductView> {
                             .trim(),
                         height: MediaQuery.of(context).size.width / (2.5),
                         progressIndicatorBuilder: (context, url, downloadProgress) =>
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  top: 25.0, bottom: 25.0, left: 20, right: 20),
-                              child: CircularProgressIndicator(
-                                  value: downloadProgress.progress),
+                            SizedBox(
+                              width: 50.0,
+                              height: 50.0,
+                              child: Shimmer.fromColors(
+                                baseColor: Colors.red,
+                                highlightColor: Colors.yellow,
+                                child: Center(
+                                  child: Text(
+                                    'Please Wait',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 15.0,
+                                      fontWeight:
+                                      FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
                         errorWidget: (context, url, error) => Icon(Icons.error),
                       ),

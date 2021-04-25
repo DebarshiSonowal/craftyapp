@@ -18,66 +18,70 @@ class AllProducts extends StatefulWidget {
 class _AllProductsState extends State<AllProducts> {
   get buttonSize => 20.0;
   EmptyListWidget emptyListWidget;
+
   @override
   Widget build(BuildContext context) {
-    return Provider.of<CartData>(context, listen: false)
-        .allproducts
-        .length == 0? emptyListWidget:Container(
-      height: MediaQuery.of(context).size.height,
-      child: Padding(
-        padding: const EdgeInsets.all(2.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Container(
-                        height: MediaQuery.of(context).size.height - (MediaQuery.of(context).size.width/(2.5)),
-                        child: GridView.count(
-                            scrollDirection: Axis.vertical,
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 10,
-                            shrinkWrap: true,
-                            children: List.generate(
-                                Provider.of<CartData>(context, listen: false)
-                                    .allproducts
-                                    .length, (index) {
-                              return ProductItemVIew(
-                                  buttonSize: buttonSize,
-                                  list: Provider.of<CartData>(context,
-                                      listen: false)
-                                      .allproducts,
-                                  OnTap: () {
-                                    Navigator.push(
-                                        context,
-                                        PageTransition(
-                                            type: PageTransitionType.fade,
-                                            child: ProductView(
-                                              product: Provider.of<CartData>(
-                                                  context,
-                                                  listen: false)
-                                                  .allproducts[index],
-                                              fragNav: Test.fragNavigate,
-                                            )));
-                                  },
-                                  Index: index);
-                            })),
+    return Provider.of<CartData>(context, listen: false).allproducts.length == 0
+        ? emptyListWidget
+        : Container(
+            height: MediaQuery.of(context).size.height,
+            child: Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Container(
+                              height: MediaQuery.of(context).size.height -
+                                  (MediaQuery.of(context).size.width / (2)),
+                              child: GridView.count(
+                                  scrollDirection: Axis.vertical,
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 10,
+                                  mainAxisSpacing: 10,
+                                  shrinkWrap: true,
+                                  children: List.generate(
+                                      Provider.of<CartData>(context,
+                                              listen: false)
+                                          .allproducts
+                                          .length, (index) {
+                                    return ProductItemVIew(
+                                        buttonSize: buttonSize,
+                                        list: Provider.of<CartData>(context,
+                                                listen: false)
+                                            .allproducts,
+                                        OnTap: () {
+                                          Navigator.push(
+                                              context,
+                                              PageTransition(
+                                                  type: PageTransitionType.fade,
+                                                  child: ProductView(
+                                                    product:
+                                                        Provider.of<CartData>(
+                                                                context,
+                                                                listen: false)
+                                                            .allproducts[index],
+                                                    fragNav: Test.fragNavigate,
+                                                  )));
+                                        },
+                                        Index: index);
+                                  })),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
+          );
   }
 
   @override

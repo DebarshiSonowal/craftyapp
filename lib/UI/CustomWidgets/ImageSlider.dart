@@ -6,6 +6,7 @@ import 'package:crafty/UI/CustomWidgets/Photoview.dart';
 import 'package:flutter/material.dart';
 import 'package:fragment_navigate/navigate-bloc.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:shimmer/shimmer.dart';
 
 class CarouselWithIndicatorDemo extends StatefulWidget {
   Products item;
@@ -52,11 +53,24 @@ class _CarouselWithIndicatorState extends State<CarouselWithIndicatorDemo> {
                         CachedNetworkImage(
                           imageUrl: i.trim(),
                           progressIndicatorBuilder: (context, url, downloadProgress) =>
-                              Padding(
-                                padding: EdgeInsets.only(
-                                    top: 25.0, bottom: 25.0, left: 20, right: 20),
-                                child: CircularProgressIndicator(
-                                    value: downloadProgress.progress),
+                              SizedBox(
+                                width: 50.0,
+                                height: 50.0,
+                                child: Shimmer.fromColors(
+                                  baseColor: Colors.red,
+                                  highlightColor: Colors.yellow,
+                                  child: Center(
+                                    child: Text(
+                                      'Please Wait',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 15.0,
+                                        fontWeight:
+                                        FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
                           errorWidget: (context, url, error) => Icon(Icons.error),
                         ),),

@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crafty/Models/Categories.dart';
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 
 class CategoryItemView extends StatelessWidget {
   const CategoryItemView(
@@ -40,12 +41,25 @@ class CategoryItemView extends StatelessWidget {
                 height: 100,
                 fit: BoxFit.fitHeight,
                 progressIndicatorBuilder: (context, url, downloadProgress) =>
-                    Padding(
-                  padding: EdgeInsets.only(
-                      top: 25.0, bottom: 25.0, left: 20, right: 20),
-                  child: CircularProgressIndicator(
-                      value: downloadProgress.progress),
-                ),
+                    SizedBox(
+                      width: 50.0,
+                      height: 50.0,
+                      child: Shimmer.fromColors(
+                        baseColor: Colors.red,
+                        highlightColor: Colors.yellow,
+                        child: Center(
+                          child: Text(
+                            'Please Wait',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 15.0,
+                              fontWeight:
+                              FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                 errorWidget: (context, url, error) => Icon(Icons.error),
               ),
               SizedBox(

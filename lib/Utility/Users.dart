@@ -82,9 +82,9 @@ class UsersModel {
     return serverOrder;
   }
 
-  Future<dynamic> saveOrderDatabase(Order orders) async {
+  Future<dynamic> saveOrderDatabase(Order orders,String name) async {
     NetworkHelper networkHelper = NetworkHelper(url);
-    var order = await networkHelper.saveOrderdatabase(orders);
+    var order = await networkHelper.saveOrderdatabase(orders,name);
     return order;
   }
 

@@ -190,46 +190,51 @@ class NetworkHelper {
   }
 
   Future getAll() async {
+    BaseOptions option;
     if (Test.accessToken != null) {
-      BaseOptions option =
+      option =
           new BaseOptions(connectTimeout: 7000, receiveTimeout: 3000, headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer ${Test.accessToken}',
       });
-      dio = Dio(option);
-      dio.interceptors.add(
-        RetryOnAccessTokenInterceptor(
-          requestRetrier: DioConnectivityRequestRetrier(
-            dio: dio,
-            connectivity: Connectivity(),
-          ),
+    }else{
+      option =
+      new BaseOptions(connectTimeout: 7000, receiveTimeout: 3000, headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      });
+    }
+    dio = Dio(option);
+    dio.interceptors.add(
+      RetryOnAccessTokenInterceptor(
+        requestRetrier: DioConnectivityRequestRetrier(
+          dio: dio,
+          connectivity: Connectivity(),
         ),
-      );
-      Response response;
-      try {
-        response = await dio.get(url + "products");
-      } on DioError catch (e) {
-        if (e.type == DioErrorType.CONNECT_TIMEOUT) {
-          response = Response(statusCode: 500);
-        }
+      ),
+    );
+    Response response;
+    try {
+      response = await dio.get(url + "products");
+    } on DioError catch (e) {
+      if (e.type == DioErrorType.CONNECT_TIMEOUT) {
+        response = Response(statusCode: 500);
       }
-      if (response.statusCode == 200) {
-        var data = response.data["products"] as List;
-        print(data);
-        List<Products> Data = data.map((e) => Products.fromJson(e)).toList();
-        print(Data);
-        return Data;
-      } else if (response.statusCode == 500) {
-        return "Server Error";
-      } else {
-        return "Products not found";
-      }
+    }
+    if (response.statusCode == 200) {
+      var data = response.data["products"] as List;
+      print(data);
+      List<Products> Data = data.map((e) => Products.fromJson(e)).toList();
+      print(Data);
+      return Data;
+    } else if (response.statusCode == 500) {
+      return "Server Error";
+    } else {
+      return "Products not found";
     }
   }
 
   Future getRequired() async {
-    if (Test.accessToken != null) {
       BaseOptions option =
           new BaseOptions(connectTimeout: 7000, receiveTimeout: 3000, headers: {
         'Content-Type': 'application/json',
@@ -261,7 +266,6 @@ class NetworkHelper {
       } else {
         return "Required info not found";
       }
-    }
   }
 
   Future getorder(double price) async {
@@ -425,11 +429,11 @@ class NetworkHelper {
     }
   }
 
-  Future saveOrderdatabase(Order order) async {
+  Future saveOrderdatabase(Order order,String name) async {
     if (Test.accessToken != null) {
       Map data = {
         'email': order.email,
-        'name': order.name,
+        'name': name,
         'orderId': order.orderId,
         'products': order.products,
         'payment': order.payment,
@@ -446,6 +450,7 @@ class NetworkHelper {
         'trackingId': order.trackingId
       };
       var body = json.encode(data);
+      print(body);
       BaseOptions options =
           new BaseOptions(connectTimeout: 7000, receiveTimeout: 3000, headers: {
         'Content-Type': 'application/json',

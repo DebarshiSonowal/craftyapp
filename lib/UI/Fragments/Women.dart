@@ -52,7 +52,7 @@ class _WomenProductsState extends State<WomenProducts> {
                           padding: const EdgeInsets.all(5.0),
                           child: Container(
                             height: MediaQuery.of(context).size.height -
-                                (MediaQuery.of(context).size.width / (2.5)),
+                                (MediaQuery.of(context).size.width / (2)),
                             child: GridView.count(
                                 scrollDirection: Axis.vertical,
                                 crossAxisCount: 2,

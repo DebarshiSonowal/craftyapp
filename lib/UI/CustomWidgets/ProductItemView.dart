@@ -2,8 +2,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crafty/Models/Products.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:like_button/like_button.dart';
+import 'package:shimmer/shimmer.dart';
 class ProductItemVIew extends StatelessWidget {
   const ProductItemVIew(
       {Key key,
@@ -32,31 +31,44 @@ class ProductItemVIew extends StatelessWidget {
             color: Colors.white,
             borderRadius: BorderRadius.circular(10),
           ),
-          padding: EdgeInsets.all(5),
+          padding: EdgeInsets.all(3),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-
-              SizedBox(
-                height: 4,
-              ),
-              CachedNetworkImage(
-                imageUrl: list[Index].Image.toString().split(",")[0],
-                fit: BoxFit.fitHeight,
-                height: 100,
-                width: 120,
-                progressIndicatorBuilder: (context, url, downloadProgress) =>
-                    Padding(
-                      padding: const EdgeInsets.all(25.0),
-                      child: CircularProgressIndicator(value: downloadProgress.progress),
-                    ),
-                errorWidget: (context, url, error) => Icon(Icons.error),
+              Flexible(
+                flex:5,
+                child: CachedNetworkImage(
+                  imageUrl: list[Index].Image.toString().split(",")[0],
+                  fit: BoxFit.fitHeight,
+                  progressIndicatorBuilder: (context, url, downloadProgress) =>
+                      SizedBox(
+                        width: 50.0,
+                        height: 50.0,
+                        child: Shimmer.fromColors(
+                          baseColor: Colors.red,
+                          highlightColor: Colors.yellow,
+                          child: Center(
+                            child: Text(
+                              'Please Wait',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 15.0,
+                                fontWeight:
+                                FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  errorWidget: (context, url, error) => Icon(Icons.error),
+                ),
               ),
               SizedBox(
                 height: 3,
               ),
               Flexible(
+                flex: 1,
                 child: Text(
                   list[Index].Name,
                   maxLines: 1,

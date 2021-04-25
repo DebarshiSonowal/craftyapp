@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
+import 'package:crafty/Models/Address.dart';
 import 'package:crafty/Models/Ads.dart';
 import 'package:crafty/Models/CartProduct.dart';
 import 'package:crafty/Models/Categories.dart';
@@ -21,13 +22,22 @@ class CartData extends ChangeNotifier {
   List<Products> _allproducts = [];
   List<Products> _men = [];
   List<Products> _women = [];
+  List<Products> _couple = [];
   static String RESULT = "assets/raw/loading.json", TXT = "Please Wait";
   Razorpay _razorpay = null;
   List<Categories> _categ = [];
   List<Ads> _ads = [];
   String _specialTxt;
   List<Products> _special =[];
+  String address,name;
+  Address _address;
+
 //Set
+  void setAddress(Address value) {
+    _address = value;
+    notifyListeners();
+  }
+
   void setCategory(List<Categories> list) {
     _categ = list;
     notifyListeners();
@@ -40,7 +50,10 @@ class CartData extends ChangeNotifier {
     _specialTxt = tag;
     notifyListeners();
   }
-
+  void setCouple(List<Products> list){
+    _couple = list;
+    notifyListeners();
+  }
   void setRazorpay(Razorpay razorpay) {
     _razorpay = razorpay;
     print("RAzor ${_razorpay.Key}");
@@ -132,6 +145,10 @@ class CartData extends ChangeNotifier {
     return _user;
   }
 
+
+  Address get getAddress => _address;
+
+  List<Products> get couple => _couple;
 
   List<Products> get special => _special;
 

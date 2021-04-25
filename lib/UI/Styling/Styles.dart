@@ -37,4 +37,14 @@ class Styles {
       ),
     ));
   }
+
+  static void showBottomSheet(BuildContext context,Function child){
+    showModalBottomSheet(
+        context: context,
+        isDismissible: true,
+        isScrollControlled: true,
+        builder: (BuildContext context) {
+          return child(context);
+        });
+  }
 }
