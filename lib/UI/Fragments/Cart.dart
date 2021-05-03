@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:cashfree_pg/cashfree_pg.dart';
 import 'package:crafty/Helper/CartData.dart';
 import 'package:crafty/Helper/DioError.dart';
 import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/Models/Address.dart';
 import 'package:crafty/Models/CartProduct.dart';
+import 'package:crafty/Models/CashOrder.dart';
 import 'package:crafty/Models/Order.dart';
 import 'package:crafty/Models/Profile.dart';
 import 'package:crafty/Models/ServerOrder.dart';
@@ -13,6 +15,7 @@ import 'package:crafty/UI/CustomWidgets/AddressOption.dart';
 import 'package:crafty/UI/CustomWidgets/BottomCard.dart';
 import 'package:crafty/UI/CustomWidgets/CartScreen.dart';
 import 'package:crafty/UI/Styling/Styles.dart';
+import 'package:crafty/UI/Styling/UIMeta.dart';
 import 'package:crafty/Utility/Users.dart';
 import 'package:dio/dio.dart';
 import 'package:empty_widget/empty_widget.dart';
@@ -278,10 +281,7 @@ class _CartState extends State<Cart> {
               topLeft: Radius.circular(20), topRight: Radius.circular(20))),
       child: Container(
         height: MediaQuery.of(context).size.height / 4,
-        child: Provider.of<CartData>(context, listen: false).profile.address !=
-                null
-            ? withoption(context)
-            : withoutoption(context),
+        child: checkIfLoggedIn(),
       ),
     );
   }
@@ -447,7 +447,10 @@ class _CartState extends State<Cart> {
     Provider.of<CartData>(context, listen: false).setAddress(Address(
         Provider.of<CartData>(context, listen: false).profile.address,
         Provider.of<CartData>(context, listen: false).profile.phone.toString(),
-        Provider.of<CartData>(context, listen: false).profile.pincode.toString()));
+        Provider.of<CartData>(context, listen: false)
+            .profile
+            .pincode
+            .toString()));
     Navigator.pop(context);
     showPaymentDialog();
   }
@@ -593,12 +596,10 @@ class _CartState extends State<Cart> {
                 }
                 var size = Provider.of<CartData>(context, listen: false).Sizes;
                 var amount =
-                    Provider.of<CartData>(context, listen: false).getPrice() *
-                        100;
+                    Provider.of<CartData>(context, listen: false).getPrice();
                 var items = Provider.of<CartData>(context, listen: false).names;
                 Test.currentCartItems =
                     Provider.of<CartData>(context, listen: false).list;
-
                 var options = {
                   'key': Provider.of<CartData>(context, listen: false)
                       .razorpay
@@ -629,5 +630,36 @@ class _CartState extends State<Cart> {
             iconColor: Colors.white,
           ),
         ]);
+  }
+
+  getTokenData(CashOrder cashOrder) async {
+    UsersModel usersModel = new UsersModel();
+    return await usersModel.savePayment(cashOrder);
+  }
+
+  getOrder(var amount) {
+    var order = CashOrder();
+    // order.orderCurrency="INR"
+    // order.orderId = order.orderId.toString().substring(1,order.orderId.toString().length-1);
+    order.customerName =
+        Provider.of<CartData>(context, listen: false).user.name;
+    order.customerEmail = 'debarkhisonowal@gmail.com';
+    order.customerPhone = '8638372157';
+    order.orderAmount = amount;
+    order.stage="TEST";
+    return order;
+  }
+
+  checkIfLoggedIn() {
+    if (Provider.of<CartData>(context, listen: false).profile == null) {
+      return Container(
+        child: Text('Log in first'),
+      );
+    } else {
+      return Provider.of<CartData>(context, listen: false).profile.address !=
+              null
+          ? withoption(context)
+          : withoutoption(context);
+    }
   }
 }

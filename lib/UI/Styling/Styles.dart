@@ -8,7 +8,9 @@ class Styles {
   static const button_color = Colors.black;
   static const button_text_color = Colors.white;
   static const hyperlink = Colors.black;
-
+  static const url = "https://officialcraftybackend.herokuapp.com/users/";
+// static const url = "http://10.0.2.2:3000/users/";
+//static const url = "http://localhost:3000/users/";
   static void showWarningToast(
       Color colors, String txt, Color txtcolor, double size) {
     Fluttertoast.showToast(

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:connectivity/connectivity.dart';
 import 'package:crafty/Helper/Test.dart';
+import 'package:crafty/Models/CashOrder.dart';
 import 'package:crafty/Models/LoginData.dart';
 import 'package:crafty/Models/Order.dart';
 import 'package:crafty/Models/Products.dart';
@@ -268,6 +269,59 @@ class NetworkHelper {
       }
   }
 
+  Future payOrder(CashOrder cashOrder) async{
+    print("ktk ${cashOrder.orderId.toString().substring(1,cashOrder.orderId.toString().length-1)}");
+    Map data = {
+      'orderID': cashOrder.orderId.toString().substring(1,cashOrder.orderId.toString().length-1),
+      'amount': cashOrder.orderAmount,
+      'orderCurrency': 'INR',
+      'orderNote':cashOrder.orderNote,
+      'customerName': cashOrder.customerName,
+      'email':cashOrder.customerEmail,
+      'phone':cashOrder.customerPhone,
+    };
+    var body = json.encode(data);
+    print("GIve $body");
+    BaseOptions options =
+    new BaseOptions(connectTimeout: 10000, receiveTimeout: 5000, headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Accept': 'application/json',
+      // 'Authorization': 'Bearer ${Test.accessToken}',
+    });
+    dio = Dio(options);
+    dio.interceptors.add(
+      RetryOnAccessTokenInterceptor(
+        requestRetrier: DioConnectivityRequestRetrier(
+          dio: dio,
+          connectivity: Connectivity(),
+        ),
+      ),
+    );
+    Response response;
+    try {
+      response = await dio.post(url + "orderCASH",data: body);
+    } on DioError catch (e) {
+      print("${e.error} ${e.type.index}");
+      if (e.error == DioErrorType.CONNECT_TIMEOUT) {
+        print("DA");
+        response = Response(statusCode: 500);
+        response.statusCode = 500;
+        print("response1 ${response.statusCode}");
+      }
+    }
+    print("response ${response}");
+    if (response.statusCode == 200) {
+      var data = response.data;
+      print(data);
+      print(data['body']['cftoken']);
+      return data;
+    } else if (response.statusCode == 500) {
+      return "Server Error";
+    } else {
+      return "Unable to generate";
+    }
+  }
+
   Future getorder(double price) async {
     if (Test.accessToken != null) {
       BaseOptions options =
@@ -292,6 +346,7 @@ class NetworkHelper {
       } on DioError catch (e) {
         if (e.type == DioErrorType.CONNECT_TIMEOUT) {
           response = Response(statusCode: 500);
+          response.statusCode = 500;
         }
       }
       if (response.statusCode == 200) {

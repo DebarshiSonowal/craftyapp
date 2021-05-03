@@ -1,3 +1,4 @@
+import 'package:crafty/Models/CashOrder.dart';
 import 'package:crafty/Models/LoginData.dart';
 import 'package:crafty/Models/Order.dart';
 import 'package:crafty/Models/Products.dart';
@@ -86,6 +87,12 @@ class UsersModel {
     NetworkHelper networkHelper = NetworkHelper(url);
     var order = await networkHelper.saveOrderdatabase(orders,name);
     return order;
+  }
+
+  Future<dynamic> savePayment(CashOrder cashOrder) async{
+    NetworkHelper networkHelper = NetworkHelper(url);
+    var data = await networkHelper.payOrder(cashOrder);
+    return data;
   }
 
   Future<dynamic> saveOrder(dynamic body) async {
