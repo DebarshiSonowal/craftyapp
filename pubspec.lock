@@ -43,6 +43,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.0"
+  cashfree_pg:
+    dependency: "direct main"
+    description:
+      name: cashfree_pg
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.2+16"
   change_app_package_name:
     dependency: "direct main"
     description:

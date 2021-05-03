@@ -56,6 +56,7 @@ dependencies:
   email_validator: ^2.0.1
   cached_network_image: ^2.5.0
   shimmer: ^2.0.0
+  cashfree_pg: 1.2.2+16
 dev_dependencies:
   flutter_test:
     sdk: flutter
