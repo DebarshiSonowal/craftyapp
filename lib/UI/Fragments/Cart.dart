@@ -600,42 +600,24 @@ class _CartState extends State<Cart> {
                 var items = Provider.of<CartData>(context, listen: false).names;
                 Test.currentCartItems =
                     Provider.of<CartData>(context, listen: false).list;
-
-                CashOrder order = getOrder(amount);
-                var data = await getTokenData(order);
-                order.tokenData = data['body']['cftoken'].toString();
-                order.appId = data['id'];
-                order.orderNote = items;
-                order.notifyUrl =
-                "https://officialcraftybackend.herokuapp.com/users/successfulWebhook";
-                order.orderId = order.orderId
-                    .toString()
-                    .substring(1, order.orderId.toString().length - 1);
-                var inputs = order.toMap();
-                // inputs.addAll(UIMeta().toMap());
-                inputs.putIfAbsent('orderCurrency', () {
-                  return "INR";
-                });
-                // inputs.forEach((key, value) {
-                //   print("$key : $value");
-                // });
-                print("the inputs \n ${inputs}");
-                CashfreePGSDK.doPayment(inputs)
-                    .onError((error, stackTrace) {
-                  print(error);
-                  return error;
-                })
-                    .then((value) {
-                  value?.forEach((key, value) async {
-                    print("$key : $value");
-                  });
-                  if(value['txStatus'].toString() =="SUCCESS"){
-                    // _handlePaymentSuccess(response);
+                var options = {
+                  'key': Provider.of<CartData>(context, listen: false)
+                      .razorpay
+                      .Id
+                      .toString(),
+                  'amount': amount,
+                  'order_id': '$id',
+                  'name': 'Crafty',
+                  'description': items,
+                  'external': {
+                    'wallets': ['paytm']
                   }
-                })
-                    .whenComplete(() {
-                  pr.hide().then((isHidden) {});
-                });
+                };
+                try {
+                  _razorpay.open(options);
+                } catch (e) {
+                  print("VVVV $e");
+                }
               } else {
                 Styles.showWarningToast(
                     Colors.red, "Failed Please Log out", Colors.white, 15);
