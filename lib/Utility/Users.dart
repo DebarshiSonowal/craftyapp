@@ -94,7 +94,10 @@ class UsersModel {
     var data = await networkHelper.payOrder(cashOrder);
     return data;
   }
-
+Future<dynamic> triggerResponse(dynamic id) async{
+  NetworkHelper networkHelper = NetworkHelper(url);
+  return await networkHelper.triggerResponse(id);
+}
   Future<dynamic> saveOrder(dynamic body) async {
     NetworkHelper networkHelper = NetworkHelper(url);
     var v = await networkHelper.saveorder(body);

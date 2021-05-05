@@ -219,13 +219,6 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "Categories:",
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
               Container(
                 color: Colors.transparent,
                 height: 150,

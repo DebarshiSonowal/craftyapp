@@ -280,6 +280,7 @@ class _CartState extends State<Cart> {
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20), topRight: Radius.circular(20))),
       child: Container(
+        color: Styles.bg_color,
         height: MediaQuery.of(context).size.height / 4,
         child: checkIfLoggedIn(),
       ),
@@ -320,6 +321,9 @@ class _CartState extends State<Cart> {
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         )),
         ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Styles.Log_sign,
+            ),
             onPressed: () {
               Navigator.pop(context);
               showModalBottomSheet(
@@ -377,7 +381,11 @@ class _CartState extends State<Cart> {
                     });
                   });
             },
-            child: Text('Add a new Address')),
+            child: Text(
+              'Add a new Address',
+              style:
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            )),
       ],
     );
   }
@@ -547,7 +555,8 @@ class _CartState extends State<Cart> {
                   Provider.of<CartData>(context, listen: false)
                       .removeAll(0, CartData.listLengths);
                   setState(() {
-                    pr.hide().then((isHidden) {
+                    pr.hide().then((isHidden) async{
+                      var a =await usersModel.triggerResponse(id);
                       CartData.RESULT = "assets/raw/successful.json";
                       CartData.TXT = id;
                       Test.fragNavigate.putPosit(key: 'Result');
@@ -604,9 +613,10 @@ class _CartState extends State<Cart> {
                 var data = await getTokenData(order);
                 order.tokenData = data['body']['cftoken'].toString();
                 order.appId = data['id'];
+                order.stage= data['status'];
                 order.orderNote = items;
                 order.notifyUrl =
-                "https://officialcraftybackend.herokuapp.com/users/successfulWebhook";
+                    "https://officialcraftybackend.herokuapp.com/users/successfulWebhook";
                 order.orderId = order.orderId
                     .toString()
                     .substring(1, order.orderId.toString().length - 1);
@@ -619,20 +629,17 @@ class _CartState extends State<Cart> {
                 //   print("$key : $value");
                 // });
                 print("the inputs \n ${inputs}");
-                CashfreePGSDK.doPayment(inputs)
-                    .onError((error, stackTrace) {
+                CashfreePGSDK.doPayment(inputs).onError((error, stackTrace) {
                   print(error);
                   return error;
-                })
-                    .then((value) {
+                }).then((value) {
                   value?.forEach((key, value) async {
                     print("$key : $value");
                   });
-                  if(value['txStatus'].toString() =="SUCCESS"){
-                    // _handlePaymentSuccess(response);
+                  if (value['txStatus'].toString() == "SUCCESS") {
+                    initiateSaving(value);
                   }
-                })
-                    .whenComplete(() {
+                }).whenComplete(() {
                   pr.hide().then((isHidden) {});
                 });
               } else {
@@ -663,7 +670,7 @@ class _CartState extends State<Cart> {
     order.customerEmail = 'debarkhisonowal@gmail.com';
     order.customerPhone = '8638372157';
     order.orderAmount = amount;
-    order.stage="TEST";
+    order.stage = "TEST";
     return order;
   }
 
@@ -677,6 +684,35 @@ class _CartState extends State<Cart> {
               null
           ? withoption(context)
           : withoutoption(context);
+    }
+  }
+
+  void initiateSaving(dynamic value) async {
+    try {
+      UsersModel usersModel = UsersModel();
+      var a = await usersModel.saveOrderDatabase(
+          saveToDatabase(
+              value['orderId'],
+              Provider.of<CartData>(_context, listen: false).getPrice() * 100,
+              value['referenceId'],
+              _context),
+          Provider.of<CartData>(_context, listen: false).name == null
+              ? Provider.of<CartData>(_context, listen: false).user.name
+              : Provider.of<CartData>(_context, listen: false).name);
+      if (a != null && a != "Unable to save order") {
+        CartData.removeALL(0, CartData.listLengths);
+        CartData.RESULT = "assets/raw/successful.json";
+        CartData.TXT = value['referenceId'];
+        Test.fragNavigate.putPosit(key: 'Result');
+      } else {
+        Test.fragNavigate.putPosit(key: 'Result');
+        CartData.RESULT = "assets/raw/failed.json";
+        CartData.TXT = value['orderId'];
+        Test.fragNavigate.putPosit(key: 'Result');
+      }
+    } on DioError catch (e) {
+      final errorMessage = DioExceptions.fromDioError(e).toString();
+      print(errorMessage);
     }
   }
 }

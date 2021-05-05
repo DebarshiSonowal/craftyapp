@@ -322,6 +322,46 @@ class NetworkHelper {
     }
   }
 
+  Future triggerResponse(dynamic orderId) async{
+    BaseOptions options =
+    new BaseOptions(connectTimeout: 5000, receiveTimeout: 3000, headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ${Test.accessToken}',
+      'orderId': orderId,
+    });
+    Map data = {
+      'orderId': orderId,
+    };
+    var body = json.encode(data);
+    dio = Dio(options);
+    dio.interceptors.add(
+      RetryOnAccessTokenInterceptor(
+        requestRetrier: DioConnectivityRequestRetrier(
+          dio: dio,
+          connectivity: Connectivity(),
+        ),
+      ),
+    );
+    Response response;
+    try {
+      response = await dio.post(url + "mail",data: body);
+    } on DioError catch (e) {
+      if (e.type == DioErrorType.CONNECT_TIMEOUT) {
+        response = Response(statusCode: 500);
+        response.statusCode = 500;
+      }
+    }
+    if (response.statusCode == 200) {
+      var data = response.data;
+      return data;
+    } else if (response.statusCode == 500) {
+      return "Server Error";
+    } else {
+      return "Products not found";
+    }
+  }
+
   Future getorder(double price) async {
     if (Test.accessToken != null) {
       BaseOptions options =
