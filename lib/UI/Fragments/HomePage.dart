@@ -303,7 +303,6 @@ class _HomePageState extends State<HomePage> {
                     .map((i) {
                   return Builder(
                     builder: (BuildContext context) {
-                      print("faf ${i.trim()}");
                       return GestureDetector(
                         onTap: () => showIndex(
                             Provider.of<CartData>(context, listen: false)

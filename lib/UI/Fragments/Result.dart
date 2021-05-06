@@ -1,15 +1,12 @@
 
 import 'package:crafty/Helper/CartData.dart';
 import 'package:crafty/Helper/Test.dart';
-import 'package:crafty/UI/Activity/Host.dart';
+import 'package:crafty/Models/User.dart';
 import 'package:crafty/UI/Styling/Styles.dart';
+import 'package:crafty/Utility/Users.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lottie/lottie.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
-
-import '../../main.dart';
 
 
 class Result extends StatefulWidget {
@@ -44,6 +41,16 @@ var RESULT;
                 Flexible(
                     flex: 3,
                     child: Lottie.asset(CartData.RESULT)),
+                Flexible(
+                    flex: 1,
+                    child: Center(
+                      child: Text(
+                        "Your order has been placed",
+                        style: TextStyle(
+                          fontSize: 14,
+                        ),
+                      ),
+                    )),
                 Flexible(
                     flex: 1,
                     child: Center(
@@ -84,6 +91,14 @@ var RESULT;
     );
   }
 
+@override
+  void initState() {
+
+  updateOrder();
+    super.initState();
+//
+  }
+
   String getAsset() {
     if(CartData.RESULT == "Successful") {
       setState(() {
@@ -97,5 +112,16 @@ var RESULT;
       return "assets/raw/loading.json";
     }
 
+  }
+
+  void updateOrder() async{
+    UsersModel usersModel =UsersModel();
+    var order = await usersModel.getOrdersforUser(
+    Provider.of<CartData>(context, listen: false).user.id);
+    if (order != null) {
+      setState(() {
+        Provider.of<CartData>(context, listen: false).orders(order);
+      });
+    }
   }
 }

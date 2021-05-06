@@ -15,7 +15,6 @@ import 'package:crafty/UI/CustomWidgets/AddressOption.dart';
 import 'package:crafty/UI/CustomWidgets/BottomCard.dart';
 import 'package:crafty/UI/CustomWidgets/CartScreen.dart';
 import 'package:crafty/UI/Styling/Styles.dart';
-import 'package:crafty/UI/Styling/UIMeta.dart';
 import 'package:crafty/Utility/Users.dart';
 import 'package:dio/dio.dart';
 import 'package:empty_widget/empty_widget.dart';
@@ -26,7 +25,6 @@ import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
-import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Cart extends StatefulWidget {
@@ -38,7 +36,6 @@ BuildContext _context;
 ProgressDialog pr;
 
 class _CartState extends State<Cart> {
-  Razorpay _razorpay;
   int item = 0;
   var products, id;
   double price = 0.00;
@@ -53,10 +50,6 @@ class _CartState extends State<Cart> {
 
   @override
   void initState() {
-    _razorpay = Razorpay();
-    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
-    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
-    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
     pinT = TextEditingController();
     phT = TextEditingController();
     addT1 = TextEditingController();
@@ -118,7 +111,6 @@ class _CartState extends State<Cart> {
     addTtown.dispose();
     addTdis.dispose();
     addTstate.dispose();
-    _razorpay.clear();
     super.dispose();
   }
 
@@ -153,71 +145,6 @@ class _CartState extends State<Cart> {
               },
             ),
     );
-  }
-
-  _handlePaymentSuccess(PaymentSuccessResponse response) async {
-    Styles.showWarningToast(Colors.green, "Successful", Colors.white, 15);
-    Map data = {
-      'orderId': response.orderId,
-      'paymentId': response.paymentId,
-      'signature': response.signature,
-    };
-    var body = json.encode(data);
-    UsersModel usersModel = UsersModel();
-    var b = await usersModel.saveOrder(body);
-    if (b != "Failed to save" && b != "Server Error") {
-      if (b["result"].toString() == "Successful") {
-        try {
-          UsersModel usersModel = UsersModel();
-          var a = await usersModel.saveOrderDatabase(
-              saveToDatabase(
-                  response.orderId,
-                  Provider.of<CartData>(_context, listen: false).getPrice() *
-                      100,
-                  response.paymentId,
-                  _context),
-              Provider.of<CartData>(_context, listen: false).name == null
-                  ? Provider.of<CartData>(_context, listen: false).user.name
-                  : Provider.of<CartData>(_context, listen: false).name);
-          if (a != null && a != "Unable to save order") {
-            CartData.removeALL(0, CartData.listLengths);
-            CartData.RESULT = "assets/raw/successful.json";
-            CartData.TXT = response.paymentId;
-            Test.fragNavigate.putPosit(key: 'Result');
-          } else {
-            Test.fragNavigate.putPosit(key: 'Result');
-            CartData.RESULT = "assets/raw/failed.json";
-            CartData.TXT = response.orderId;
-            Test.fragNavigate.putPosit(key: 'Result');
-          }
-        } on DioError catch (e) {
-          final errorMessage = DioExceptions.fromDioError(e).toString();
-          print(errorMessage);
-        }
-        pr.hide().then((isHidden) {
-          CartData.RESULT = "assets/raw/successful.json";
-          CartData.TXT = "Payment ID" + response.paymentId;
-          Test.fragNavigate.putPosit(key: 'Result');
-        });
-      } else {
-        pr.hide().then((isHidden) {
-          CartData.RESULT = "assets/raw/failed.json";
-          CartData.TXT = "Payment ID" + response.orderId;
-          Test.fragNavigate.putPosit(key: 'Result');
-        });
-      }
-    }
-  }
-
-  _handlePaymentError(PaymentFailureResponse response) {
-    pr.hide().then((isHidden) {
-      Styles.showWarningToast(Colors.red, response.message, Colors.white, 15);
-    });
-  }
-
-  _handleExternalWallet(ExternalWalletResponse response) {
-    Styles.showWarningToast(
-        Colors.green, "Successful ${response}", Colors.white, 15);
   }
 
   void save(String key, value) async {
@@ -557,9 +484,12 @@ class _CartState extends State<Cart> {
                   setState(() {
                     pr.hide().then((isHidden) async{
                       var a =await usersModel.triggerResponse(id);
-                      CartData.RESULT = "assets/raw/successful.json";
-                      CartData.TXT = id;
-                      Test.fragNavigate.putPosit(key: 'Result');
+                      if (a=="complete") {
+                        CartData.RESULT = "assets/raw/successful.json";
+                        CartData.TXT = id;
+                        Test.fragNavigate.putPosit(key: 'Result');
+                      }else{
+                      }
                     });
                   });
                 } else {

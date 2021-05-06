@@ -244,7 +244,9 @@ class _LoginState extends State<Login> {
   }
 
   void _togglePasswordView() {
-      _isHidden = !_isHidden;
+      setState(() {
+        _isHidden = !_isHidden;
+      });
   }
 
   void LogIn(String email, String password) async {
@@ -263,6 +265,10 @@ class _LoginState extends State<Login> {
         print("V: ${UserData.name}");
         Provider.of<CartData>(context, listen: false).updateUser(UserData);
       }
+      var profile = await usersModel.getProf(UserData.id);
+    if(profile!="Server Error"){
+      Provider.of<CartData>(context, listen: false).updateProfile(profile);
+    }
       var order = await usersModel.getOrdersforUser(
           Provider.of<CartData>(context, listen: false).user.id);
       if (order != "Server Error" && order != "Orders  not found") {

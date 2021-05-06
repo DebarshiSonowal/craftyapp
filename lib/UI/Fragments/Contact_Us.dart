@@ -1,8 +1,9 @@
-
+import 'package:crafty/UI/Activity/T&C.dart';
 import 'package:crafty/UI/CustomWidgets/ContactIconButton.dart';
 import 'package:crafty/UI/Styling/Styles.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ContactUs extends StatefulWidget {
@@ -67,7 +68,8 @@ class _ContactUsState extends State<ContactUs> {
                     Color(0xffD64135)),
                 ContactIconButton(() {
                   try {
-                    _launchURL("https://play.app.goo.gl/?link=https://play.google.com/store/apps/details?id=com.craftyfashion.crafty");
+                    _launchURL(
+                        "https://play.app.goo.gl/?link=https://play.google.com/store/apps/details?id=com.craftyfashion.crafty");
                   } catch (e) {
                     print(e);
                   }
@@ -121,6 +123,11 @@ class _ContactUsState extends State<ContactUs> {
               ],
             ),
           ),
+          ElevatedButton(onPressed: () {
+            Navigator.push(
+                context,
+                PageTransition(type: PageTransitionType.fade, child: HelpScreen("T&C")));
+          }, child: Text('Terms &  conditions')),
           SizedBox(
             height: 10,
           ),

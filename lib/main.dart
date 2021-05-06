@@ -1,5 +1,6 @@
 import 'package:crafty/UI/Activity/Login.dart';
 import 'package:flutter/material.dart';
+import 'package:in_app_update/in_app_update.dart';
 import 'package:provider/provider.dart';
 
 import 'Helper/CartData.dart';
@@ -10,8 +11,39 @@ void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  // AppUpdateInfo _updateInfo;
+  //
+  // GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
+  //
+  // bool _flexibleUpdateAvailable = false;
+  // Future<void> checkForUpdate() async {
+  //   InAppUpdate.checkForUpdate().then((info) {
+  //     setState(() {
+  //       _updateInfo = info;
+  //     });
+  //   }).catchError((e) {
+  //     showSnack(e.toString());
+  //   });
+  // }
+  // void showSnack(String text) {
+  //   if (_scaffoldKey.currentContext != null) {
+  //     ScaffoldMessenger.of(_scaffoldKey.currentContext)
+  //         .showSnackBar(SnackBar(content: Text(text)));
+  //   }
+  // }
+
+  @override
+  void initState() {
+    super.initState();
+    // checkForUpdate();
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(

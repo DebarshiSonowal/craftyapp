@@ -240,7 +240,6 @@ class NetworkHelper {
           new BaseOptions(connectTimeout: 7000, receiveTimeout: 3000, headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer ${Test.accessToken}',
       });
       dio = Dio(option);
       dio.interceptors.add(
@@ -286,7 +285,7 @@ class NetworkHelper {
     new BaseOptions(connectTimeout: 10000, receiveTimeout: 5000, headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Accept': 'application/json',
-      // 'Authorization': 'Bearer ${Test.accessToken}',
+      'Authorization': 'Bearer ${Test.accessToken}',
     });
     dio = Dio(options);
     dio.interceptors.add(
@@ -322,6 +321,44 @@ class NetworkHelper {
     }
   }
 
+  Future cancel(dynamic orderId) async{
+    BaseOptions options =
+    new BaseOptions(connectTimeout: 5000, receiveTimeout: 3000, headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ${Test.accessToken}',
+    });
+    Map data = {
+      'orderId': orderId,
+    };
+    var body = json.encode(data);
+    dio = Dio(options);
+    dio.interceptors.add(
+      RetryOnAccessTokenInterceptor(
+        requestRetrier: DioConnectivityRequestRetrier(
+          dio: dio,
+          connectivity: Connectivity(),
+        ),
+      ),
+    );
+    Response response;
+    try {
+      response = await dio.post(url + "cancel",data: body);
+    } on DioError catch (e) {
+      if (e.type == DioErrorType.CONNECT_TIMEOUT) {
+        response = Response(statusCode: 500);
+        response.statusCode = 500;
+      }
+    }
+    if (response.statusCode == 200) {
+      return "Your cancellation request is received";
+    } else if (response.statusCode == 500) {
+      return "Server Error";
+    } else {
+      return "Please try again later";
+    }
+  }
+
   Future triggerResponse(dynamic orderId) async{
     BaseOptions options =
     new BaseOptions(connectTimeout: 5000, receiveTimeout: 3000, headers: {
@@ -353,8 +390,7 @@ class NetworkHelper {
       }
     }
     if (response.statusCode == 200) {
-      var data = response.data;
-      return data;
+      return "complete";
     } else if (response.statusCode == 500) {
       return "Server Error";
     } else {

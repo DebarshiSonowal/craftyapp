@@ -1,4 +1,6 @@
 import 'package:crafty/Helper/CartData.dart';
+import 'package:crafty/UI/Styling/Styles.dart';
+import 'package:crafty/Utility/Users.dart';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -12,13 +14,13 @@ class OrderItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height-150,
+      height: MediaQuery.of(context).size.height - 150,
       child: Padding(
         padding: EdgeInsets.only(top: 20.0),
         child: ListView.builder(
           shrinkWrap: true,
           scrollDirection: Axis.vertical,
-          itemCount:Provider.of<CartData>(context, listen: false).order.length,
+          itemCount: Provider.of<CartData>(context, listen: false).order.length,
           itemBuilder: (BuildContext ctxt, int index) {
             return Padding(
               padding: const EdgeInsets.all(8.0),
@@ -35,8 +37,7 @@ class OrderItem extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Row(
-                          mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
                               "Order No:${Provider.of<CartData>(context, listen: false).order[index].orderId}",
@@ -65,22 +66,19 @@ class OrderItem extends StatelessWidget {
                             Text(
                               "${Provider.of<CartData>(context, listen: false).order[index].trackingId}",
                               style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16),
+                                  fontWeight: FontWeight.bold, fontSize: 16),
                             ),
                           ],
                         ),
                         Row(
-                          mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Row(
                               children: [
                                 Text(
                                   "Quantity:",
                                   style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.black45),
+                                      fontSize: 14, color: Colors.black45),
                                 ),
                                 SizedBox(
                                   width: 16,
@@ -98,8 +96,7 @@ class OrderItem extends StatelessWidget {
                                 Text(
                                   "Total Amount:",
                                   style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.black45),
+                                      fontSize: 14, color: Colors.black45),
                                 ),
                                 SizedBox(
                                   width: 16,
@@ -115,31 +112,53 @@ class OrderItem extends StatelessWidget {
                           ],
                         ),
                         Row(
-                          mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Card(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              child: InkWell(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text("Details"),
+                            Row(
+                              children: [
+                                Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  child: InkWell(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text("Details"),
+                                    ),
+                                    onTap: () {
+                                      Fluttertoast.showToast(
+                                          msg: "Coming soon",
+                                          toastLength: Toast.LENGTH_SHORT,
+                                          gravity: ToastGravity.BOTTOM,
+                                          timeInSecForIosWeb: 1,
+                                          backgroundColor: Colors.red,
+                                          textColor: Colors.black,
+                                          fontSize: 16.0);
+                                    },
+                                    splashColor: Colors.black45,
+                                    radius: MediaQuery.of(context).size.width,
+                                  ),
                                 ),
-                                onTap: () {
-                                  Fluttertoast.showToast(
-                                      msg: "Coming soon",
-                                      toastLength: Toast.LENGTH_SHORT,
-                                      gravity: ToastGravity.BOTTOM,
-                                      timeInSecForIosWeb: 1,
-                                      backgroundColor: Colors.red,
-                                      textColor: Colors.black,
-                                      fontSize: 16.0);
-                                },
-                                splashColor: Colors.black45,
-                                radius: MediaQuery.of(context).size.width,
-                              ),
+                                Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  child: InkWell(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text("Cancel"),
+                                    ),
+                                    onTap: () {
+                                      cancelOrder(Provider.of<CartData>(context,
+                                          listen: false)
+                                          .order[index]
+                                          .orderId);
+                                    },
+                                    splashColor: Colors.black45,
+                                    radius: MediaQuery.of(context).size.width,
+                                  ),
+                                ),
+                              ],
                             ),
                             Text(
                               "${Provider.of<CartData>(context, listen: false).order[index].status}",
@@ -157,5 +176,11 @@ class OrderItem extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void cancelOrder(orderId) async {
+    UsersModel usersModel = UsersModel();
+    var txt = await usersModel.cancel(orderId);
+    Styles.showWarningToast(Colors.green, txt.toString(), Colors.black, 15);
   }
 }

@@ -3,20 +3,17 @@ import 'package:crafty/Helper/CartData.dart';
 import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/Models/CartProduct.dart';
 import 'package:crafty/Models/Products.dart';
-import 'package:crafty/Models/size.dart';
-import 'package:crafty/UI/Activity/Host.dart';
+import 'package:crafty/UI/Activity/PhotoviewAsset.dart';
+import 'package:crafty/UI/CustomWidgets/GroupButton.dart';
 import 'package:crafty/UI/CustomWidgets/ImageSlider.dart';
 import 'package:crafty/UI/CustomWidgets/Photoview.dart';
 import 'package:crafty/UI/Styling/Styles.dart';
 import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fragment_navigate/navigate-bloc.dart';
 import 'package:like_button/like_button.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:photo_view/photo_view.dart';
-import 'package:photo_view/photo_view_gallery.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -37,6 +34,7 @@ class _ProductViewState extends State<ProductView> {
   var selectedColor;
   var selectedSize;
   var snackBar;
+  var currentIndex = 0;
   int currentPhoto = 0;
   List<int> lst = [1, 22, 3];
   int Index;
@@ -50,15 +48,6 @@ class _ProductViewState extends State<ProductView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // floatingActionButton: FloatingActionButton(
-      //   // onPressed:
-      //   backgroundColor: Styles.Log_sign,
-      //   splashColor: Colors.orange,
-      //   child: Icon(
-      //     Icons.add,
-      //     color: Styles.log_sign_text,
-      //   ),
-      // ),
       body: SafeArea(
         child: Container(
           color: Styles.bg_color,
@@ -108,43 +97,13 @@ class _ProductViewState extends State<ProductView> {
               ),
               Flexible(
                 flex: 2,
-                // child: PhotoViewGallery.builder(
-                //   scrollPhysics: const BouncingScrollPhysics(),
-                //   builder: (BuildContext context, int index) {
-                //     return PhotoViewGalleryPageOptions(
-                //       imageProvider: NetworkImage(widget.product.Image
-                //           .toString()
-                //           .split(",")[index]
-                //           .trim()),
-                //       initialScale: PhotoViewComputedScale.contained * 0.8,
-                //       heroAttributes: PhotoViewHeroAttributes(tag: lst[index]),
-                //     );
-                //   },
-                //   itemCount: widget.product.Image.toString().split(",").length,
-                //   loadingBuilder: (context, event) => Center(
-                //     child: Container(
-                //       width: 20.0,
-                //       height: 20.0,
-                //       child: CircularProgressIndicator(
-                //         value: event == null
-                //             ? 0
-                //             : event.cumulativeBytesLoaded /
-                //                 event.expectedTotalBytes,
-                //       ),
-                //     ),
-                //   ),
-                //   backgroundDecoration:
-                //       BoxDecoration(color: Colors.transparent),
-                //   pageController: PageController(
-                //     initialPage: 0,
-                //     keepPage: true,
-                //   ),
-                //   onPageChanged: (INDEX) {
-                //     currentPhoto = INDEX;
-                //   },
-                // ),
                 child: CarouselWithIndicatorDemo(
-                    widget.product, Test.fragNavigate, (index)=>onTapeed(index)),
+                    widget.product, Test.fragNavigate, (index)=>onTapeed(index),(t){
+                      setState(() {
+                        currentIndex = t;
+                        print(currentIndex);
+                      });
+                }),
               ),
               Flexible(
                 flex: 2,
@@ -236,7 +195,7 @@ class _ProductViewState extends State<ProductView> {
                                 ),
                                 Flexible(
                                   flex: 3,
-                                  child: CustomRadioButton(
+                                  child: GroupButton(
                                     width: 85,
                                     spacing: MediaQuery.of(context).size.height,
                                     elevation: 5,
@@ -265,8 +224,17 @@ class _ProductViewState extends State<ProductView> {
                                     },
                                     selectedColor: Styles.Log_sign,
                                     defaultSelected:
-                                        widget.product.Color.split(",")[0],
+                                        widget.product.Color.split(",")[currentIndex],
                                   ),
+                                ),
+                                TextButton(
+                                  child: Text("Size Chart",style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
+                                  onPressed: (){
+                                    Navigator.push(
+                                        context,
+                                        PageTransition(
+                                            type: PageTransitionType.fade, child: PhotoviewAsset(checkGender()==true?"Men":"Women")));
+                                  },
                                 ),
                                 ConstrainedBox(
                                   constraints: BoxConstraints.tightFor(
@@ -286,17 +254,6 @@ class _ProductViewState extends State<ProductView> {
                                     ),
                                     onPressed: () {
                                       print("AS $selectedColor");
-                                      // snackBar = SnackBar(
-                                      //   content: Text('Product Added'),
-                                      //   action: SnackBarAction(
-                                      //     label: 'Next',
-                                      //     onPressed: () {
-                                      //       setState(() {
-                                      //         widget.fragNav.putPosit(key: 'Cart', force: true);
-                                      //       });
-                                      //     },
-                                      //   ),
-                                      // );
                                       showModalBottomSheet(
                                           backgroundColor: Colors.transparent,
                                           context: context,
@@ -316,132 +273,9 @@ class _ProductViewState extends State<ProductView> {
                                           widget.quantity = 1;
                                         });
                                       });
-                                      // print(widget.product.Image.toString().split(",")[Index]);
-                                      // (selectedSize != null && selectedColor != null)
-                                      //     ? show()
-                                      //     : Styles.showWarningToast(
-                                      //         Colors.red, "Must add size and color", Colors.white, 15);
                                     },
                                   ),
                                 ),
-                                // Flexible(
-                                //   flex: 3,
-                                //   child: Padding(
-                                //     padding: const EdgeInsets.only(left: 10),
-                                //     child: Text(
-                                //       "Available Sizes:",
-                                //       style: TextStyle(
-                                //         color: Colors.black,
-                                //         fontWeight: FontWeight.bold,
-                                //         fontSize: 16,
-                                //       ),
-                                //     ),
-                                //   ),
-                                // ),
-                                // Flexible(
-                                //   child: CustomRadioButton(
-                                //     width: 65,
-                                //     elevation: 5,
-                                //     customShape: RoundedRectangleBorder(
-                                //       borderRadius:
-                                //           BorderRadius.all(Radius.circular(20)),
-                                //     ),
-                                //     absoluteZeroSpacing: true,
-                                //     unSelectedColor:
-                                //         Theme.of(context).canvasColor,
-                                //     buttonLables: getLabels(),
-                                //     buttonValues: getLabels(),
-                                //     buttonTextStyle: ButtonTextStyle(
-                                //         selectedColor: Colors.black,
-                                //         unSelectedColor: Colors.black,
-                                //         textStyle: TextStyle(fontSize: 12)),
-                                //     radioButtonValue: (value) {
-                                //       selectedSize = value;
-                                //       print(value);
-                                //     },
-                                //     selectedColor: Styles.Log_sign,
-                                //   ),
-                                // ),
-                                // Flexible(
-                                //   flex: 3,
-                                //   child: Padding(
-                                //     padding: const EdgeInsets.only(left: 10),
-                                //     child: Text(
-                                //       "Quantity:",
-                                //       style: TextStyle(
-                                //         color: Colors.black,
-                                //         fontWeight: FontWeight.bold,
-                                //         fontSize: 16,
-                                //       ),
-                                //     ),
-                                //   ),
-                                // ),
-                                // Container(
-                                //   width: 140,
-                                //   child: Row(
-                                //     mainAxisAlignment: MainAxisAlignment.center,
-                                //     children: [
-                                //       Flexible(
-                                //         flex: 4,
-                                //         child: Card(
-                                //           child: IconButton(
-                                //             icon: Icon(
-                                //               FontAwesomeIcons.minus,
-                                //               color: Colors.red,
-                                //             ),
-                                //             onPressed: () {
-                                //               setState(() {
-                                //                 widget.quantity == 1
-                                //                     ? Styles.showWarningToast(
-                                //                         Colors.yellow,
-                                //                         "Minimum is one",
-                                //                         Colors.black,
-                                //                         15)
-                                //                     : widget.quantity--;
-                                //               });
-                                //             },
-                                //           ),
-                                //         ),
-                                //       ),
-                                //       Flexible(
-                                //           flex: 4,
-                                //           child: Card(
-                                //               elevation: 0,
-                                //               color: Styles.bg_color,
-                                //               child: Padding(
-                                //                 padding:
-                                //                     const EdgeInsets.all(8.0),
-                                //                 child: Text(
-                                //                   widget.quantity.toString(),
-                                //                   style:
-                                //                       TextStyle(fontSize: 16),
-                                //                 ),
-                                //               ))),
-                                //       Flexible(
-                                //         flex: 4,
-                                //         child: Card(
-                                //           child: IconButton(
-                                //             icon: Icon(
-                                //               FontAwesomeIcons.plus,
-                                //               color: Colors.green,
-                                //             ),
-                                //             onPressed: () {
-                                //               setState(() {
-                                //                 widget.quantity == 5
-                                //                     ? Styles.showWarningToast(
-                                //                         Colors.yellow,
-                                //                         "Miximum is 5",
-                                //                         Colors.black,
-                                //                         15)
-                                //                     : widget.quantity++;
-                                //               });
-                                //             },
-                                //           ),
-                                //         ),
-                                //       ),
-                                //     ],
-                                //   ),
-                                // ),
                               ],
                             ),
                           )
@@ -741,5 +575,10 @@ class _ProductViewState extends State<ProductView> {
                 .toString()
                 .split(',')[index]
                 .trim())));
+  }
+
+  bool checkGender() {
+    print(widget.product.Gender.toString());
+    return widget.product.Gender.toString().trim() == "MALE";
   }
 }

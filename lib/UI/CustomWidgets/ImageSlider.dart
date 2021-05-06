@@ -8,11 +8,12 @@ import 'package:fragment_navigate/navigate-bloc.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:shimmer/shimmer.dart';
 
-class CarouselWithIndicatorDemo extends StatefulWidget {
+class CarouselWithIndicatorDemo<T> extends StatefulWidget {
   Products item;
   FragNavigate _fragNavigate;
   Function(int) onTap;
-  CarouselWithIndicatorDemo(this.item, this._fragNavigate,this.onTap);
+  final void Function(T) value;
+  CarouselWithIndicatorDemo(this.item, this._fragNavigate,this.onTap,this.value);
 
   @override
   State<StatefulWidget> createState() {
@@ -24,7 +25,7 @@ class _CarouselWithIndicatorState extends State<CarouselWithIndicatorDemo> {
   int _current = 0;
 
   int get current => _current;
-
+  CarouselController controller=CarouselController();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -33,17 +34,11 @@ class _CarouselWithIndicatorState extends State<CarouselWithIndicatorDemo> {
         child: Column(
             children: [
           CarouselSlider(
+            carouselController: controller,
             items: widget.item.Image.toString().split(',').map((i) {
               return Builder(
                 builder: (BuildContext context) {
                   return GestureDetector(
-                    // onTap: () {
-                    // setState(() {
-                    //   // Test.url =widget.item.Image.toString().split(',')[_current].trim();
-                    //   Navigator.push(context, PageTransition(
-                    //       type: PageTransitionType.fade, child: Photoview(widget.item.Image.toString().split(',')[_current].trim())));
-                    // });
-                    // },
                     onTap:()=> widget.onTap(_current),
                     child: Container(
                         width: MediaQuery.of(context).size.width,
@@ -73,7 +68,8 @@ class _CarouselWithIndicatorState extends State<CarouselWithIndicatorDemo> {
                                 ),
                               ),
                           errorWidget: (context, url, error) => Icon(Icons.error),
-                        ),),
+                        ),
+                    ),
                   );
                 },
               );
@@ -85,8 +81,8 @@ class _CarouselWithIndicatorState extends State<CarouselWithIndicatorDemo> {
                 aspectRatio: 2.8,
                 onPageChanged: (index, reason) {
                   setState(() {
+                    widget.value(index);
                     _current = index;
-                    print(index);
                   });
                 }),
           ),

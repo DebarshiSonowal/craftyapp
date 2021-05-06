@@ -21,7 +21,11 @@ class UsersModel {
     var Data = await networkHelper.log(loginData);
     return Data;
   }
-
+  Future<dynamic> cancel(var orderId) async {
+    NetworkHelper networkHelper = NetworkHelper(url);
+    var Data = await networkHelper.cancel(orderId);
+    return Data;
+  }
   Future<dynamic> signuP(SignUpData signUpData) async {
     NetworkHelper networkHelper = NetworkHelper(url);
     var Data = await networkHelper.sign(signUpData);
