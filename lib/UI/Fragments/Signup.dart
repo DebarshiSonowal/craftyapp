@@ -6,7 +6,6 @@ import 'package:crafty/Models/SignUpData.dart';
 import 'package:crafty/UI/CustomWidgets/Gender.dart';
 import 'package:crafty/UI/Styling/Styles.dart';
 import 'package:crafty/Utility/Users.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:fragment_navigate/navigate-bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:progress_dialog/progress_dialog.dart';

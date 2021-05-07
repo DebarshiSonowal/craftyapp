@@ -1,23 +1,18 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:crafty/Helper/CartData.dart';
 import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/Models/Ads.dart';
 import 'package:crafty/Models/Categories.dart';
-import 'package:crafty/Models/Products.dart';
-import 'package:crafty/Models/Razorpay.dart';
 import 'package:crafty/UI/Activity/Host.dart';
 import 'package:crafty/UI/Fragments/NoInternet.dart';
 import 'package:crafty/UI/Styling/Styles.dart';
 import 'package:crafty/Utility/Users.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
-import 'package:material_dialogs/material_dialogs.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'Login.dart';
 
 class SplashScreen extends StatefulWidget {
   @override

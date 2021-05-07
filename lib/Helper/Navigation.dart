@@ -1,10 +1,7 @@
-import 'package:crafty/UI/Activity/Login.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fragment_navigate/navigate-bloc.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../UI/Activity/Host.dart';
 import 'package:provider/provider.dart';
 
 import 'CartData.dart';

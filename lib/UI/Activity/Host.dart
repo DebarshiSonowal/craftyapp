@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:crafty/Helper/CartData.dart';
 import 'package:crafty/Helper/DataSearch.dart';
@@ -29,7 +28,6 @@ import 'package:crafty/UI/Styling/Styles.dart';
 import 'package:crafty/Utility/Users.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fragment_navigate/navigate-bloc.dart';
 import 'package:fragment_navigate/navigate-support.dart';
 import 'package:material_dialogs/material_dialogs.dart';

@@ -1,11 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/Models/Products.dart';
-import 'package:crafty/UI/CustomWidgets/Photoview.dart';
 import 'package:flutter/material.dart';
 import 'package:fragment_navigate/navigate-bloc.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:shimmer/shimmer.dart';
 
 class CarouselWithIndicatorDemo<T> extends StatefulWidget {
