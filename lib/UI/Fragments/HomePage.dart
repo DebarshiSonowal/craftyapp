@@ -6,6 +6,7 @@ import 'package:crafty/Models/Categories.dart';
 import 'package:crafty/Models/Products.dart';
 import 'package:crafty/Models/Razorpay.dart';
 import 'package:crafty/UI/CustomWidgets/CategoryItemView.dart';
+import 'package:crafty/UI/CustomWidgets/LoadingAnimation.dart';
 import 'package:crafty/UI/CustomWidgets/ProductItemView.dart';
 import 'package:crafty/UI/Styling/Styles.dart';
 import 'package:crafty/Utility/Users.dart';
@@ -219,130 +220,59 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                color: Colors.transparent,
-                height: 150,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  itemCount: Provider.of<CartData>(context, listen: true)
-                      .getCateg()
-                      .length,
-                  itemBuilder: (BuildContext ctxt, int index) {
-                    return CategoryItemView(
-                      list: Provider.of<CartData>(context, listen: true)
-                          .getCateg(),
-                      index: index,
-                      OnTap: () {
-                        if (Provider.of<CartData>(context, listen: false)
-                                    .getCateg()[index]
-                                    .name
-                                    .toString()
-                                    .trim() !=
-                                'Men' &&
-                            Provider.of<CartData>(context, listen: false)
-                                    .getCateg()[index]
-                                    .name
-                                    .toString()
-                                    .trim() !=
-                                'Women') {
-                          List<Products> list = [];
-                          for (var i
-                              in Provider.of<CartData>(context, listen: false)
-                                  .allproducts) {
-                            if (i.Gender.toString().trim().toUpperCase() ==
-                                Provider.of<CartData>(context, listen: false)
-                                    .getCateg()[index]
-                                    .name
-                                    .toString()
-                                    .trim()
-                                    .toUpperCase()) {
-                              list.add(i);
-                            }
-                          }
-                          setState(() {
-                            Provider.of<CartData>(context, listen: false)
-                                .setCouple(list);
-                          });
-                          Test.fragNavigate
-                              .putPosit(key: 'Couple', force: true);
-                        } else {
-                          if (Provider.of<CartData>(context, listen: false)
+              Provider.of<CartData>(context, listen: true).getCateg().length ==
+                      0
+                  ? LoadingAnimation(
+                      Provider.of<CartData>(context, listen: true)
+                          .getCateg()
+                          .length,
+                      6,
+                      MediaQuery.of(context).size.height / 3)
+                  // ignore: missing_return
+                  : categoryData(context, showIndex, (index) {
+                      if (Provider.of<CartData>(context, listen: false)
                                   .getCateg()[index]
                                   .name
                                   .toString()
-                                  .trim() ==
-                              'Men') {
-                            print("BEER");
-                            Test.fragNavigate.putPosit(key: 'Men', force: true);
-                          } else {
-                            Test.fragNavigate
-                                .putPosit(key: 'Women', force: true);
+                                  .trim() !=
+                              'Men' &&
+                          Provider.of<CartData>(context, listen: false)
+                                  .getCateg()[index]
+                                  .name
+                                  .toString()
+                                  .trim() !=
+                              'Women') {
+                        List<Products> list = [];
+                        for (var i
+                            in Provider.of<CartData>(context, listen: false)
+                                .allproducts) {
+                          if (i.Gender.toString().trim().toUpperCase() ==
+                              Provider.of<CartData>(context, listen: false)
+                                  .getCateg()[index]
+                                  .name
+                                  .toString()
+                                  .trim()
+                                  .toUpperCase()) {
+                            list.add(i);
                           }
                         }
-                      },
-                    );
-                  },
-                ),
-              ),
-              SizedBox(
-                height: 15,
-              ),
-              CarouselSlider(
-                options: CarouselOptions(
-                  height: 300.0,
-                  autoPlay: true,
-                  autoPlayInterval: Duration(seconds: 3),
-                  autoPlayAnimationDuration: Duration(milliseconds: 800),
-                  autoPlayCurve: Curves.fastOutSlowIn,
-                  enableInfiniteScroll: true,
-                  reverse: false,
-                ),
-                items: Provider.of<CartData>(context, listen: false)
-                    .getAdImage()
-                    .map((i) {
-                  return Builder(
-                    builder: (BuildContext context) {
-                      return GestureDetector(
-                        onTap: () => showIndex(
-                            Provider.of<CartData>(context, listen: false)
-                                .getAdImage()
-                                .indexOf(i)),
-                        child: Container(
-                          width: MediaQuery.of(context).size.width,
-                          margin: EdgeInsets.symmetric(horizontal: 5.0),
-                          decoration: BoxDecoration(color: Colors.transparent),
-                          child: CachedNetworkImage(
-                            imageUrl: i,
-                            progressIndicatorBuilder: (context, url, downloadProgress) =>
-                                SizedBox(
-                                  width: 50.0,
-                                  height: 50.0,
-                                  child: Shimmer.fromColors(
-                                    baseColor: Colors.red,
-                                    highlightColor: Colors.yellow,
-                                    child: Center(
-                                      child: Text(
-                                        'Please Wait',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontSize: 15.0,
-                                          fontWeight:
-                                          FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                            errorWidget: (context, url, error) =>
-                                Icon(Icons.error),
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                }).toList(),
-              ),
+                        Provider.of<CartData>(context, listen: false)
+                            .setCouple(list);
+                        Test.fragNavigate.putPosit(key: 'Couple', force: true);
+                      } else {
+                        if (Provider.of<CartData>(context, listen: false)
+                                .getCateg()[index]
+                                .name
+                                .toString()
+                                .trim() ==
+                            'Men') {
+                          print("BEER");
+                          Test.fragNavigate.putPosit(key: 'Men', force: true);
+                        } else {
+                          Test.fragNavigate.putPosit(key: 'Women', force: true);
+                        }
+                      }
+                    }),
               SizedBox(
                 height: 15,
               ),
@@ -400,55 +330,15 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              Container(
-                color: Colors.transparent,
-                height: 220,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  itemCount: Provider.of<CartData>(context, listen: true)
-                      .allproducts
-                      .sublist(
-                          0,
-                          Provider.of<CartData>(context, listen: false)
-                                  .allproducts
-                                  .length ~/
-                              3)
-                      .length,
-                  itemBuilder: (BuildContext ctxt, int index) {
-                    return ProductItemVIew(
-                      buttonSize: buttonSize,
-                      list: Provider.of<CartData>(context, listen: true)
+              Provider.of<CartData>(context, listen: true).allproducts.length ==
+                      0
+                  ? LoadingAnimation(
+                      Provider.of<CartData>(context, listen: false)
                           .allproducts
-                          .sublist(
-                              0,
-                              Provider.of<CartData>(context, listen: false)
-                                      .allproducts
-                                      .length ~/
-                                  3),
-                      Index: index,
-                      OnTap: () {
-                        Navigator.push(
-                            context,
-                            PageTransition(
-                                type: PageTransitionType.fade,
-                                child: ProductView(
-                                    product: Provider.of<CartData>(context,
-                                            listen: false)
-                                        .allproducts
-                                        .sublist(
-                                            0,
-                                            Provider.of<CartData>(context,
-                                                        listen: false)
-                                                    .allproducts
-                                                    .length ~/
-                                                3)[index],
-                                    fragNav: Test.fragNavigate)));
-                      },
-                    );
-                  },
-                ),
-              ),
+                          .length,
+                      5,
+                      MediaQuery.of(context).size.height / 4)
+                  : allproducts(),
               SizedBox(
                 height: 15,
               ),
@@ -548,6 +438,7 @@ class _HomePageState extends State<HomePage> {
   showIndex(int i) {
     List<Products> list = [];
     var tag = Provider.of<CartData>(context, listen: false).getAds()[i].tag;
+    Test.specialTag=tag;
     Provider.of<CartData>(context, listen: false).setSpecialTag(tag);
     var all = Provider.of<CartData>(context, listen: false).allproducts;
     for (var i in all) {
@@ -569,4 +460,136 @@ class _HomePageState extends State<HomePage> {
     }
     Test.fragNavigate.putPosit(key: 'Special', force: true);
   }
+
+  Widget allproducts() {
+    return Container(
+      color: Colors.transparent,
+      height: 220,
+      child: ListView.builder(
+        shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
+        itemCount: Provider.of<CartData>(context, listen: true)
+            .allproducts
+            .sublist(
+                0,
+                Provider.of<CartData>(context, listen: false)
+                        .allproducts
+                        .length ~/
+                    3)
+            .length,
+        itemBuilder: (BuildContext ctxt, int index) {
+          return ProductItemVIew(
+            buttonSize: buttonSize,
+            list: Provider.of<CartData>(context, listen: true)
+                .allproducts
+                .sublist(
+                    0,
+                    Provider.of<CartData>(context, listen: false)
+                            .allproducts
+                            .length ~/
+                        3),
+            Index: index,
+            OnTap: () {
+              Navigator.push(
+                  context,
+                  PageTransition(
+                      type: PageTransitionType.fade,
+                      child: ProductView(
+                          product: Provider.of<CartData>(context, listen: false)
+                              .allproducts
+                              .sublist(
+                                  0,
+                                  Provider.of<CartData>(context, listen: false)
+                                          .allproducts
+                                          .length ~/
+                                      3)[index],
+                          fragNav: Test.fragNavigate)));
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+Widget categoryData(
+    BuildContext context, Function showIndex, Function onTap(T)) {
+  return Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Container(
+        color: Colors.transparent,
+        height: 150,
+        child: ListView.builder(
+          shrinkWrap: true,
+          scrollDirection: Axis.horizontal,
+          itemCount:
+              Provider.of<CartData>(context, listen: true).getCateg().length,
+          itemBuilder: (BuildContext ctxt, int index) {
+            return CategoryItemView(
+              list: Provider.of<CartData>(context, listen: true).getCateg(),
+              index: index,
+              OnTap: () => onTap(index),
+            );
+          },
+        ),
+      ),
+      SizedBox(
+        height: 15,
+      ),
+      CarouselSlider(
+        options: CarouselOptions(
+          height: 300.0,
+          autoPlay: true,
+          autoPlayInterval: Duration(seconds: 3),
+          autoPlayAnimationDuration: Duration(milliseconds: 800),
+          autoPlayCurve: Curves.fastOutSlowIn,
+          enableInfiniteScroll: true,
+          reverse: false,
+        ),
+        items:
+            Provider.of<CartData>(context, listen: false).getAdImage().map((i) {
+          return Builder(
+            builder: (BuildContext context) {
+              return GestureDetector(
+                onTap: () => showIndex(
+                    Provider.of<CartData>(context, listen: false)
+                        .getAdImage()
+                        .indexOf(i)),
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  margin: EdgeInsets.symmetric(horizontal: 5.0),
+                  decoration: BoxDecoration(color: Colors.transparent),
+                  child: CachedNetworkImage(
+                    imageUrl: i,
+                    progressIndicatorBuilder:
+                        (context, url, downloadProgress) => SizedBox(
+                      width: 50.0,
+                      height: 50.0,
+                      child: Shimmer.fromColors(
+                        baseColor: Colors.red,
+                        highlightColor: Colors.yellow,
+                        child: Center(
+                          child: Text(
+                            'Please Wait',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
+                  ),
+                ),
+              );
+            },
+          );
+        }).toList(),
+      ),
+    ],
+  );
 }

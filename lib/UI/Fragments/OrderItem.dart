@@ -149,10 +149,11 @@ class OrderItem extends StatelessWidget {
                                       child: Text("Cancel"),
                                     ),
                                     onTap: () {
+                                      print('Cancelled');
                                       cancelOrder(Provider.of<CartData>(context,
                                           listen: false)
                                           .order[index]
-                                          .orderId);
+                                          .orderId,context);
                                     },
                                     splashColor: Colors.black45,
                                     radius: MediaQuery.of(context).size.width,
@@ -178,9 +179,9 @@ class OrderItem extends StatelessWidget {
     );
   }
 
-  void cancelOrder(orderId) async {
+  void cancelOrder(orderId,context) async {
     UsersModel usersModel = UsersModel();
-    var txt = await usersModel.cancel(orderId);
+    var txt = await usersModel.cancel(orderId,Provider.of<CartData>(context, listen: false).profile.email);
     Styles.showWarningToast(Colors.green, txt.toString(), Colors.black, 15);
   }
 }

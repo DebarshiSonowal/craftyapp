@@ -21,9 +21,9 @@ class UsersModel {
     var Data = await networkHelper.log(loginData);
     return Data;
   }
-  Future<dynamic> cancel(var orderId) async {
+  Future<dynamic> cancel(var orderId,var email) async {
     NetworkHelper networkHelper = NetworkHelper(url);
-    var Data = await networkHelper.cancel(orderId);
+    var Data = await networkHelper.cancel(orderId,email);
     return Data;
   }
   Future<dynamic> signuP(SignUpData signUpData) async {
@@ -98,9 +98,9 @@ class UsersModel {
     var data = await networkHelper.payOrder(cashOrder);
     return data;
   }
-Future<dynamic> triggerResponse(dynamic id) async{
+Future<dynamic> triggerResponse(dynamic id,dynamic email) async{
   NetworkHelper networkHelper = NetworkHelper(url);
-  return await networkHelper.triggerResponse(id);
+  return await networkHelper.triggerResponse(id,email);
 }
   Future<dynamic> saveOrder(dynamic body) async {
     NetworkHelper networkHelper = NetworkHelper(url);

@@ -1,7 +1,11 @@
+import 'package:crafty/Helper/CartData.dart';
 import 'package:crafty/Models/CartProduct.dart';
 import 'package:crafty/Models/Categories.dart';
 import 'package:crafty/Models/Products.dart';
+import 'package:crafty/Utility/Users.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:fragment_navigate/navigate-bloc.dart';
+import 'package:provider/provider.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,6 +14,7 @@ class Test {
 
   static String url;
 
+  static String specialTag=null;
 
   static saveKeys() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -43,8 +48,38 @@ class Test {
     cart.add(cartProduct);
     print(cartProduct);
   }
-
-
+  static getAllProducts(BuildContext context) async{
+    UsersModel usersModel = UsersModel();
+    var Data = await usersModel.getAll();
+    if (Data.toString() != "Server Error" ||
+        Data.toString() != "Products not found") {
+      List<Products> data = Data;
+      if (data != null) {
+        Provider.of<CartData>(context, listen: false)
+            .setAllProduct(data);
+        addData(data,context);
+      }
+    }
+  }
+  static addData(List<Products> data,BuildContext context) {
+    List<Products> men = [];
+    List<Products> women = [];
+    if (data != null) {
+      for (var i in data) {
+        if (i.Gender == "MALE") {
+          men.add(i);
+          print("MEN $i");
+        } else {
+          women.add(i);
+          print("WOMEN $i");
+        }
+      }
+        Provider.of<CartData>(context, listen: false).setMen(men);
+        Provider.of<CartData>(context, listen: false).setWomen(women);
+    } else {
+      print("empty");
+    }
+  }
 
   static List<String> currentIds = [];
 

@@ -1,3 +1,4 @@
+import 'package:empty_widget/empty_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -39,6 +40,19 @@ class Styles {
       ),
     ));
   }
+  static EmptyListWidget EmptyError  = EmptyListWidget(
+      title: 'Please swipe down to refresh',
+      subTitle:
+      'No Items found in this categories',
+      image: 'assets/images/404.png',
+      titleTextStyle: TextStyle(
+          color: Colors.red,
+          fontWeight: FontWeight.bold,
+          fontSize: 20
+      ),
+      subtitleTextStyle: TextStyle(
+        color: Color(0xffabb8d6),
+      ));
 
   static void showBottomSheet(BuildContext context,Function child){
     showModalBottomSheet(

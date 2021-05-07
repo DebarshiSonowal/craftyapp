@@ -59,6 +59,7 @@ dependencies:
   cashfree_pg: 1.2.2+16
   webview_flutter: ^2.0.4
   in_app_update: ^2.0.0
+  flare_splash_screen: ^2.0.1+2
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -80,6 +81,7 @@ flutter:
         - assets/images/crafty.png
         - assets/images/settings.png
         - assets/images/men.jpg
+        - assets/images/logo.png
         - assets/images/women.jpg
         - assets/images/user.png
         - assets/images/kk.jpg

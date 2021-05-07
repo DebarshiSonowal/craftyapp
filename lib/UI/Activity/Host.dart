@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:crafty/Helper/CartData.dart';
 import 'package:crafty/Helper/DataSearch.dart';
@@ -72,9 +73,21 @@ class HostState extends State<Host> {
 
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-
+  void getLoginData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var acc = prefs.get('access');
+    var ref = prefs.get('refresh');
+    print(acc);
+    if (acc != null && ref != null) {
+     setState(() {
+       Test.accessToken = acc;
+       Test.refreshToken = ref;
+     });
+    }
+  }
   @override
   void initState() {
+    getLoginData();
     _fragNav = FragNavigate(
       firstKey: 'Home',
       drawerContext: null,
@@ -82,7 +95,9 @@ class HostState extends State<Host> {
     );
     new Future.delayed(Duration.zero, () {
       _fragNav.setDrawerContext = context;
-      getEverything(context);
+     if(Provider.of<CartData>(context, listen: false).allproducts.length==0){
+       getEverything(context);
+     }
     });
     super.initState();
   }
@@ -131,7 +146,6 @@ class HostState extends State<Host> {
             },
           ).whenComplete(() => Future.value(false));
          return Future.delayed(Duration(seconds: 3),(){
-           print("CCC");
             return Future.value(false);
           });
         }
@@ -214,34 +228,51 @@ class HostState extends State<Host> {
   void getEverything(BuildContext context) async {
     UsersModel usersModel1 = UsersModel();
     var data = await usersModel1.getRequired();
-
-    var data1 = data['require'] as List;
-    List<Categories> categories =
-    data1.map((e) => Categories.fromJson(e)).toList();
-
-    var data2 = data['ads'] as List;
-    List<Ads> ads = data2.map((e) => Ads.fromJson(e)).toList();
-    var data3 = data['razorpay'];
-
-    new Future.delayed(Duration.zero, () {
+  // print("Data ${jsonDecode(data).toString()} ");
+    if (data != "Server Error") {
+      var data1 = data['require'] as List;
+      List<Categories> categories =
+      data1.map((e) => Categories.fromJson(e)).toList();
       Provider.of<CartData>(context, listen: false)
           .setCategory(categories);
+      var data2 = data['ads'] as List;
+      List<Ads> ads = data2.map((e) => Ads.fromJson(e)).toList();
+      var data3 = data['razorpay'];
+
+
       Provider.of<CartData>(context, listen: false).setAds(ads);
       Provider.of<CartData>(context, listen: false)
           .setRazorpay(Razorpay.fromJson(data3));
-    });
+    }else{
+      print(2);
+      UsersModel usersModel1 = UsersModel();
+      var data = await usersModel1.getRequired();
+      var data1 = data['require'] as List;
+      List<Categories> categories =
+      data1.map((e) => Categories.fromJson(e)).toList();
+      Provider.of<CartData>(context, listen: false)
+          .setCategory(categories);
+      var data2 = data['ads'] as List;
+      List<Ads> ads = data2.map((e) => Ads.fromJson(e)).toList();
+      var data3 = data['razorpay'];
+
+
+      Provider.of<CartData>(context, listen: false).setAds(ads);
+      Provider.of<CartData>(context, listen: false)
+          .setRazorpay(Razorpay.fromJson(data3));
+    }
+
+
+
     if (Test.refreshToken != null && Test.accessToken != null) {
-      print("ccc");
       UsersModel usersModel = UsersModel();
       UsersModel usersModel1 = UsersModel();
       UsersModel usersModel2 = UsersModel();
       UsersModel usersModel3 = UsersModel();
       var UserData = await usersModel1.getUser();
       if (UserData != "User Not Found") {
-        print("CC");
         Provider.of<CartData>(context, listen: false).updateUser(UserData);
       } else {
-        print("CC1");
         Dialogs.materialDialog(
             msg: 'Sorry Something is wrong',
             title: "Server Error",
@@ -279,7 +310,6 @@ class HostState extends State<Host> {
       var order = await usersModel3.getOrdersforUser(
           Provider.of<CartData>(context, listen: false).user.id);
       if (order != "Server Error" && order != "Orders  not found") {
-        print("GOR ORDER");
         Provider.of<CartData>(context, listen: false).orders(order);
       }
       var Data = await usersModel.getAll();
@@ -311,10 +341,8 @@ class HostState extends State<Host> {
           for (var i in data) {
             if (i.Gender == "MALE") {
               men.add(i);
-              print("MEN $i");
             } else {
               women.add(i);
-              print("WOMEN $i");
             }
           }
           setState(() {

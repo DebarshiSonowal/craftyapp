@@ -237,7 +237,7 @@ class NetworkHelper {
 
   Future getRequired() async {
       BaseOptions option =
-          new BaseOptions(connectTimeout: 7000, receiveTimeout: 3000, headers: {
+          new BaseOptions(connectTimeout: 7000, receiveTimeout: 6000, headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       });
@@ -254,7 +254,8 @@ class NetworkHelper {
       try {
         response = await dio.get(url + "required");
       } on DioError catch (e) {
-        if (e.type == DioErrorType.CONNECT_TIMEOUT) {
+        print(e.error);
+        if (e.error == DioErrorType.CONNECT_TIMEOUT) {
           response = Response(statusCode: 500);
         }
       }
@@ -321,7 +322,7 @@ class NetworkHelper {
     }
   }
 
-  Future cancel(dynamic orderId) async{
+  Future cancel(dynamic orderId,dynamic email) async{
     BaseOptions options =
     new BaseOptions(connectTimeout: 5000, receiveTimeout: 3000, headers: {
       'Content-Type': 'application/json',
@@ -330,7 +331,9 @@ class NetworkHelper {
     });
     Map data = {
       'orderId': orderId,
+      'email':email
     };
+    print("rEceived1");
     var body = json.encode(data);
     dio = Dio(options);
     dio.interceptors.add(
@@ -351,6 +354,7 @@ class NetworkHelper {
       }
     }
     if (response.statusCode == 200) {
+      print("rEceived");
       return "Your cancellation request is received";
     } else if (response.statusCode == 500) {
       return "Server Error";
@@ -359,7 +363,7 @@ class NetworkHelper {
     }
   }
 
-  Future triggerResponse(dynamic orderId) async{
+  Future triggerResponse(dynamic orderId,dynamic email) async{
     BaseOptions options =
     new BaseOptions(connectTimeout: 5000, receiveTimeout: 3000, headers: {
       'Content-Type': 'application/json',
@@ -369,6 +373,7 @@ class NetworkHelper {
     });
     Map data = {
       'orderId': orderId,
+      'email':email
     };
     var body = json.encode(data);
     dio = Dio(options);
