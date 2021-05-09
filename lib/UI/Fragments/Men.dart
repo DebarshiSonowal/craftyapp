@@ -34,7 +34,7 @@ class _MenProductsState extends State<MenProducts> {
   @override
   Widget build(BuildContext context) {
     sysContext = context;
-    print("Length ${ Provider.of<CartData>(context, listen: true).men.length}");
+    print("Length ${Provider.of<CartData>(context, listen: true).men.length}");
     return Scaffold(
       body: SmartRefresher(
         enablePullDown: true,
@@ -63,12 +63,16 @@ class _MenProductsState extends State<MenProducts> {
         controller: _refreshController,
         onRefresh: _onRefresh,
         onLoading: _onLoading,
-        child:
-            Provider.of<CartData>(context, listen: true).allproducts.length ==
-                        0 &&
-                    showError
-                ? emptyListWidget
-                : getUI(),
+        child: Padding(
+          padding: EdgeInsets.only(top: 17.0,),
+          child: Center(
+            child: Provider.of<CartData>(context, listen: true).allproducts.length ==
+                            0 &&
+                        showError
+                    ? emptyListWidget
+                    : getUI(),
+          ),
+        ),
       ),
     );
   }
@@ -78,7 +82,7 @@ class _MenProductsState extends State<MenProducts> {
     emptyListWidget = Styles.EmptyError;
     super.initState();
     Timer(Duration(seconds: 7), () {
-     changevalue();
+      changevalue();
     });
   }
 
@@ -89,7 +93,6 @@ class _MenProductsState extends State<MenProducts> {
             10,
             null)
         : Container(
-            height: MediaQuery.of(context).size.height,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -98,44 +101,40 @@ class _MenProductsState extends State<MenProducts> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: Container(
-                            height: MediaQuery.of(context).size.height -
-                                (MediaQuery.of(context).size.width / (2)),
-                            child: GridView.count(
-                                scrollDirection: Axis.vertical,
-                                crossAxisCount: 2,
-                                crossAxisSpacing: 10,
-                                mainAxisSpacing: 10,
-                                shrinkWrap: true,
-                                children: List.generate(
-                                    Provider.of<CartData>(context,
+                        Container(
+                          height: MediaQuery.of(context).size.height-(MediaQuery.of(context).size.width/2.4),
+                          child: GridView.count(
+                              scrollDirection: Axis.vertical,
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 10,
+                              mainAxisSpacing: 10,
+                              shrinkWrap: true,
+                              children: List.generate(
+                                  Provider.of<CartData>(context,
+                                          listen: false)
+                                      .men
+                                      .length, (index) {
+                                return ProductItemVIew(
+                                    buttonSize: buttonSize,
+                                    list: Provider.of<CartData>(context,
                                             listen: false)
-                                        .men
-                                        .length, (index) {
-                                  return ProductItemVIew(
-                                      buttonSize: buttonSize,
-                                      list: Provider.of<CartData>(context,
-                                              listen: false)
-                                          .men,
-                                      OnTap: () {
-                                        Navigator.push(
-                                            context,
-                                            PageTransition(
-                                                type: PageTransitionType.fade,
-                                                child: ProductView(
-                                                  product:
-                                                      Provider.of<CartData>(
-                                                              context,
-                                                              listen: false)
-                                                          .men[index],
-                                                  fragNav: Test.fragNavigate,
-                                                )));
-                                      },
-                                      Index: index);
-                                })),
-                          ),
+                                        .men,
+                                    OnTap: () {
+                                      Navigator.push(
+                                          context,
+                                          PageTransition(
+                                              type: PageTransitionType.fade,
+                                              child: ProductView(
+                                                product:
+                                                    Provider.of<CartData>(
+                                                            context,
+                                                            listen: false)
+                                                        .men[index],
+                                                fragNav: Test.fragNavigate,
+                                              )));
+                                    },
+                                    Index: index);
+                              })),
                         ),
                       ],
                     ),

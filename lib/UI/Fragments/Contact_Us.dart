@@ -123,13 +123,21 @@ class _ContactUsState extends State<ContactUs> {
               ],
             ),
           ),
-          ElevatedButton(onPressed: () {
-            Navigator.push(
-                context,
-                PageTransition(type: PageTransitionType.fade, child: HelpScreen("T&C")));
-          }, child: Text('Terms &  conditions')),
-          SizedBox(
-            height: 10,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        PageTransition(
+                            type: PageTransitionType.fade,
+                            child: HelpScreen("Return")));
+                  },
+                  child: Text('Return Policy')),
+              ElevatedButton(
+                  onPressed: _launchPrivacy, child: Text('Privacy Policy')),
+            ],
           ),
         ],
       ),
@@ -196,5 +204,21 @@ class _ContactUsState extends State<ContactUs> {
     } catch (e) {
       await launch(fallbackUrl, forceSafariVC: false, forceWebView: false);
     }
+  }
+}
+
+void _launchPrivacy() async {
+  const urls =
+      'https://www.freeprivacypolicy.com/live/2bed81fc-8c4f-4fe6-8015-8fcdcb5cc8e0';
+  var url = Uri.encodeFull(urls);
+  // var url = Uri.encodeComponent(urls);
+  try {
+    if (await canLaunch(url)) {
+      await launch(url, forceSafariVC: false, forceWebView: false);
+    } else {
+      throw 'Could not launch $url';
+    }
+  } catch (e) {
+    await launch(url, forceSafariVC: false, forceWebView: false);
   }
 }

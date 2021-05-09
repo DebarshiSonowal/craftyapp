@@ -47,7 +47,9 @@ var RESULT;
                       child: Text(
                         "Your order has been placed",
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 20,
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold
                         ),
                       ),
                     )),
@@ -57,17 +59,9 @@ var RESULT;
                       child: Text(
                         "The Reference ID is ${CartData.TXT}",
                         style: TextStyle(
-                          fontSize: 14,
-                        ),
-                      ),
-                    )),
-                Flexible(
-                    flex: 1,
-                    child: Center(
-                      child: Text(
-                        "Do not close this",
-                        style: TextStyle(
-                          fontSize: 14,
+                            fontSize: 18,
+                            color: Colors.green,
+                            fontWeight: FontWeight.bold
                         ),
                       ),
                     )),

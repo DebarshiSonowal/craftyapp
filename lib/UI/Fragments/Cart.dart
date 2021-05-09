@@ -42,7 +42,7 @@ class _CartState extends State<Cart> {
   ServerOrder order;
   EmptyListWidget emptyListWidget;
   TextEditingController pinT, phT, addT1, addTtown, addTdis, addTstate;
-
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   Future<ServerOrder> getEveryThing(double price) async {
     UsersModel usersModel = UsersModel();
     return await usersModel.getOrder(price);
@@ -100,7 +100,7 @@ class _CartState extends State<Cart> {
 
   @override
   void dispose() {
-    var json = jsonEncode(Provider.of<CartData>(context, listen: false)
+    var json = jsonEncode(Provider.of<CartData>(_context, listen: false)
         .list
         .map((e) => e.toJson())
         .toList());
@@ -111,6 +111,8 @@ class _CartState extends State<Cart> {
     addTtown.dispose();
     addTdis.dispose();
     addTstate.dispose();
+    emptyListWidget = null;
+    _context= null;
     super.dispose();
   }
 
@@ -119,6 +121,7 @@ class _CartState extends State<Cart> {
     item = Provider.of<CartData>(context).listLength;
     _context = context;
     return Container(
+      key: _scaffoldKey,
       child: Provider.of<CartData>(context).listLength == 0
           ? emptyListWidget
           : CartScreenn(
@@ -136,7 +139,7 @@ class _CartState extends State<Cart> {
                       });
                 } else {
                   Styles.showSnackBar(context, Colors.yellow,
-                      Duration(seconds: 3), 'Next', Colors.white, () {
+                      Duration(seconds: 3), 'Login', Colors.white, () {
                     setState(() {
                       Test.fragNavigate.putPosit(key: 'Login');
                     });
@@ -221,7 +224,7 @@ class _CartState extends State<Cart> {
         Center(
             child: Text(
           'Please Select a address:',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,fontSize: 20),
         )),
         Provider.of<CartData>(context, listen: false).user != null
             ? GestureDetector(
@@ -516,12 +519,6 @@ class _CartState extends State<Cart> {
             onPressed: () async {
               Navigator.pop(context);
               await pr.show();
-              var cx = Provider.of<CartData>(context, listen: false)
-                  .razorpay
-                  .Key
-                  .toString();
-              if (Provider.of<CartData>(context, listen: false).razorpay !=
-                  null) {
                 products = Provider.of<CartData>(context, listen: false).list;
                 try {
                   id = await getEveryThing(
@@ -533,7 +530,6 @@ class _CartState extends State<Cart> {
                 } catch (e) {
                   print(e);
                 }
-                var size = Provider.of<CartData>(context, listen: false).Sizes;
                 var amount =
                     Provider.of<CartData>(context, listen: false).getPrice();
                 var items = Provider.of<CartData>(context, listen: false).names;
@@ -572,10 +568,7 @@ class _CartState extends State<Cart> {
                 }).whenComplete(() {
                   pr.hide().then((isHidden) {});
                 });
-              } else {
-                Styles.showWarningToast(
-                    Colors.red, "Failed Please Log out", Colors.white, 15);
-              }
+
             },
             text: 'PAY',
             iconData: FontAwesomeIcons.dollarSign,
@@ -593,8 +586,6 @@ class _CartState extends State<Cart> {
 
   getOrder(var amount) {
     var order = CashOrder();
-    // order.orderCurrency="INR"
-    // order.orderId = order.orderId.toString().substring(1,order.orderId.toString().length-1);
     order.customerName =
         Provider.of<CartData>(context, listen: false).user.name;
     order.customerEmail = 'debarkhisonowal@gmail.com';
@@ -623,12 +614,12 @@ class _CartState extends State<Cart> {
       var a = await usersModel.saveOrderDatabase(
           saveToDatabase(
               value['orderId'],
-              Provider.of<CartData>(_context, listen: false).getPrice() * 100,
+              Provider.of<CartData>(_scaffoldKey.currentContext, listen: false).getPrice() * 100,
               value['referenceId'],
-              _context),
-          Provider.of<CartData>(_context, listen: false).name == null
-              ? Provider.of<CartData>(_context, listen: false).user.name
-              : Provider.of<CartData>(_context, listen: false).name);
+              _scaffoldKey.currentContext),
+          Provider.of<CartData>(_scaffoldKey.currentContext, listen: false).name == null
+              ? Provider.of<CartData>(_scaffoldKey.currentContext, listen: false).user.name
+              : Provider.of<CartData>(_scaffoldKey.currentContext, listen: false).name);
       if (a != null && a != "Unable to save order") {
         CartData.removeALL(0, CartData.listLengths);
         CartData.RESULT = "assets/raw/successful.json";

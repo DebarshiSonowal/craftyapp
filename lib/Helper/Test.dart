@@ -4,6 +4,7 @@ import 'package:crafty/Models/Categories.dart';
 import 'package:crafty/Models/Products.dart';
 import 'package:crafty/Utility/Users.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:fragment_navigate/navigate-bloc.dart';
 import 'package:provider/provider.dart';
 
@@ -55,6 +56,7 @@ class Test {
         Data.toString() != "Products not found") {
       List<Products> data = Data;
       if (data != null) {
+
         Provider.of<CartData>(context, listen: false)
             .setAllProduct(data);
         addData(data,context);
@@ -68,10 +70,8 @@ class Test {
       for (var i in data) {
         if (i.Gender == "MALE") {
           men.add(i);
-          print("MEN $i");
         } else {
           women.add(i);
-          print("WOMEN $i");
         }
       }
         Provider.of<CartData>(context, listen: false).setMen(men);

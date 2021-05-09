@@ -224,9 +224,7 @@ class NetworkHelper {
     }
     if (response.statusCode == 200) {
       var data = response.data["products"] as List;
-      print(data);
       List<Products> Data = data.map((e) => Products.fromJson(e)).toList();
-      print(Data);
       return Data;
     } else if (response.statusCode == 500) {
       return "Server Error";

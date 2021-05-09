@@ -3,6 +3,7 @@ import 'package:crafty/Helper/CartData.dart';
 import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/Models/Ads.dart';
 import 'package:crafty/Models/Categories.dart';
+import 'package:crafty/Models/Products.dart';
 import 'package:crafty/UI/Activity/Host.dart';
 import 'package:crafty/UI/Fragments/NoInternet.dart';
 import 'package:crafty/UI/Styling/Styles.dart';
@@ -24,14 +25,17 @@ class _SplashScreenState extends State<SplashScreen>
   AnimationController animationController;
   bool status;
   String access, refresh;
+  static final GlobalKey<ScaffoldState> _scaffoldKey =
+      GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     checkInternet();
     // getLoginData();
+    getEverything(context);
     super.initState();
     // checkPrev();
-    getEverything(context);
+
     Timer(Duration(seconds: 8), () => checkPrev());
     animationController = new AnimationController(
       vsync: this,
@@ -50,6 +54,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       body: Stack(
         fit: StackFit.expand,
         children: <Widget>[
@@ -156,6 +161,8 @@ class _SplashScreenState extends State<SplashScreen>
     Test.getAllProducts(context);
     getLoginData();
     UsersModel usersModel1 = UsersModel();
+    UsersModel usersModel3 = UsersModel();
+    UsersModel usersModel4 = UsersModel();
     var data = await usersModel1.getRequired();
     if (data != "Server Error") {
       var data1 = data['require'] as List;
@@ -176,19 +183,17 @@ class _SplashScreenState extends State<SplashScreen>
       List<Ads> ads = data2.map((e) => Ads.fromJson(e)).toList();
       Provider.of<CartData>(context, listen: false).setAds(ads);
     }
-      UsersModel usersModel3 = UsersModel();
-      UsersModel usersModel4 = UsersModel();
-      var UserData = await usersModel4.getUser();
-      if (UserData != "User Not Found") {
-        Provider.of<CartData>(context, listen: false).updateUser(UserData);
-      }
-      var profile = await usersModel3
-          .getProf(Provider.of<CartData>(context, listen: false).user.id);
-      if (profile != "Server Error" && profile != null) {
-        Provider.of<CartData>(context, listen: false).updateProfile(profile);
-      }
-      }
+    var UserData = await usersModel4.getUser();
+    if (UserData != "User Not Found") {
+      Provider.of<CartData>(context, listen: false).updateUser(UserData);
+    }
+    var profile = await usersModel3
+        .getProf(Provider.of<CartData>(context, listen: false).user.id);
+    if (profile != "Server Error" && profile != null) {
+      Provider.of<CartData>(context, listen: false).updateProfile(profile);
+    }
   }
+}
 
 void getLoginData() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -199,4 +204,3 @@ void getLoginData() async {
     Test.refreshToken = ref;
   }
 }
-

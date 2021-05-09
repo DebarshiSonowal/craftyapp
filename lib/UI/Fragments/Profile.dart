@@ -76,7 +76,11 @@ class _ProfilePageState extends State<ProfilePage> {
       Styles.showSnackBar(context, Styles.Log_sign, Duration(seconds: 5),
           'Please Login first', Colors.black, () {
         setState(() {
-          Test.fragNavigate.putPosit(key: 'Login');
+          try {
+            Test.fragNavigate.putPosit(key: 'Login');
+          } catch (e) {
+            print(e);
+          }
         });
       });
       _refreshController.refreshFailed();

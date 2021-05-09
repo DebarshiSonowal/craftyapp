@@ -252,7 +252,6 @@ class _LoginState extends State<Login> {
   void LogIn(String email, String password) async {
     UsersModel usersModel = UsersModel();
     var b = LoginData(password, email, null);
-    print("${b.email},${b.password}");
     var data = await usersModel.login(b);
     if (data != null && data != "User not found" && data != "Server Error") {
       Test.accessToken = data["accessToken"];
@@ -262,12 +261,11 @@ class _LoginState extends State<Login> {
       await prefs.setString("refresh", data["refreshToken"]);
       var UserData = await usersModel.getUser();
       if (UserData != "User Not Found") {
-        print("V: ${UserData.name}");
         Provider.of<CartData>(context, listen: false).updateUser(UserData);
       }
       var profile = await usersModel.getProf(UserData.id);
     if(profile!="Server Error"){
-      Provider.of<CartData>(context, listen: false).updateProfile(profile);
+      Provider.of<CartData>(context, listen: true).updateProfile(profile);
     }
       var order = await usersModel.getOrdersforUser(
           Provider.of<CartData>(context, listen: false).user.id);
@@ -277,18 +275,14 @@ class _LoginState extends State<Login> {
 
       Styles.showWarningToast(Colors.green, "Successful", Colors.white, 15);
       pr.hide().then((isHidden) {
-        print(isHidden);
         Test.fragNavigate.putAndClean(key:'Home');
       });
     } else if (data == "Server Error") {
       pr.hide().then((isHidden) {
-        print(isHidden);
         Styles.showWarningToast(Colors.red, "Something is wrong. Please try again later", Colors.white, 15);
       });
     } else {
       pr.hide().then((isHidden) {
-        print(isHidden);
-        print("Password or email is wrong");
         Styles.showWarningToast(Colors.red, "Email or password is wrong", Colors.white, 15);
       });
     }
@@ -296,7 +290,6 @@ class _LoginState extends State<Login> {
 
   void hidePr() {
     pr.hide().then((isHidden) {
-      print(isHidden);
       Styles.showWarningToast(Styles.bg_color, "Email or password is wrong", Colors.white, 15);
     });
   }

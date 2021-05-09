@@ -31,6 +31,7 @@ class CartData extends ChangeNotifier {
   List<Products> _special =[];
   String address,name;
   Address _address;
+  Order orderSelected;
 
 //Set
   void setAddress(Address value) {
@@ -67,7 +68,6 @@ class CartData extends ChangeNotifier {
 
   void setAllProduct(List<Products> product) {
     _allproducts = product;
-    print(product.length);
     notifyListeners();
   }
 

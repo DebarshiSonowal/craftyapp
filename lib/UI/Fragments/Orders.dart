@@ -18,8 +18,16 @@ class Orders extends StatefulWidget {
 
 class _OrdersState extends State<Orders> {
   UsersModel usersModel = new UsersModel();
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
+  RefreshController _refreshController;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshController =
+        RefreshController(initialRefresh:Provider.of<CartData>(context, listen: false).order.length==0?true:false);
+  }
+
   var s = null;
 
   void _onRefresh() async {
@@ -28,9 +36,9 @@ class _OrdersState extends State<Orders> {
               Provider.of<CartData>(context, listen: false).user.id);
 
       if (s != null) {
-            setState(() {
-              Provider.of<CartData>(context, listen: false).orders(s);
-            });
+       setState(() {
+         Provider.of<CartData>(context, listen: false).orders(s);
+       });
             _refreshController.refreshCompleted();
           }
     }else {

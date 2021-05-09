@@ -1,3 +1,4 @@
+import 'package:crafty/UI/Activity/T&C.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 
@@ -7,6 +8,7 @@ import 'package:crafty/UI/CustomWidgets/Gender.dart';
 import 'package:crafty/UI/Styling/Styles.dart';
 import 'package:crafty/Utility/Users.dart';
 import 'package:fragment_navigate/navigate-bloc.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
@@ -190,7 +192,11 @@ class _SignUpState extends State<Signup> {
                     ),
                     TextButton(
                       onPressed: () {
-                        _launchURL();
+                        Navigator.push(
+                            context,
+                            PageTransition(
+                                type: PageTransitionType.fade,
+                                child: HelpScreen("T&C")));
                       },
                       child: Text(
                         "Agree to our terms and conditions",
@@ -381,21 +387,7 @@ class _SignUpState extends State<Signup> {
     cnf.clear();
   }
 
-  void _launchURL() async {
-    const urls =
-        'https://www.freeprivacypolicy.com/live/2bed81fc-8c4f-4fe6-8015-8fcdcb5cc8e0';
-    var url = Uri.encodeFull(urls);
-    // var url = Uri.encodeComponent(urls);
-    try {
-      if (await canLaunch(url)) {
-        await launch(url, forceSafariVC: false, forceWebView: false);
-      } else {
-        throw 'Could not launch $url';
-      }
-    } catch (e) {
-      await launch(url, forceSafariVC: false, forceWebView: false);
-    }
-  }
+
 }
 
 class MyColor extends MaterialStateColor {

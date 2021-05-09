@@ -19,20 +19,22 @@ class NavDrawer extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: <Widget>[
           GestureDetector(
-            onTap: ()=>onTap(context),
+            onTap: () => onTap(context),
             child: UserAccountsDrawerHeader(
               accountName: Provider.of<CartData>(context).user == null
                   ? Text('')
                   : Text("${Provider.of<CartData>(context).user.name}"),
               accountEmail: Provider.of<CartData>(context).user == null
-                  ? Text("Please Login",style: TextStyle(
-                fontSize: 18
-              ),)
+                  ? Text(
+                      "Please Login",
+                      style: TextStyle(fontSize: 18),
+                    )
                   : Text("${Provider.of<CartData>(context).user.email}"),
               currentAccountPicture: CircleAvatar(
-                backgroundColor: Theme.of(context).platform == TargetPlatform.iOS
-                    ? Colors.blue
-                    : Colors.white,
+                backgroundColor:
+                    Theme.of(context).platform == TargetPlatform.iOS
+                        ? Colors.blue
+                        : Colors.white,
                 child: Text(
                   "${Provider.of<CartData>(context).user == null ? "Login" : Provider.of<CartData>(context).user.name.toString()[0].toUpperCase()}",
                   style: TextStyle(fontSize: 20.0),
@@ -40,6 +42,15 @@ class NavDrawer extends StatelessWidget {
               ),
             ),
           ),
+          Provider.of<CartData>(context, listen: true).user == null
+              ? ListTile(
+                  leading: Icon(Icons.exit_to_app),
+                  title: Text('Login'),
+                  onTap: () {
+                    _fragNavigate.putPosit(key: 'Login', force: true);
+                  },
+                )
+              : Container(),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
@@ -50,24 +61,29 @@ class NavDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.home),
             title: Text('Home'),
-            onTap: (){
+            onTap: () {
               print(_fragNavigate.currentKey);
               try {
                 _fragNavigate.putPosit(key: 'Home', force: true);
               } catch (e) {
                 _fragNavigate.jumpBackTo('Home');
                 print("hee $e");
-              }},
+              }
+            },
           ),
           ListTile(
             leading: Icon(Icons.verified_user),
             title: Text('Profile'),
-            onTap: (){ _fragNavigate.putPosit(key: 'Profile', force: true);},
+            onTap: () {
+              _fragNavigate.putPosit(key: 'Profile', force: true);
+            },
           ),
           ListTile(
             leading: Icon(Icons.add_shopping_cart),
             title: Text('Cart'),
-            onTap: (){_fragNavigate.putPosit(key: 'Cart', force: true);},
+            onTap: () {
+              _fragNavigate.putPosit(key: 'Cart', force: true);
+            },
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -79,12 +95,16 @@ class NavDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(FontAwesomeIcons.mars),
             title: Text('Men'),
-            onTap: (){_fragNavigate.putPosit(key: 'Men', force: true);},
+            onTap: () {
+              _fragNavigate.putPosit(key: 'Men', force: true);
+            },
           ),
           ListTile(
             leading: Icon(FontAwesomeIcons.venus),
             title: Text('Women'),
-            onTap: (){_fragNavigate.putPosit(key: 'Women', force: true);},
+            onTap: () {
+              _fragNavigate.putPosit(key: 'Women', force: true);
+            },
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -96,12 +116,16 @@ class NavDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(FontAwesomeIcons.list),
             title: Text('Wishlist'),
-            onTap: (){_fragNavigate.putPosit(key: 'WishList');},
+            onTap: () {
+              _fragNavigate.putPosit(key: 'WishList');
+            },
           ),
           ListTile(
             leading: Icon(FontAwesomeIcons.box),
             title: Text('Orders'),
-            onTap: (){_fragNavigate.putPosit(key: 'Orders');},
+            onTap: () {
+              _fragNavigate.putPosit(key: 'Orders');
+            },
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -113,21 +137,26 @@ class NavDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(FontAwesomeIcons.headphones),
             title: Text('Contact Us'),
-            onTap: ()
-                {_fragNavigate.putPosit(key: 'Contact Us', force: true);},
+            onTap: () {
+              _fragNavigate.putPosit(key: 'Contact Us', force: true);
+            },
           ),
           ListTile(
             leading: Icon(FontAwesomeIcons.info),
             title: Text('About'),
-            onTap: (){
+            onTap: () {
               _fragNavigate.putPosit(key: 'About', force: true);
             },
           ),
-          ListTile(
-            leading: Icon(Icons.exit_to_app),
-            title: Text('Logout'),
-            onTap: (){clearTokens(context);},
-          ),
+          Provider.of<CartData>(context, listen: true).user == null
+              ? Container()
+              : ListTile(
+                  leading: Icon(Icons.exit_to_app),
+                  title: Text('Logout'),
+                  onTap: () {
+                    clearTokens(context);
+                  },
+                ),
         ],
       ),
     );
@@ -138,15 +167,15 @@ class NavDrawer extends StatelessWidget {
     await prefs.clear();
     Test.accessToken = null;
     Test.refreshToken = null;
-    Provider.of<CartData>(context, listen: false).removeOrders(Provider.of<CartData>(context, listen: false).order.length);
-    Provider.of<CartData>(context, listen: false).user=null;
+    Provider.of<CartData>(context, listen: false).removeOrders(
+        Provider.of<CartData>(context, listen: false).order.length);
+    Provider.of<CartData>(context, listen: false).user = null;
     Provider.of<CartData>(context, listen: false).removeProfile();
     _fragNavigate.putAndClean(key: 'Login', force: true);
-
   }
 
   onTap(BuildContext context) {
-    if (Provider.of<CartData>(context,listen: false).user == null) {
+    if (Provider.of<CartData>(context, listen: false).user == null) {
       _fragNavigate.putAndClean(key: 'Login', force: true);
     }
   }

@@ -16,6 +16,7 @@ import 'package:crafty/UI/Fragments/Contact_Us.dart';
 import 'package:crafty/UI/Fragments/HomePage.dart';
 import 'package:crafty/UI/Fragments/Login.dart';
 import 'package:crafty/UI/Fragments/Men.dart';
+import 'package:crafty/UI/Fragments/OrderDetails.dart';
 import 'package:crafty/UI/Fragments/Orders.dart';
 import 'package:crafty/UI/Fragments/Profile.dart';
 import 'package:crafty/UI/Fragments/Result.dart';
@@ -45,44 +46,22 @@ class HostState extends State<Host> {
   static var id;
   static var bottom;
   static FragNavigate _fragNav;
-
-  Future<bool> _onWillPop() async {
-    return (await showDialog(
-          context: context,
-          builder: (context) => new AlertDialog(
-            title: new Text('Are you sure?'),
-            content: new Text('Do you want to exit an App'),
-            actions: <Widget>[
-              new FlatButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: new Text('No'),
-              ),
-              new FlatButton(
-                onPressed: () {
-                  SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-                },
-                child: new Text('Yes'),
-              ),
-            ],
-          ),
-        )) ??
-        false;
-  }
-
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+
   void getLoginData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var acc = prefs.get('access');
     var ref = prefs.get('refresh');
     print(acc);
     if (acc != null && ref != null) {
-     setState(() {
-       Test.accessToken = acc;
-       Test.refreshToken = ref;
-     });
+      setState(() {
+        Test.accessToken = acc;
+        Test.refreshToken = ref;
+      });
     }
   }
+
   @override
   void initState() {
     getLoginData();
@@ -91,12 +70,13 @@ class HostState extends State<Host> {
       drawerContext: null,
       screens: getList(),
     );
+    getEverything(context);
     new Future.delayed(Duration.zero, () {
       _fragNav.setDrawerContext = context;
-     if(Provider.of<CartData>(context, listen: false).allproducts.length==0){
-       getEverything(context);
-     }
     });
+    Provider.of<CartData>(context, listen: false).profile != null
+        ? null
+        : getProfie();
     super.initState();
   }
 
@@ -116,10 +96,10 @@ class HostState extends State<Host> {
     }
     return WillPopScope(
       onWillPop: () {
-        if (_fragNav.stack.length >1) {
+        if (_fragNav.stack.length > 1) {
           _fragNav.jumpBack();
           return Future.value(false);
-        }else{
+        } else {
           showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -135,7 +115,8 @@ class HostState extends State<Host> {
                   ),
                   new FlatButton(
                     onPressed: () {
-                      SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+                      SystemChannels.platform
+                          .invokeMethod('SystemNavigator.pop');
                     },
                     child: new Text('Yes'),
                   ),
@@ -143,7 +124,7 @@ class HostState extends State<Host> {
               );
             },
           ).whenComplete(() => Future.value(false));
-         return Future.delayed(Duration(seconds: 3),(){
+          return Future.delayed(Duration(seconds: 3), () {
             return Future.value(false);
           });
         }
@@ -224,180 +205,97 @@ class HostState extends State<Host> {
   }
 
   void getEverything(BuildContext context) async {
-    UsersModel usersModel1 = UsersModel();
-    var data = await usersModel1.getRequired();
-  // print("Data ${jsonDecode(data).toString()} ");
-    if (data != "Server Error") {
-      var data1 = data['require'] as List;
-      List<Categories> categories =
-      data1.map((e) => Categories.fromJson(e)).toList();
-      Provider.of<CartData>(context, listen: false)
-          .setCategory(categories);
-      var data2 = data['ads'] as List;
-      List<Ads> ads = data2.map((e) => Ads.fromJson(e)).toList();
-      var data3 = data['razorpay'];
-
-
-      Provider.of<CartData>(context, listen: false).setAds(ads);
-      Provider.of<CartData>(context, listen: false)
-          .setRazorpay(Razorpay.fromJson(data3));
-    }else{
-      print(2);
+    if (Provider.of<CartData>(context, listen: false).getCateg() == null) {
+      print("Firrst");
       UsersModel usersModel1 = UsersModel();
       var data = await usersModel1.getRequired();
-      var data1 = data['require'] as List;
-      List<Categories> categories =
-      data1.map((e) => Categories.fromJson(e)).toList();
-      Provider.of<CartData>(context, listen: false)
-          .setCategory(categories);
-      var data2 = data['ads'] as List;
-      List<Ads> ads = data2.map((e) => Ads.fromJson(e)).toList();
-      var data3 = data['razorpay'];
-
-
-      Provider.of<CartData>(context, listen: false).setAds(ads);
-      Provider.of<CartData>(context, listen: false)
-          .setRazorpay(Razorpay.fromJson(data3));
+      if (data != "Server Error") {
+        var data1 = data['require'] as List;
+        List<Categories> categories =
+            data1.map((e) => Categories.fromJson(e)).toList();
+        Provider.of<CartData>(context, listen: false).setCategory(categories);
+        var data2 = data['ads'] as List;
+        List<Ads> ads = data2.map((e) => Ads.fromJson(e)).toList();
+        Provider.of<CartData>(context, listen: false).setAds(ads);
+      } else {
+        Styles.showWarningToast(
+            Colors.red, "Unable to connect to the server", Colors.white, 18);
+      }
     }
-
-
-
+    if (Provider.of<CartData>(context, listen: false).allproducts == null||Provider.of<CartData>(context, listen: false).allproducts.length==0) {
+      print("Firrst1");
+      UsersModel usersModel = UsersModel();
+      var Data = await usersModel.getAll();
+      List<Products> data = [];
+      if (Data.toString() == "Server Error" ||
+          Data.toString() == "Products not found") {
+        showMaterialDialog();
+      } else {
+        data = Data;
+        List<Products> men = [];
+        List<Products> women = [];
+        if (data != null) {
+          for (var i in data) {
+            if (i.Gender == "MALE") {
+              men.add(i);
+            } else {
+              women.add(i);
+            }
+          }
+          setState(() {
+            Provider.of<CartData>(context, listen: false).setAllProduct(data);
+            Provider.of<CartData>(context, listen: false).setMen(men);
+            Provider.of<CartData>(context, listen: false).setWomen(women);
+          });
+        } else {
+          print("empty");
+        }
+      }
+    }
     if (Test.refreshToken != null && Test.accessToken != null) {
-      UsersModel usersModel = UsersModel();
-      UsersModel usersModel1 = UsersModel();
-      UsersModel usersModel2 = UsersModel();
-      UsersModel usersModel3 = UsersModel();
-      var UserData = await usersModel1.getUser();
-      if (UserData != "User Not Found") {
-        Provider.of<CartData>(context, listen: false).updateUser(UserData);
-      } else {
-        Dialogs.materialDialog(
-            msg: 'Sorry Something is wrong',
-            title: "Server Error",
-            color: Colors.white,
-            context: context,
-            actions: [
-              IconsButton(
-                onPressed: () async {
-                  SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
-                  await prefs.clear();
-                  Test.accessToken = null;
-                  Test.refreshToken = null;
-                  Provider.of<CartData>(context, listen: false).removeOrders(
-                      Provider.of<CartData>(context, listen: false)
-                          .order
-                          .length);
-                  Provider.of<CartData>(context, listen: false).removeProfile();
-                  Navigator.pop(context);
-                  SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-                },
-                text: 'Accepted',
-                iconData: Icons.delete,
-                color: Colors.red,
-                textStyle: TextStyle(color: Colors.white),
-                iconColor: Colors.white,
-              ),
-            ]);
-      }
-      var profile = await usersModel2
-          .getProf(Provider.of<CartData>(context, listen: false).user.id);
-      if (profile != "Server Error" && profile != null) {
-        Provider.of<CartData>(context, listen: false).updateProfile(profile);
-      }
-      var order = await usersModel3.getOrdersforUser(
-          Provider.of<CartData>(context, listen: false).user.id);
-      if (order != "Server Error" && order != "Orders  not found") {
-        Provider.of<CartData>(context, listen: false).orders(order);
-      }
-      var Data = await usersModel.getAll();
-      List<Products> data = [];
-      if (Data.toString() == "Server Error" ||
-          Data.toString() == "Products not found") {
-        Dialogs.materialDialog(
-            msg: 'Sorry Something is wrong',
-            title: "Server Error",
-            color: Colors.white,
-            context: context,
-            actions: [
-              IconsButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                text: 'Accepted',
-                iconData: Icons.delete,
-                color: Colors.red,
-                textStyle: TextStyle(color: Colors.white),
-                iconColor: Colors.white,
-              ),
-            ]);
-      } else {
-        data = Data;
-        List<Products> men = [];
-        List<Products> women = [];
-        if (data != null) {
-          for (var i in data) {
-            if (i.Gender == "MALE") {
-              men.add(i);
-            } else {
-              women.add(i);
-            }
-          }
-          setState(() {
-            Provider.of<CartData>(context, listen: false).setAllProduct(data);
-            Provider.of<CartData>(context, listen: false).setMen(men);
-            Provider.of<CartData>(context, listen: false).setWomen(women);
-          });
+      if (Provider.of<CartData>(context, listen: false).user == null) {
+        print("Firrst2");
+        UsersModel usersModel1 = UsersModel();
+        var UserData = await usersModel1.getUser();
+        if (UserData != "User Not Found") {
+          Provider.of<CartData>(context, listen: false).updateUser(UserData);
         } else {
-          print("empty");
+          Dialogs.materialDialog(
+              msg: 'Sorry Something is wrong',
+              title: "Server Error",
+              color: Colors.white,
+              context: context,
+              actions: [
+                IconsButton(
+                  onPressed: clearData,
+                  text: 'Accepted',
+                  iconData: Icons.delete,
+                  color: Colors.red,
+                  textStyle: TextStyle(color: Colors.white),
+                  iconColor: Colors.white,
+                ),
+              ]);
         }
-        o = 4;
       }
-    } else {
-      print('A<AM');
-      UsersModel usersModel = UsersModel();
-      var Data = await usersModel.getAll();
-      List<Products> data = [];
-      if (Data.toString() == "Server Error" ||
-          Data.toString() == "Products not found") {
-        Dialogs.materialDialog(
-            msg: 'Sorry Something is wrong',
-            title: "Server Error",
-            color: Colors.white,
-            context: context,
-            actions: [
-              IconsButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                text: 'Accepted',
-                iconData: Icons.delete,
-                color: Colors.red,
-                textStyle: TextStyle(color: Colors.white),
-                iconColor: Colors.white,
-              ),
-            ]);
-      } else {
-        data = Data;
-        List<Products> men = [];
-        List<Products> women = [];
-        if (data != null) {
-          for (var i in data) {
-            if (i.Gender == "MALE") {
-              men.add(i);
-            } else {
-              women.add(i);
-            }
-          }
-          setState(() {
-            Provider.of<CartData>(context, listen: false).setAllProduct(data);
-            Provider.of<CartData>(context, listen: false).setMen(men);
-            Provider.of<CartData>(context, listen: false).setWomen(women);
-          });
-        } else {
-          print("empty");
+      if (Provider.of<CartData>(context, listen: false).profile == null) {
+        print("Firrst3");
+        UsersModel usersModel2 = UsersModel();
+        var profile = await usersModel2
+            .getProf(Provider.of<CartData>(context, listen: false).user.id);
+        if (profile != "Server Error" && profile != null) {
+          Provider.of<CartData>(context, listen: false).updateProfile(profile);
         }
-        o = 4;
+      }
+      if (Provider.of<CartData>(context, listen: false).order == null||Provider.of<CartData>(context, listen: false).order.length==0) {
+        print("Firrst3");
+        UsersModel usersModel3 = UsersModel();
+        var order = await usersModel3.getOrdersforUser(
+            Provider.of<CartData>(context, listen: false).user.id);
+        if (order != "Server Error" && order != "Orders  not found") {
+          Provider.of<CartData>(context, listen: false).orders(order);
+        }
+      }else{
+        print("ADAAGQGQ");
       }
     }
   }
@@ -458,6 +356,11 @@ class HostState extends State<Host> {
           icon: Icons.code,
           fragment: AllProducts()),
       Posit(
+          key: 'Details',
+          title: 'Details',
+          icon: Icons.code,
+          fragment: OrderDetails()),
+      Posit(
           key: 'Special',
           title:
               Provider.of<CartData>(context, listen: false).specialTxt == null
@@ -478,5 +381,46 @@ class HostState extends State<Host> {
     );
     Test.fragNavigate = _fragNav;
     _fragNav.setDrawerContext = context;
+  }
+
+  void getProfie() async {
+    UsersModel usersModel3 = UsersModel();
+    var profile = await usersModel3
+        .getProf(Provider.of<CartData>(context, listen: false).user.id);
+    if (profile != "Server Error" && profile != null) {
+      Provider.of<CartData>(context, listen: false).updateProfile(profile);
+    }
+  }
+
+  clearData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    Test.accessToken = null;
+    Test.refreshToken = null;
+    Provider.of<CartData>(context, listen: false).removeOrders(
+        Provider.of<CartData>(context, listen: false).order.length);
+    Provider.of<CartData>(context, listen: false).removeProfile();
+    Navigator.pop(context);
+    SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+  }
+
+  showMaterialDialog() {
+    Dialogs.materialDialog(
+        msg: 'Sorry Something is wrong',
+        title: "Server Error",
+        color: Colors.white,
+        context: context,
+        actions: [
+          IconsButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            text: 'Accepted',
+            iconData: Icons.delete,
+            color: Colors.red,
+            textStyle: TextStyle(color: Colors.white),
+            iconColor: Colors.white,
+          ),
+        ]);
   }
 }

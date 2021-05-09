@@ -1,14 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crafty/Models/CartProduct.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class CartItem extends StatelessWidget {
+  CartItem({this.index, this.list, this.callback, this.th});
+
   Function callback;
   int index;
-  List<CartProduct> list;
-
-  CartItem({this.index, this.list, this.callback});
+  var list;
+  bool th = true;
 
   @override
   Widget build(BuildContext context) {
@@ -53,13 +55,12 @@ class CartItem extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Text(
-                      "${list[index].name}",
+                      "${th ? "" : list[index].name}",
                       softWrap: true,
                       style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold
-                      ),
+                          color: Colors.black,
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -74,7 +75,7 @@ class CartItem extends StatelessWidget {
                         Column(
                           children: [
                             Text(
-                              "₹ ${list[index].payment}",
+                              "₹ ${th ? list[index].price : list[index].payment}",
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 15,
@@ -103,35 +104,52 @@ class CartItem extends StatelessWidget {
               ),
               Flexible(
                 flex: 1,
-                child: Column(
-                  children: [
-                    TextButton(
-                        onPressed: callback,
-                        child: Text(
-                          'remove',
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontSize: 13,
-                          ),
-                        )),
-                    Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      color: Color(0xffF5F4F6),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "x${list[index].quantity}",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold),
+                child: th
+                    ? Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
                         ),
+                        color: Color(0xffF5F4F6),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            "x${list[index].quantity}",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      )
+                    : Column(
+                        children: [
+                          TextButton(
+                              onPressed: callback,
+                              child: Text(
+                                'remove',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 13,
+                                ),
+                              )),
+                          Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15.0),
+                            ),
+                            color: Color(0xffF5F4F6),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                "x${list[index].quantity}",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
               )
             ],
           ),

@@ -13,7 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:shimmer/shimmer.dart';
 
 import 'ProductView.dart';
 
@@ -63,12 +62,20 @@ class _WomenProductsState extends State<WomenProducts> {
         controller: _refreshController,
         onRefresh: _onRefresh,
         onLoading: _onLoading,
-        child:
-            Provider.of<CartData>(context, listen: true).allproducts.length ==
+        child: Padding(
+          padding: EdgeInsets.only(
+            top: 17.0,
+          ),
+          child: Center(
+            child: Provider.of<CartData>(context, listen: true)
+                            .allproducts
+                            .length ==
                         0 &&
                     showError
                 ? emptyListWidget
                 : getUI(),
+          ),
+        ),
       ),
     );
   }
@@ -104,7 +111,7 @@ class _WomenProductsState extends State<WomenProducts> {
                           padding: const EdgeInsets.all(5.0),
                           child: Container(
                             height: MediaQuery.of(context).size.height -
-                                (MediaQuery.of(context).size.width / (2)),
+                                (MediaQuery.of(context).size.width / 2.4),
                             child: GridView.count(
                                 scrollDirection: Axis.vertical,
                                 crossAxisCount: 2,

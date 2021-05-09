@@ -33,7 +33,7 @@ class HelpScreenState extends State<HelpScreen> {
   }
 
   _loadHtmlFromAssets() async {
-    String fileText = await rootBundle.loadString('assets/Policy/RETURN AND REFUND POLICY.htm');
+    String fileText = await rootBundle.loadString(widget.which.toString().trim()=="T&C"?'assets/Policy/index.html':'assets/Policy/RETURN AND REFUND POLICY.htm');
     _controller.loadUrl( Uri.dataFromString(
         fileText,
         mimeType: 'text/html',

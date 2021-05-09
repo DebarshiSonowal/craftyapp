@@ -1,9 +1,9 @@
 import 'package:crafty/Helper/CartData.dart';
+import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/UI/Styling/Styles.dart';
 import 'package:crafty/Utility/Users.dart';
 
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 class OrderItem extends StatelessWidget {
@@ -126,29 +126,32 @@ class OrderItem extends StatelessWidget {
                                       child: Text("Details"),
                                     ),
                                     onTap: () {
-                                      Fluttertoast.showToast(
-                                          msg: "Coming soon",
-                                          toastLength: Toast.LENGTH_SHORT,
-                                          gravity: ToastGravity.BOTTOM,
-                                          timeInSecForIosWeb: 1,
-                                          backgroundColor: Colors.red,
-                                          textColor: Colors.black,
-                                          fontSize: 16.0);
+                                      Provider.of<CartData>(context,listen: false).orderSelected = Provider.of<CartData>(context,
+                                          listen: false)
+                                          .order[index];
+                                      Test.fragNavigate.putPosit(key: 'Details', force: true);
                                     },
                                     splashColor: Colors.black45,
                                     radius: MediaQuery.of(context).size.width,
                                   ),
                                 ),
                                 Card(
+                                  color: Provider.of<CartData>(context,
+                                      listen: false)
+                                      .order[index].status.toString().trim()=="Cancelled"?Colors.black12:Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10.0),
                                   ),
                                   child: InkWell(
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
-                                      child: Text("Cancel"),
+                                      child: Text("Cancel",style:Provider.of<CartData>(context,
+                                          listen: false)
+                                          .order[index].status.toString().trim()!="Cancelled"?TextStyle():TextStyle(decoration: TextDecoration.lineThrough,color: Colors.red),),
                                     ),
-                                    onTap: () {
+                                    onTap:Provider.of<CartData>(context,
+                                        listen: false)
+                                        .order[index].status.toString().trim()=="Cancelled"?null:() {
                                       print('Cancelled');
                                       cancelOrder(Provider.of<CartData>(context,
                                           listen: false)

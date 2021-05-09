@@ -109,7 +109,6 @@ Future<dynamic> triggerResponse(dynamic id,dynamic email) async{
   }
   Future<dynamic> getRequired()async{
     NetworkHelper networkHelper = NetworkHelper(url);
-    print("BBBB1");
     var v = await networkHelper.getRequired();
     return v;
   }
