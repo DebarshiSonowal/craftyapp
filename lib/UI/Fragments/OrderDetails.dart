@@ -1,8 +1,6 @@
-import 'dart:convert';
 
 import 'package:crafty/Helper/CartData.dart';
 import 'package:crafty/Helper/Test.dart';
-import 'package:crafty/Models/Order.dart';
 import 'package:crafty/UI/CustomWidgets/CartItems.dart';
 import 'package:crafty/UI/Styling/Styles.dart';
 import 'package:crafty/Utility/Users.dart';
@@ -21,6 +19,8 @@ class _OrderDetailsState extends State<OrderDetails> {
 
   @override
   Widget build(BuildContext context) {
+    print(
+        "The li asg ${Provider.of<CartData>(context).orderSelected.products.toString().split(",").length}");
     return Container(
       color: Styles.bg_color,
       height: MediaQuery.of(context).size.height,
@@ -104,7 +104,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                       children: [
                         Flexible(
                           child: Text(
-                            "${Provider.of<CartData>(context).orderSelected.color.toString().split(",").length + 1} items",
+                            "${Provider.of<CartData>(context).orderSelected.color.toString().split(",").length} items",
                             textAlign: TextAlign.start,
                           ),
                         ),
@@ -113,12 +113,17 @@ class _OrderDetailsState extends State<OrderDetails> {
                             child: ListView.builder(
                               shrinkWrap: true,
                               scrollDirection: Axis.vertical,
-                              itemCount:
-                                  Provider.of<CartData>(context).order.length,
+                              itemCount: Provider.of<CartData>(context)
+                                  .orderSelected
+                                  .products
+                                  .toString()
+                                  .split(",")
+                                  .length,
                               itemBuilder: (BuildContext ctxt, int index) {
                                 return CartItem(
                                   index: index,
-                                  list: Provider.of<CartData>(context).order,
+                                  list: Provider.of<CartData>(context)
+                                      .orderSelected,
                                   callback: null,
                                   th: true,
                                 );
@@ -144,7 +149,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                     style: TextStyle(fontSize: 20),
                   ),
                   SizedBox(
-                    height: 20,
+                    height: 10,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -226,6 +231,7 @@ class _OrderDetailsState extends State<OrderDetails> {
 }
 
 void cancelOrder(orderId, context) async {
+  Styles.showWarningToast(Colors.green, "Order cancelled", Colors.black, 15);
   UsersModel usersModel = UsersModel();
   var txt = await usersModel.cancel(
       orderId, Provider.of<CartData>(context, listen: false).profile.email);

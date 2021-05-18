@@ -240,34 +240,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               ),
-              // Padding(
-              //   padding: const EdgeInsets.all(10.0),
-              //   child: TextField(
-              //     controller: addT,
-              //     keyboardType: TextInputType.text,
-              //     style: TextStyle(color: Colors.black),
-              //     onChanged: (txt) {
-              //       setState(() {
-              //         enabled = checknull(Provider.of<CartData>(context, listen: false).profile);
-              //       });
-              //       address = txt;
-              //     },
-              //     decoration: InputDecoration(
-              //       labelStyle: TextStyle(color: Styles.log_sign_text),
-              //       labelText: "Address",
-              //       filled: true,
-              //       fillColor: Colors.white,
-              //       focusedBorder: OutlineInputBorder(
-              //         borderSide: BorderSide(color: Colors.white),
-              //         borderRadius: BorderRadius.circular(10),
-              //       ),
-              //       enabledBorder: UnderlineInputBorder(
-              //         borderSide: BorderSide(color: Colors.white),
-              //         borderRadius: BorderRadius.circular(10),
-              //       ),
-              //     ),
-              //   ),
-              // ),
               Padding(
                 padding: const EdgeInsets.all(10),
                 child: TextField(

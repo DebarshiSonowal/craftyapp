@@ -37,12 +37,13 @@ ProgressDialog pr;
 
 class _CartState extends State<Cart> {
   int item = 0;
-  var products, id;
+  var products, id, list;
   double price = 0.00;
   ServerOrder order;
   EmptyListWidget emptyListWidget;
   TextEditingController pinT, phT, addT1, addTtown, addTdis, addTstate;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   Future<ServerOrder> getEveryThing(double price) async {
     UsersModel usersModel = UsersModel();
     return await usersModel.getOrder(price);
@@ -100,10 +101,7 @@ class _CartState extends State<Cart> {
 
   @override
   void dispose() {
-    var json = jsonEncode(Provider.of<CartData>(_context, listen: false)
-        .list
-        .map((e) => e.toJson())
-        .toList());
+    var json = jsonEncode(list.map((e) => e.toJson()).toList());
     save("data", json);
     pinT.dispose();
     phT.dispose();
@@ -112,7 +110,13 @@ class _CartState extends State<Cart> {
     addTdis.dispose();
     addTstate.dispose();
     emptyListWidget = null;
-    _context= null;
+    // order = null;
+    // price=null;
+    // products=null;
+    // item=null;
+    // id =null;
+    // // _context= null;
+    // pr = null;
     super.dispose();
   }
 
@@ -120,7 +124,9 @@ class _CartState extends State<Cart> {
   Widget build(BuildContext context) {
     item = Provider.of<CartData>(context).listLength;
     _context = context;
+    list = Provider.of<CartData>(_context, listen: false).list;
     return Container(
+      height: MediaQuery.of(context).size.height - 100,
       key: _scaffoldKey,
       child: Provider.of<CartData>(context).listLength == 0
           ? emptyListWidget
@@ -180,7 +186,8 @@ class _CartState extends State<Cart> {
     }
   }
 
-  Order saveToDatabase(id, double amount, String status, BuildContext context) {
+  Order saveToDatabase(
+      id, double amount, String status, BuildContext context, String indv) {
     return Order(
         Provider.of<CartData>(context, listen: false).Colours,
         "15-02-21",
@@ -201,7 +208,8 @@ class _CartState extends State<Cart> {
         Provider.of<CartData>(context, listen: false).getAddress.address,
         Provider.of<CartData>(context, listen: false).getAddress.phone,
         Provider.of<CartData>(context, listen: false).getAddress.pin,
-        "NOT AVAILABLE");
+        "NOT AVAILABLE",
+        indv);
   }
 
   Widget initModel(BuildContext context) {
@@ -211,7 +219,7 @@ class _CartState extends State<Cart> {
               topLeft: Radius.circular(20), topRight: Radius.circular(20))),
       child: Container(
         color: Styles.bg_color,
-        height: MediaQuery.of(context).size.height / 4,
+        height: MediaQuery.of(context).size.height / 3,
         child: checkIfLoggedIn(),
       ),
     );
@@ -223,8 +231,9 @@ class _CartState extends State<Cart> {
       children: [
         Center(
             child: Text(
-          'Please Select a address:',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,fontSize: 20),
+          'Please Select an address:',
+          style: TextStyle(
+              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20),
         )),
         Provider.of<CartData>(context, listen: false).user != null
             ? GestureDetector(
@@ -475,7 +484,9 @@ class _CartState extends State<Cart> {
                                 .getPrice() *
                             100,
                         "COD",
-                        _context),
+                        _context,
+                        Provider.of<CartData>(_context, listen: false)
+                            .getIndivisualPrice()),
                     Provider.of<CartData>(_context, listen: false).name == null
                         ? Provider.of<CartData>(_context, listen: false)
                             .user
@@ -485,14 +496,17 @@ class _CartState extends State<Cart> {
                   Provider.of<CartData>(context, listen: false)
                       .removeAll(0, CartData.listLengths);
                   setState(() {
-                    pr.hide().then((isHidden) async{
-                      var a =await usersModel.triggerResponse(id,Provider.of<CartData>(context, listen: false).profile.email);
-                      if (a=="complete") {
+                    pr.hide().then((isHidden) async {
+                      var a = await usersModel.triggerResponse(
+                          id,
+                          Provider.of<CartData>(context, listen: false)
+                              .profile
+                              .email);
+                      if (a == "complete") {
                         CartData.RESULT = "assets/raw/successful.json";
                         CartData.TXT = id;
                         Test.fragNavigate.putPosit(key: 'Result');
-                      }else{
-                      }
+                      } else {}
                     });
                   });
                 } else {
@@ -519,56 +533,55 @@ class _CartState extends State<Cart> {
             onPressed: () async {
               Navigator.pop(context);
               await pr.show();
-                products = Provider.of<CartData>(context, listen: false).list;
-                try {
-                  id = await getEveryThing(
-                          Provider.of<CartData>(context, listen: false)
-                              .getPrice())
-                      .then((value) {
-                    return value.id;
-                  });
-                } catch (e) {
-                  print(e);
+              products = Provider.of<CartData>(context, listen: false).list;
+              try {
+                id = await getEveryThing(
+                        Provider.of<CartData>(context, listen: false)
+                            .getPrice())
+                    .then((value) {
+                  return value.id;
+                });
+              } catch (e) {
+                print(e);
+              }
+              var amount =
+                  Provider.of<CartData>(context, listen: false).getPrice();
+              var items = Provider.of<CartData>(context, listen: false).names;
+              Test.currentCartItems =
+                  Provider.of<CartData>(context, listen: false).list;
+              CashOrder order = getOrder(amount);
+              var data = await getTokenData(order);
+              order.tokenData = data['body']['cftoken'].toString();
+              order.appId = data['id'];
+              order.stage = data['status'];
+              order.orderNote = items;
+              order.notifyUrl =
+                  "https://officialcraftybackend.herokuapp.com/users/successfulWebhook";
+              order.orderId = order.orderId
+                  .toString()
+                  .substring(1, order.orderId.toString().length - 1);
+              var inputs = order.toMap();
+              // inputs.addAll(UIMeta().toMap());
+              inputs.putIfAbsent('orderCurrency', () {
+                return "INR";
+              });
+              // inputs.forEach((key, value) {
+              //   print("$key : $value");
+              // });
+              print("the inputs \n ${inputs}");
+              CashfreePGSDK.doPayment(inputs).onError((error, stackTrace) {
+                print(error);
+                return error;
+              }).then((value) {
+                value?.forEach((key, value) async {
+                  print("$key : $value");
+                });
+                if (value['txStatus'].toString() == "SUCCESS") {
+                  initiateSaving(value);
                 }
-                var amount =
-                    Provider.of<CartData>(context, listen: false).getPrice();
-                var items = Provider.of<CartData>(context, listen: false).names;
-                Test.currentCartItems =
-                    Provider.of<CartData>(context, listen: false).list;
-                CashOrder order = getOrder(amount);
-                var data = await getTokenData(order);
-                order.tokenData = data['body']['cftoken'].toString();
-                order.appId = data['id'];
-                order.stage= data['status'];
-                order.orderNote = items;
-                order.notifyUrl =
-                    "https://officialcraftybackend.herokuapp.com/users/successfulWebhook";
-                order.orderId = order.orderId
-                    .toString()
-                    .substring(1, order.orderId.toString().length - 1);
-                var inputs = order.toMap();
-                // inputs.addAll(UIMeta().toMap());
-                inputs.putIfAbsent('orderCurrency', () {
-                  return "INR";
-                });
-                // inputs.forEach((key, value) {
-                //   print("$key : $value");
-                // });
-                print("the inputs \n ${inputs}");
-                CashfreePGSDK.doPayment(inputs).onError((error, stackTrace) {
-                  print(error);
-                  return error;
-                }).then((value) {
-                  value?.forEach((key, value) async {
-                    print("$key : $value");
-                  });
-                  if (value['txStatus'].toString() == "SUCCESS") {
-                    initiateSaving(value);
-                  }
-                }).whenComplete(() {
-                  pr.hide().then((isHidden) {});
-                });
-
+              }).whenComplete(() {
+                pr.hide().then((isHidden) {});
+              });
             },
             text: 'PAY',
             iconData: FontAwesomeIcons.dollarSign,
@@ -614,12 +627,23 @@ class _CartState extends State<Cart> {
       var a = await usersModel.saveOrderDatabase(
           saveToDatabase(
               value['orderId'],
-              Provider.of<CartData>(_scaffoldKey.currentContext, listen: false).getPrice() * 100,
+              Provider.of<CartData>(_scaffoldKey.currentContext, listen: false)
+                      .getPrice() *
+                  100,
               value['referenceId'],
-              _scaffoldKey.currentContext),
-          Provider.of<CartData>(_scaffoldKey.currentContext, listen: false).name == null
-              ? Provider.of<CartData>(_scaffoldKey.currentContext, listen: false).user.name
-              : Provider.of<CartData>(_scaffoldKey.currentContext, listen: false).name);
+              _scaffoldKey.currentContext,
+              Provider.of<CartData>(_context, listen: false)
+                  .getIndivisualPrice()),
+          Provider.of<CartData>(_scaffoldKey.currentContext, listen: false)
+                      .name ==
+                  null
+              ? Provider.of<CartData>(_scaffoldKey.currentContext,
+                      listen: false)
+                  .user
+                  .name
+              : Provider.of<CartData>(_scaffoldKey.currentContext,
+                      listen: false)
+                  .name);
       if (a != null && a != "Unable to save order") {
         CartData.removeALL(0, CartData.listLengths);
         CartData.RESULT = "assets/raw/successful.json";

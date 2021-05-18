@@ -21,6 +21,7 @@ class ProductView extends StatefulWidget {
   final FragNavigate fragNav;
 
   ProductView({this.product, this.fragNav});
+
   int quantity = 1;
 
   final Products product;
@@ -97,12 +98,12 @@ class _ProductViewState extends State<ProductView> {
               ),
               Flexible(
                 flex: 2,
-                child: CarouselWithIndicatorDemo(
-                    widget.product, Test.fragNavigate, (index)=>onTapeed(index),(t){
-                      setState(() {
-                        currentIndex = t;
-                        print(currentIndex);
-                      });
+                child: CarouselWithIndicatorDemo(widget.product,
+                    Test.fragNavigate, (index) => onTapeed(index), (t) {
+                  setState(() {
+                    currentIndex = t;
+                    print(currentIndex);
+                  });
                 }),
               ),
               Flexible(
@@ -223,17 +224,26 @@ class _ProductViewState extends State<ProductView> {
                                       print("selected $selectedColor");
                                     },
                                     selectedColor: Styles.Log_sign,
-                                    defaultSelected:
-                                        widget.product.Color.split(",")[currentIndex],
+                                    defaultSelected: widget.product.Color
+                                        .split(",")[currentIndex],
                                   ),
                                 ),
                                 TextButton(
-                                  child: Text("Size Chart",style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
-                                  onPressed: (){
+                                  child: Text(
+                                    "Size Chart",
+                                    style: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  onPressed: () {
                                     Navigator.push(
                                         context,
                                         PageTransition(
-                                            type: PageTransitionType.fade, child: PhotoviewAsset(checkGender()==true?"Men":"Women")));
+                                            type: PageTransitionType.fade,
+                                            child: PhotoviewAsset(
+                                                checkGender() == true
+                                                    ? "Men"
+                                                    : "Women")));
                                   },
                                 ),
                                 ConstrainedBox(
@@ -312,41 +322,41 @@ class _ProductViewState extends State<ProductView> {
                   Flexible(
                     flex: 2,
                     child: GestureDetector(
-                      onTap: (){
+                      onTap: () {
                         Navigator.push(
                             context,
                             PageTransition(
-                                type: PageTransitionType.fade, child: Photoview(widget.product.Image
-                                .toString()
-                                .split(",")[getIndex()]
-                                .trim())));
+                                type: PageTransitionType.fade,
+                                child: Photoview(widget.product.Image
+                                    .toString()
+                                    .split(",")[getIndex()]
+                                    .trim())));
                       },
                       child: CachedNetworkImage(
-                        imageUrl:  widget.product.Image
+                        imageUrl: widget.product.Image
                             .toString()
                             .split(",")[getIndex()]
                             .trim(),
                         height: MediaQuery.of(context).size.width / (2.5),
-                        progressIndicatorBuilder: (context, url, downloadProgress) =>
-                            SizedBox(
-                              width: 50.0,
-                              height: 50.0,
-                              child: Shimmer.fromColors(
-                                baseColor: Colors.red,
-                                highlightColor: Colors.yellow,
-                                child: Center(
-                                  child: Text(
-                                    'Please Wait',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 15.0,
-                                      fontWeight:
-                                      FontWeight.bold,
-                                    ),
-                                  ),
+                        progressIndicatorBuilder:
+                            (context, url, downloadProgress) => SizedBox(
+                          width: 50.0,
+                          height: 50.0,
+                          child: Shimmer.fromColors(
+                            baseColor: Colors.red,
+                            highlightColor: Colors.yellow,
+                            child: Center(
+                              child: Text(
+                                'Please Wait',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 15.0,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
+                          ),
+                        ),
                         errorWidget: (context, url, error) => Icon(Icons.error),
                       ),
                     ),
@@ -356,7 +366,10 @@ class _ProductViewState extends State<ProductView> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(widget.product.Name.toString(),style: TextStyle(fontWeight: FontWeight.bold),),
+                        Text(
+                          widget.product.Name.toString(),
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                         Text(selectedColor),
                         Text(
                           "₹${widget.product.Price}",
@@ -517,14 +530,16 @@ class _ProductViewState extends State<ProductView> {
   }
 
   show() {
-    Provider.of<CartData>(context, listen: false).addProduct(CartProduct(
-        selectedColor,
-        widget.product.Price,
-        widget.product.Image.toString().split(",")[getIndex()].trim(),
-        widget.quantity,
-        selectedSize,
-        widget.product.Name,
-        widget.product.Id));
+    Provider.of<CartData>(context, listen: false).addProduct(
+      CartProduct(
+          selectedColor,
+          widget.product.Price,
+          widget.product.Image.toString().split(",")[getIndex()].trim(),
+          widget.quantity,
+          selectedSize,
+          widget.product.Name,
+          widget.product.Id),
+    );
     Styles.showSnackBar(context, Colors.green, Duration(seconds: 5),
         'Product Added', Colors.white, () {
       setState(() {
@@ -571,10 +586,8 @@ class _ProductViewState extends State<ProductView> {
         context,
         PageTransition(
             type: PageTransitionType.fade,
-            child: Photoview(widget.product.Image
-                .toString()
-                .split(',')[index]
-                .trim())));
+            child: Photoview(
+                widget.product.Image.toString().split(',')[index].trim())));
   }
 
   bool checkGender() {

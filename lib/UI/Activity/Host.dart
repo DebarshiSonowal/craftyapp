@@ -83,6 +83,7 @@ class HostState extends State<Host> {
   @override
   void dispose() {
     _fragNav.dispose();
+    print("GHoast");
     super.dispose();
   }
 
@@ -307,7 +308,7 @@ class HostState extends State<Host> {
           title: 'Home',
           fragment: Container(
             color: Styles.bg_color,
-            child: HomePage(Test.fragNavigate),
+            child: HomePage(),
           ),
           icon: Icons.add),
       Posit(
@@ -385,10 +386,12 @@ class HostState extends State<Host> {
 
   void getProfie() async {
     UsersModel usersModel3 = UsersModel();
-    var profile = await usersModel3
-        .getProf(Provider.of<CartData>(context, listen: false).user.id);
-    if (profile != "Server Error" && profile != null) {
-      Provider.of<CartData>(context, listen: false).updateProfile(profile);
+    if (Test.accessToken!=null) {
+      var profile = await usersModel3
+              .getProf(Provider.of<CartData>(context, listen: false).user.id);
+      if (profile != "Server Error" && profile != null) {
+        Provider.of<CartData>(context, listen: false).updateProfile(profile);
+      }
     }
   }
 

@@ -1,11 +1,9 @@
 import 'package:crafty/Helper/CartData.dart';
 import 'package:crafty/Models/CartProduct.dart';
-import 'package:crafty/Models/Categories.dart';
 import 'package:crafty/Models/Products.dart';
 import 'package:crafty/Utility/Users.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fragment_navigate/navigate-bloc.dart';
 import 'package:provider/provider.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -56,7 +54,6 @@ class Test {
         Data.toString() != "Products not found") {
       List<Products> data = Data;
       if (data != null) {
-
         Provider.of<CartData>(context, listen: false)
             .setAllProduct(data);
         addData(data,context);

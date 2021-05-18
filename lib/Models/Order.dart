@@ -1,6 +1,6 @@
 class Order {
   var _color,
-  _date,
+      _date,
       _email,
       _payment,
       _products,
@@ -15,7 +15,8 @@ class Order {
       _address,
       _pin,
       _phone,
-      _trackingId;
+      _trackingId,
+      _indvPrice;
 
   Order(
       this._color,
@@ -34,7 +35,8 @@ class Order {
       this._address,
       this._phone,
       this._pin,
-      this._trackingId);
+      this._trackingId,
+      this._indvPrice);
 
   factory Order.fromJson(dynamic json) {
     return Order(
@@ -43,7 +45,7 @@ class Order {
         json["name"],
         json["email"],
         json["payment"],
-        json["product"],
+        json["products"],
         json["picture"],
         json["price"],
         json["quantity"],
@@ -54,7 +56,8 @@ class Order {
         json["address"],
         json["phone"],
         json["pin"],
-        json['trackingId']);
+        json['trackingId'],
+        json['indvPrice']);
   }
 
   get address => _address;
@@ -88,6 +91,8 @@ class Order {
   get color => _color;
 
   get pin => _pin;
+
+  get indvPrice => _indvPrice;
 
   get phone => _phone;
 }

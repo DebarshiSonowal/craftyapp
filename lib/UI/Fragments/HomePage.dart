@@ -4,11 +4,9 @@ import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/Models/Ads.dart';
 import 'package:crafty/Models/Categories.dart';
 import 'package:crafty/Models/Products.dart';
-import 'package:crafty/Models/Razorpay.dart';
 import 'package:crafty/UI/CustomWidgets/CategoryItemView.dart';
 import 'package:crafty/UI/CustomWidgets/LoadingAnimation.dart';
 import 'package:crafty/UI/CustomWidgets/ProductItemView.dart';
-import 'package:crafty/UI/Styling/Styles.dart';
 import 'package:crafty/Utility/Users.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +14,6 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fragment_navigate/navigate-bloc.dart';
 import 'package:lottie/lottie.dart';
-import 'package:material_dialogs/material_dialogs.dart';
-import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -27,12 +23,11 @@ import 'ProductView.dart';
 
 //Carolina Cajazeira
 class HomePage extends StatefulWidget {
-  FragNavigate _fragNavigate;
 
   @override
   _HomePageState createState() => _HomePageState();
 
-  HomePage(fragNavigate);
+  HomePage();
 }
 
 class _HomePageState extends State<HomePage> {
@@ -57,6 +52,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     _refreshController.dispose();
+    customcontext=null;
     super.dispose();
   }
 
@@ -89,7 +85,8 @@ class _HomePageState extends State<HomePage> {
     }
     UsersModel usersModel1 = UsersModel();
     var data = await usersModel1.getRequired();
-    if (!data is String) {
+    print("The type is ${data.runtimeType}");
+    if (data.runtimeType != "String") {
       var data1 = data['require'] as List;
       List<Categories> categories =
           data1.map((e) => Categories.fromJson(e)).toList();
@@ -484,7 +481,7 @@ Widget categoryData(
                   margin: EdgeInsets.symmetric(horizontal: 5.0),
                   decoration: BoxDecoration(color: Colors.transparent),
                   child: CachedNetworkImage(
-                    imageUrl: i,
+                    imageUrl: i.trim(),
                     progressIndicatorBuilder:
                         (context, url, downloadProgress) => SizedBox(
                       width: 50.0,

@@ -35,7 +35,9 @@ class CartItem extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: CachedNetworkImage(
-                    imageUrl: list[index].picture,
+                    imageUrl: th
+                        ? list.picture.toString().split(",")[index]
+                        : list[index].picture,
                     height: 100,
                     width: 100,
                     progressIndicatorBuilder:
@@ -75,21 +77,21 @@ class CartItem extends StatelessWidget {
                         Column(
                           children: [
                             Text(
-                              "₹ ${th ? list[index].price : list[index].payment}",
+                              "₹ ${th ? list.price : list[index].payment}",
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 15,
                               ),
                             ),
                             Text(
-                              "${list[index].size}",
+                              "${th ? list.size : list[index].size}",
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 15,
                               ),
                             ),
                             Text(
-                              "${list[index].color}",
+                              "${th ? list.color : list[index].color}",
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 15,
@@ -113,7 +115,7 @@ class CartItem extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
-                            "x${list[index].quantity}",
+                            "x${th ? list.quantity : list[index].quantity}",
                             style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 18,

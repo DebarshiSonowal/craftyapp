@@ -23,6 +23,7 @@ class CartData extends ChangeNotifier {
   List<Products> _men = [];
   List<Products> _women = [];
   List<Products> _couple = [];
+  List<Products> _sorted=[];
   static String RESULT = "assets/raw/loading.json", TXT = "Please Wait";
   Razorpay _razorpay = null;
   List<Categories> _categ = [];
@@ -31,11 +32,23 @@ class CartData extends ChangeNotifier {
   List<Products> _special =[];
   String address,name;
   Address _address;
-  Order orderSelected;
+  Order _orderSelected;
 
 //Set
   void setAddress(Address value) {
     _address = value;
+    notifyListeners();
+  }
+
+
+  void setOrderSelected(Order value) {
+    _orderSelected = value;
+    print("Selected ${value.products}");
+    notifyListeners();
+  }
+
+  void setSortedList(List<Products>list){
+    _sorted = list;
     notifyListeners();
   }
 
@@ -63,6 +76,7 @@ class CartData extends ChangeNotifier {
 
   void setAds(List<Ads> ads) {
     _ads = ads;
+    print("Adss are ${ads}");
     notifyListeners();
   }
 
@@ -146,6 +160,8 @@ class CartData extends ChangeNotifier {
   }
 
 
+  Order get orderSelected => _orderSelected;
+
   Address get getAddress => _address;
 
   List<Products> get couple => _couple;
@@ -208,6 +224,9 @@ class CartData extends ChangeNotifier {
     return _list.length;
   }
 
+
+  List<Products> get sorted => _sorted;
+
   int get listLength {
     return _list.length;
   }
@@ -220,6 +239,17 @@ class CartData extends ChangeNotifier {
       price += double.parse(_list[i].payment.toString()) * _list[i].quantity;
     }
     return price;
+  }
+  String getIndivisualPrice(){
+    String price="";
+    for (int i = 0; i < _list.length; i++) {
+      if(i!=_list.length-1){
+        price += _list[i].payment.toString()+",";
+      }else{
+        price += _list[i].payment.toString();
+      }
+    }
+    return price.trim();
   }
 
   String get Colours {
@@ -273,8 +303,15 @@ class CartData extends ChangeNotifier {
 
   List<Products> get men => _men;
 
+  List<Products> get menProducts{
+    return _allproducts.where((element) => element.Gender.toString().trim()=="MALE").toList();
+  }
+
   List<Products> get women => _women;
 
+  List<Products> get womenProducts{
+    return _allproducts.where((element) => element.Gender.toString().trim()=="FEMALE").toList();
+  }
   //Remove
   static void removeALL(int first, int second) {
     _list.removeRange(first, second);

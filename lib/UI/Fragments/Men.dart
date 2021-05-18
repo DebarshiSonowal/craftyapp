@@ -26,15 +26,23 @@ class MenProducts extends StatefulWidget {
 class _MenProductsState extends State<MenProducts> {
   get buttonSize => 20.0;
   bool showError = false;
-  EmptyListWidget emptyListWidget;
+  EmptyListWidget  emptyListWidget = Styles.EmptyError;
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   BuildContext sysContext;
 
   @override
+  void initState() {
+    emptyListWidget = Styles.EmptyError;
+    super.initState();
+    Timer(Duration(seconds: 7), () {
+      changevalue();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     sysContext = context;
-    print("Length ${Provider.of<CartData>(context, listen: true).men.length}");
     return Scaffold(
       body: SmartRefresher(
         enablePullDown: true,
@@ -70,23 +78,14 @@ class _MenProductsState extends State<MenProducts> {
                             0 &&
                         showError
                     ? emptyListWidget
-                    : getUI(),
+                    : getUI(context),
           ),
         ),
       ),
     );
   }
 
-  @override
-  void initState() {
-    emptyListWidget = Styles.EmptyError;
-    super.initState();
-    Timer(Duration(seconds: 7), () {
-      changevalue();
-    });
-  }
-
-  getUI() {
+  getUI(BuildContext context) {
     return Provider.of<CartData>(context, listen: true).allproducts.length == 0
         ? LoadingAnimation(
             Provider.of<CartData>(context, listen: true).allproducts.length,
@@ -102,39 +101,8 @@ class _MenProductsState extends State<MenProducts> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Container(
-                          height: MediaQuery.of(context).size.height-(MediaQuery.of(context).size.width/2.4),
-                          child: GridView.count(
-                              scrollDirection: Axis.vertical,
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 10,
-                              mainAxisSpacing: 10,
-                              shrinkWrap: true,
-                              children: List.generate(
-                                  Provider.of<CartData>(context,
-                                          listen: false)
-                                      .men
-                                      .length, (index) {
-                                return ProductItemVIew(
-                                    buttonSize: buttonSize,
-                                    list: Provider.of<CartData>(context,
-                                            listen: false)
-                                        .men,
-                                    OnTap: () {
-                                      Navigator.push(
-                                          context,
-                                          PageTransition(
-                                              type: PageTransitionType.fade,
-                                              child: ProductView(
-                                                product:
-                                                    Provider.of<CartData>(
-                                                            context,
-                                                            listen: false)
-                                                        .men[index],
-                                                fragNav: Test.fragNavigate,
-                                              )));
-                                    },
-                                    Index: index);
-                              })),
+                          height: MediaQuery.of(context).size.height-(MediaQuery.of(context).size.width/2),
+                          child: gridView(context),
                         ),
                       ],
                     ),
@@ -152,15 +120,13 @@ class _MenProductsState extends State<MenProducts> {
         Data.toString() != "Products not found") {
       List<Products> data = Data;
       if (data != null) {
-        setState(() {
           new Future.delayed(Duration.zero, () {
-            Provider.of<CartData>(context, listen: false).setAllProduct(data);
-            Test.addData(data, context);
+            Provider.of<CartData>(sysContext, listen: false).setAllProduct(data);
+            Test.addData(data, sysContext);
           });
           Test.bihu = data;
           showError = false;
           _refreshController.refreshCompleted();
-        });
       } else {
         _refreshController.refreshFailed();
       }
@@ -175,8 +141,45 @@ class _MenProductsState extends State<MenProducts> {
   }
 
   void changevalue() {
-    setState(() {
       showError = true;
-    });
+  }
+  Widget gridView(BuildContext context){
+    return GridView.builder(
+      itemCount:Provider.of<CartData>(context,
+          listen: true)
+          .menProducts.length,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+      ),
+      itemBuilder: (context,index,) {
+        return ProductItemVIew(
+            buttonSize: buttonSize,
+            list: Provider.of<CartData>(context,
+                listen: false)
+                .menProducts,
+            OnTap: () {
+              Navigator.push(
+                  context,
+                  PageTransition(
+                      type: PageTransitionType.fade,
+                      child: ProductView(
+                        product:
+                        Provider.of<CartData>(context,
+                            listen: false)
+                            .menProducts[index],
+                        fragNav: Test.fragNavigate,
+                      )));
+            },
+            Index: index);
+      },
+    );
+  }
+
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    throw UnimplementedError();
   }
 }

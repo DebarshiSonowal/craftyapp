@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:crafty/Models/CashOrder.dart';
 import 'package:crafty/Models/LoginData.dart';
 import 'package:crafty/Models/Order.dart';
@@ -64,7 +66,7 @@ class UsersModel {
     print('c');
     var user1 = await networkHelper.getuser();
     if (user1 != "User not found" && user1 != "Server Error") {
-      print("DFg");
+      print("DFg $user1}");
       User user =
           User(user1["name"], user1["_id"], user1["email"], user1["googleId"]);
       return user;

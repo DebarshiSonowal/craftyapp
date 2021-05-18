@@ -27,12 +27,14 @@ class _SplashScreenState extends State<SplashScreen>
   String access, refresh;
   static final GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>();
+  static BuildContext syscontext;
 
   @override
   void initState() {
     checkInternet();
     // getLoginData();
-    getEverything(context);
+    syscontext=context;
+    getEverything(syscontext);
     super.initState();
     // checkPrev();
 
@@ -157,6 +159,18 @@ class _SplashScreenState extends State<SplashScreen>
             (r) => false);
   }
 
+  void getLoginData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var acc = prefs.get('access');
+    var ref = prefs.get('refresh');
+    if (acc != null && ref != null) {
+   setState(() {
+     Test.accessToken = acc;
+     Test.refreshToken = ref;
+   });
+    }
+  }
+
   void getEverything(BuildContext context) async {
     Test.getAllProducts(context);
     getLoginData();
@@ -187,20 +201,14 @@ class _SplashScreenState extends State<SplashScreen>
     if (UserData != "User Not Found") {
       Provider.of<CartData>(context, listen: false).updateUser(UserData);
     }
-    var profile = await usersModel3
-        .getProf(Provider.of<CartData>(context, listen: false).user.id);
-    if (profile != "Server Error" && profile != null) {
-      Provider.of<CartData>(context, listen: false).updateProfile(profile);
+    if (Test.accessToken!=null) {
+      var profile = await usersModel3
+              .getProf(Provider.of<CartData>(context, listen: false).user.id);
+      if (profile != "Server Error" && profile != null) {
+        Provider.of<CartData>(context, listen: false).updateProfile(profile);
+      }
     }
   }
 }
 
-void getLoginData() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  var acc = prefs.get('access');
-  var ref = prefs.get('refresh');
-  if (acc != null && ref != null) {
-    Test.accessToken = acc;
-    Test.refreshToken = ref;
-  }
-}
+

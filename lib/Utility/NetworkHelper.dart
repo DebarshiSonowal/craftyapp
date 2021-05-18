@@ -8,9 +8,11 @@ import 'package:crafty/Models/Order.dart';
 import 'package:crafty/Models/Products.dart';
 import 'package:crafty/Models/Profile.dart';
 import 'package:crafty/Models/SignUpData.dart';
+import 'package:crafty/UI/Styling/Styles.dart';
 import 'package:crafty/Utility/retry_interceptor.dart';
 import 'package:crafty/Utility/retry_refresh_token.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'dio_connectivity_request_retrier.dart';
@@ -194,13 +196,13 @@ class NetworkHelper {
     BaseOptions option;
     if (Test.accessToken != null) {
       option =
-          new BaseOptions(connectTimeout: 7000, receiveTimeout: 3000, headers: {
+          new BaseOptions(connectTimeout: 7000, receiveTimeout: 5000, headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       });
-    }else{
+    } else {
       option =
-      new BaseOptions(connectTimeout: 7000, receiveTimeout: 3000, headers: {
+          new BaseOptions(connectTimeout: 7000, receiveTimeout: 5000, headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       });
@@ -218,70 +220,80 @@ class NetworkHelper {
     try {
       response = await dio.get(url + "products");
     } on DioError catch (e) {
-      if (e.type == DioErrorType.CONNECT_TIMEOUT) {
+      print(e);
+      if (e == DioErrorType.CONNECT_TIMEOUT) {
         response = Response(statusCode: 500);
       }
     }
-    if (response.statusCode == 200) {
-      var data = response.data["products"] as List;
-      List<Products> Data = data.map((e) => Products.fromJson(e)).toList();
-      return Data;
-    } else if (response.statusCode == 500) {
-      return "Server Error";
+    if (response != null) {
+      if (response.statusCode == 200) {
+        var data = response.data["products"] as List;
+        List<Products> Data = data.map((e) => Products.fromJson(e)).toList();
+        return Data;
+      } else if (response.statusCode == 500) {
+        return "Server Error";
+      } else {
+        return "Products not found";
+      }
     } else {
-      return "Products not found";
+      print("No productr");
+      Styles.showWarningToast(
+          Colors.red, "Swipe down and try again", Colors.white, 20);
     }
   }
 
   Future getRequired() async {
-      BaseOptions option =
-          new BaseOptions(connectTimeout: 7000, receiveTimeout: 6000, headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      });
-      dio = Dio(option);
-      dio.interceptors.add(
-        RetryOnAccessTokenInterceptor(
-          requestRetrier: DioConnectivityRequestRetrier(
-            dio: dio,
-            connectivity: Connectivity(),
-          ),
+    BaseOptions option =
+        new BaseOptions(connectTimeout: 7000, receiveTimeout: 6000, headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    });
+    dio = Dio(option);
+    dio.interceptors.add(
+      RetryOnAccessTokenInterceptor(
+        requestRetrier: DioConnectivityRequestRetrier(
+          dio: dio,
+          connectivity: Connectivity(),
         ),
-      );
-      Response response;
-      try {
-        response = await dio.get(url + "required");
-      } on DioError catch (e) {
-        print(e.error);
-        if (e.error == DioErrorType.CONNECT_TIMEOUT) {
-          response = Response(statusCode: 500);
-        }
+      ),
+    );
+    Response response;
+    try {
+      response = await dio.get(url + "required");
+    } on DioError catch (e) {
+      print(e.error);
+      if (e.error == DioErrorType.CONNECT_TIMEOUT) {
+        response = Response(statusCode: 500);
+        Styles.showWarningToast(Colors.red, "Your internet connection is unstable.Please try later", Colors.white, 18);
       }
-      if (response.statusCode == 200) {
-        print("BBBB2");
-        return response.data;
-      } else if (response.statusCode == 500) {
-        return "Server Error";
-      } else {
-        return "Required info not found";
-      }
+    }
+    if (response.statusCode == 200) {
+      return response.data;
+    } else if (response.statusCode == 500) {
+      return "Server Error";
+    } else {
+      return "Required info not found";
+    }
   }
 
-  Future payOrder(CashOrder cashOrder) async{
-    print("ktk ${cashOrder.orderId.toString().substring(1,cashOrder.orderId.toString().length-1)}");
+  Future payOrder(CashOrder cashOrder) async {
+    print(
+        "ktk ${cashOrder.orderId.toString().substring(1, cashOrder.orderId.toString().length - 1)}");
     Map data = {
-      'orderID': cashOrder.orderId.toString().substring(1,cashOrder.orderId.toString().length-1),
+      'orderID': cashOrder.orderId
+          .toString()
+          .substring(1, cashOrder.orderId.toString().length - 1),
       'amount': cashOrder.orderAmount,
       'orderCurrency': 'INR',
-      'orderNote':cashOrder.orderNote,
+      'orderNote': cashOrder.orderNote,
       'customerName': cashOrder.customerName,
-      'email':cashOrder.customerEmail,
-      'phone':cashOrder.customerPhone,
+      'email': cashOrder.customerEmail,
+      'phone': cashOrder.customerPhone,
     };
     var body = json.encode(data);
     print("GIve $body");
     BaseOptions options =
-    new BaseOptions(connectTimeout: 10000, receiveTimeout: 5000, headers: {
+        new BaseOptions(connectTimeout: 10000, receiveTimeout: 5000, headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Accept': 'application/json',
       'Authorization': 'Bearer ${Test.accessToken}',
@@ -297,7 +309,7 @@ class NetworkHelper {
     );
     Response response;
     try {
-      response = await dio.post(url + "orderCASH",data: body);
+      response = await dio.post(url + "orderCASH", data: body);
     } on DioError catch (e) {
       print("${e.error} ${e.type.index}");
       if (e.error == DioErrorType.CONNECT_TIMEOUT) {
@@ -320,17 +332,14 @@ class NetworkHelper {
     }
   }
 
-  Future cancel(dynamic orderId,dynamic email) async{
+  Future cancel(dynamic orderId, dynamic email) async {
     BaseOptions options =
-    new BaseOptions(connectTimeout: 5000, receiveTimeout: 3000, headers: {
+        new BaseOptions(connectTimeout: 5000, receiveTimeout: 3000, headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'Authorization': 'Bearer ${Test.accessToken}',
     });
-    Map data = {
-      'orderId': orderId,
-      'email':email
-    };
+    Map data = {'orderId': orderId, 'email': email};
     print("rEceived1");
     var body = json.encode(data);
     dio = Dio(options);
@@ -344,7 +353,7 @@ class NetworkHelper {
     );
     Response response;
     try {
-      response = await dio.post(url + "cancel",data: body);
+      response = await dio.post(url + "cancel", data: body);
     } on DioError catch (e) {
       if (e.type == DioErrorType.CONNECT_TIMEOUT) {
         response = Response(statusCode: 500);
@@ -361,18 +370,15 @@ class NetworkHelper {
     }
   }
 
-  Future triggerResponse(dynamic orderId,dynamic email) async{
+  Future triggerResponse(dynamic orderId, dynamic email) async {
     BaseOptions options =
-    new BaseOptions(connectTimeout: 5000, receiveTimeout: 3000, headers: {
+        new BaseOptions(connectTimeout: 5000, receiveTimeout: 3000, headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'Authorization': 'Bearer ${Test.accessToken}',
       'orderId': orderId,
     });
-    Map data = {
-      'orderId': orderId,
-      'email':email
-    };
+    Map data = {'orderId': orderId, 'email': email};
     var body = json.encode(data);
     dio = Dio(options);
     dio.interceptors.add(
@@ -385,7 +391,7 @@ class NetworkHelper {
     );
     Response response;
     try {
-      response = await dio.post(url + "mail",data: body);
+      response = await dio.post(url + "mail", data: body);
     } on DioError catch (e) {
       if (e.type == DioErrorType.CONNECT_TIMEOUT) {
         response = Response(statusCode: 500);
@@ -548,6 +554,7 @@ class NetworkHelper {
       try {
         if (response.statusCode == 200) {
           var data = response.data;
+          print("Data $data");
           return data;
         } else if (response.statusCode == 500) {
           return "Server Error";
@@ -560,10 +567,11 @@ class NetworkHelper {
       }
     } else {
       print("CCCvbbb");
+      return "Server Error";
     }
   }
 
-  Future saveOrderdatabase(Order order,String name) async {
+  Future saveOrderdatabase(Order order, String name) async {
     if (Test.accessToken != null) {
       Map data = {
         'email': order.email,
@@ -581,7 +589,8 @@ class NetworkHelper {
         'phone': order.phone,
         'UID': order.UID,
         'pincode': order.pin,
-        'trackingId': order.trackingId
+        'trackingId': order.trackingId,
+        'indvPrice':order.indvPrice
       };
       var body = json.encode(data);
       print(body);

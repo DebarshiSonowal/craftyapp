@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fragment_navigate/navigate-bloc.dart';
+import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
@@ -93,6 +94,13 @@ class NavDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
+            leading: Icon(FontAwesomeIcons.boxOpen),
+            title: Text('All Products'),
+            onTap: () {
+              _fragNavigate.putPosit(key: 'All', force: true);
+            },
+          ),
+          ListTile(
             leading: Icon(FontAwesomeIcons.mars),
             title: Text('Men'),
             onTap: () {
@@ -146,6 +154,13 @@ class NavDrawer extends StatelessWidget {
             title: Text('About'),
             onTap: () {
               _fragNavigate.putPosit(key: 'About', force: true);
+            },
+          ),
+          ListTile(
+            leading: Icon(FontAwesomeIcons.share),
+            title: Text('Share Crafty'),
+            onTap: () {
+              Share.share("Checkout this awesome app \nhttps://play.app.goo.gl/?link=https://play.google.com/store/apps/details?id=com.craftyfashion.crafty",subject: "Checkout this awesome app");
             },
           ),
           Provider.of<CartData>(context, listen: true).user == null

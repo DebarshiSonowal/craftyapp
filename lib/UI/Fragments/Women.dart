@@ -32,6 +32,15 @@ class _WomenProductsState extends State<WomenProducts> {
   BuildContext sysContext;
 
   @override
+  void initState() {
+    emptyListWidget = Styles.EmptyError;
+    super.initState();
+    Timer(Duration(seconds: 7), () {
+      changevalue();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     sysContext = context;
     return Scaffold(
@@ -80,17 +89,6 @@ class _WomenProductsState extends State<WomenProducts> {
     );
   }
 
-  @override
-  void initState() {
-    emptyListWidget = Styles.EmptyError;
-    super.initState();
-    Timer(Duration(seconds: 7), () {
-      setState(() {
-        showError = true;
-      });
-    });
-  }
-
   getUI() {
     return Provider.of<CartData>(context, listen: true).allproducts.length == 0
         ? LoadingAnimation(
@@ -111,39 +109,8 @@ class _WomenProductsState extends State<WomenProducts> {
                           padding: const EdgeInsets.all(5.0),
                           child: Container(
                             height: MediaQuery.of(context).size.height -
-                                (MediaQuery.of(context).size.width / 2.4),
-                            child: GridView.count(
-                                scrollDirection: Axis.vertical,
-                                crossAxisCount: 2,
-                                crossAxisSpacing: 10,
-                                mainAxisSpacing: 10,
-                                shrinkWrap: true,
-                                children: List.generate(
-                                    Provider.of<CartData>(context,
-                                            listen: false)
-                                        .women
-                                        .length, (index) {
-                                  return ProductItemVIew(
-                                      buttonSize: buttonSize,
-                                      list: Provider.of<CartData>(context,
-                                              listen: false)
-                                          .women,
-                                      OnTap: () {
-                                        Navigator.push(
-                                            context,
-                                            PageTransition(
-                                                type: PageTransitionType.fade,
-                                                child: ProductView(
-                                                  product:
-                                                      Provider.of<CartData>(
-                                                              context,
-                                                              listen: false)
-                                                          .women[index],
-                                                  fragNav: Test.fragNavigate,
-                                                )));
-                                      },
-                                      Index: index);
-                                })),
+                                (MediaQuery.of(context).size.width / 2),
+                            child: gridView(context),
                           ),
                         ),
                       ],
@@ -182,5 +149,41 @@ class _WomenProductsState extends State<WomenProducts> {
   void _onLoading() async {
     await Future.delayed(Duration(milliseconds: 1000));
     _refreshController.loadComplete();
+  }
+
+  Widget gridView(BuildContext context) {
+    return GridView.builder(
+      itemCount:
+          Provider.of<CartData>(context, listen: false).womenProducts.length,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+      ),
+      itemBuilder: (
+        context,
+        index,
+      ) {
+        return ProductItemVIew(
+            buttonSize: buttonSize,
+            list: Provider.of<CartData>(context, listen: true).womenProducts,
+            OnTap: () {
+              Navigator.push(
+                  context,
+                  PageTransition(
+                      type: PageTransitionType.fade,
+                      child: ProductView(
+                        product: Provider.of<CartData>(context, listen: false)
+                            .womenProducts[index],
+                        fragNav: Test.fragNavigate,
+                      )));
+            },
+            Index: index);
+      },
+    );
+  }
+
+  void changevalue() {
+    showError = true;
   }
 }

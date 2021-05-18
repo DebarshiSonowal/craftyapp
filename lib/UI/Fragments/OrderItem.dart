@@ -126,9 +126,12 @@ class OrderItem extends StatelessWidget {
                                       child: Text("Details"),
                                     ),
                                     onTap: () {
-                                      Provider.of<CartData>(context,listen: false).orderSelected = Provider.of<CartData>(context,
+                                      print("Order is ${Provider.of<CartData>(context,
                                           listen: false)
-                                          .order[index];
+                                          .order[index]}");
+                                      Provider.of<CartData>(context,listen: false).setOrderSelected(Provider.of<CartData>(context,
+                                          listen: false)
+                                          .order[index]);
                                       Test.fragNavigate.putPosit(key: 'Details', force: true);
                                     },
                                     splashColor: Colors.black45,
@@ -147,7 +150,9 @@ class OrderItem extends StatelessWidget {
                                       padding: const EdgeInsets.all(8.0),
                                       child: Text("Cancel",style:Provider.of<CartData>(context,
                                           listen: false)
-                                          .order[index].status.toString().trim()!="Cancelled"?TextStyle():TextStyle(decoration: TextDecoration.lineThrough,color: Colors.red),),
+                                          .order[index].status.toString().trim()!="Cancelled"||Provider.of<CartData>(context,
+                                          listen: false)
+                                          .order[index].status.toString().trim()!="Delivered"?TextStyle():TextStyle(decoration: TextDecoration.lineThrough,color: Colors.red),),
                                     ),
                                     onTap:Provider.of<CartData>(context,
                                         listen: false)

@@ -1,5 +1,5 @@
 class CartProduct {
-  var _color, _payment, _picture, _quantity, _size, _Name, _UID;
+  var _color, _payment, _picture, _quantity, _size, _Name, _UID,_indvPrice;
 
   CartProduct(this._color, this._payment, this._picture, this._quantity,
       this._size, this._Name, this._UID);

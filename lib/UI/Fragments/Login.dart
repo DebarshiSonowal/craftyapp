@@ -265,7 +265,7 @@ class _LoginState extends State<Login> {
       }
       var profile = await usersModel.getProf(UserData.id);
     if(profile!="Server Error"){
-      Provider.of<CartData>(context, listen: true).updateProfile(profile);
+      Provider.of<CartData>(context, listen: false).updateProfile(profile);
     }
       var order = await usersModel.getOrdersforUser(
           Provider.of<CartData>(context, listen: false).user.id);
