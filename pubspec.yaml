@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.5.5+18
+version: 1.5.9+22
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -32,7 +32,7 @@ dependencies:
   page_transition: ^1.1.7+6
   font_awesome_flutter: ^8.11.0
   carousel_slider: ^3.0.0
-  lottie: ^0.7.0+1
+  lottie: ^1.0.1
   like_button: ^1.0.4
   rating_bar: ^0.2.0
   google_fonts: ^1.1.2
@@ -45,7 +45,7 @@ dependencies:
   dio: ^3.0.10
   material_dialogs: ^0.1.4
   pull_to_refresh: ^1.6.3
-  flutter_spinkit: ^2.1.0
+  flutter_spinkit: ^4.1.2
   connectivity: ^3.0.3
   data_connection_checker: ^0.3.4
   url_launcher: ^5.7.10
@@ -60,6 +60,10 @@ dependencies:
   in_app_update: ^2.0.0
   flare_splash_screen: ^2.0.1+2
   share: ^2.0.1
+  badges: ^2.0.1
+  flutter_icons: ^1.1.0
+  intl: ^0.17.0
+  sizer: ^2.0.13
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -77,27 +81,36 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-        - assets/images/404.png
-        - assets/images/crafty.png
-        - assets/images/settings.png
-        - assets/images/men.jpg
-        - assets/images/logo.png
-        - assets/images/women.jpg
-        - assets/images/user.png
-        - assets/images/kk.jpg
-        - assets/images/nointernet.png
-        - assets/raw/safe.json
-        - assets/raw/shoppingcart.json
-        - assets/raw/like.json
-        - assets/raw/failed.json
-        - assets/raw/successful.json
-        - assets/raw/loading.json
-        - assets/Policy/RETURN AND REFUND POLICY.htm
-        - assets/Policy/RETURN AND REFUND POLICY_files/colorschememapping.xml
-        - assets/Policy/RETURN AND REFUND POLICY_files/filelist.xml
-        - assets/Policy/RETURN AND REFUND POLICY_files/themedata.thmx
-        - assets/Policy/index.html
-        - assets/Policy/style.css
+    - assets/images/404.png
+    - assets/images/doodleWall.jpg
+    - assets/images/crafty.png
+    - assets/images/settings.png
+    - assets/images/error.webp
+    - assets/images/warning.webp
+    - assets/images/men.jpg
+    - assets/images/logo.png
+    - assets/images/cartEmpty.png
+    - assets/images/women.jpg
+    - assets/images/user.png
+    - assets/images/kk.jpg
+    - assets/images/mask.webp
+    - assets/images/shopping-cart.webp
+    - assets/images/favourite.webp
+    - assets/images/nointernet.png
+    - assets/images/payment.jpg
+    - assets/raw/safe.json
+    - assets/raw/shoppingcart.json
+    - assets/raw/like.json
+    - assets/raw/failed.json
+    - assets/raw/successful.json
+    - assets/raw/loading.json
+    - assets/Policy/payment.html
+    - assets/Policy/RETURN AND REFUND POLICY.htm
+    - assets/Policy/RETURN AND REFUND POLICY_files/colorschememapping.xml
+    - assets/Policy/RETURN AND REFUND POLICY_files/filelist.xml
+    - assets/Policy/RETURN AND REFUND POLICY_files/themedata.thmx
+    - assets/Policy/index.html
+    - assets/Policy/style.css
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
@@ -111,12 +124,6 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-     - family: BEYOND
-       fonts:
-         - asset: assets/Fonts/beyond_the_mountains.ttf
-     - family: JustMe
-       fonts:
-         - asset: assets/Fonts/JustMeAgainDownHere-Regular.ttf
      - family: EBGaramond
        fonts:
          - asset: assets/Fonts/EBGaramond-Regular.ttf
@@ -126,9 +133,13 @@ flutter:
        fonts:
          - asset: assets/Fonts/Sumana-Bold.ttf
          - asset: assets/Fonts/Sumana-Regular.ttf
-     - family: Shadows
+     - family: Halyard
        fonts:
-         - asset: assets/Fonts/ShadowsIntoLight-Regular.ttf
+         - asset: assets/Fonts/Halyard Text Regular.ttf
+     - family: Beyond
+       fonts:
+         - asset: assets/Fonts/beyond_the_mountains.ttf
+
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

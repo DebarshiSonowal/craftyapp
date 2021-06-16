@@ -10,6 +10,7 @@ import 'package:crafty/UI/Styling/Styles.dart';
 import 'package:crafty/Utility/Users.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -33,15 +34,16 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     checkInternet();
     // getLoginData();
+
     syscontext=context;
     getEverything(syscontext);
     super.initState();
     // checkPrev();
 
-    Timer(Duration(seconds: 8), () => checkPrev());
+    Timer(Duration(seconds: 3), () => checkPrev());
     animationController = new AnimationController(
       vsync: this,
-      duration: new Duration(seconds: 7),
+      duration: new Duration(seconds: 5),
     );
     animationController.repeat();
     // ;
@@ -55,6 +57,11 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    try {
+      SystemChannels.textInput.invokeMethod('TextInput.hide');
+    } catch (e) {
+      print(e);
+    }
     return Scaffold(
       key: _scaffoldKey,
       body: Stack(
@@ -101,32 +108,6 @@ class _SplashScreenState extends State<SplashScreen>
                   ],
                 ),
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  CircularProgressIndicator(
-                    backgroundColor: Styles.button_color,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 20.0),
-                  ),
-                  Center(
-                    child: Text(
-                      "With love \n"
-                      "from\n"
-                      "Crafty",
-                      softWrap: true,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20.0,
-                        color: Colors.red,
-                      ),
-                    ),
-                  ),
-                ],
-              )
             ],
           )
         ],

@@ -1,3 +1,4 @@
+import 'package:crafty/UI/Activity/Host.dart';
 import 'package:crafty/UI/Activity/Login.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +36,7 @@ class NoInternet extends StatelessWidget {
                     Navigator.pushAndRemoveUntil(
                         context,
                         PageTransition(
-                        type: PageTransitionType.fade, child: Login()),(r) => false);
+                        type: PageTransitionType.fade, child: Host()),(r) => false);
                   }else{
                     Fluttertoast.showToast(
                         msg: "Failed",

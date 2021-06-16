@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <meta name="viewport" content="width=device-width" />
+  <head>
+    <title>RazorPay Web Payment</title>
+  </head>
+  <body>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+      console.log(window.frameElement.getAttribute("data-key"));
+      var options = {
+        key: window.frameElement.getAttribute("data-key"),
+        amount: window.frameElement.getAttribute("data-amount"),
+        currency: "INR",
+        name: window.frameElement.getAttribute("data-name"),
+        description: window.frameElement.getAttribute("data-description"),
+        order_id: window.frameElement.getAttribute("data-order_id"),
+        image:
+          "https://firebasestorage.googleapis.com/v0/b/crafty-fashions-assam.appspot.com/o/Icon%2Fplaystore%20logo.png?alt=media&token=320e3643-3e87-4f52-8d76-f691afa7075b",
+        handler: function (response) {
+          console.log(response);
+          window.parent.postMessage(
+            {
+              event_id: "SUCCESS",
+              data: {
+                v1: response.razorpay_payment_id,
+                v2: response.razorpay_order_id,
+                v3: response.razorpay_signature,
+              },
+            },
+            "*"
+          );
+        },
+        prefill: {
+          name: window.frameElement.getAttribute("data-name"),
+          email: window.frameElement.getAttribute("data-email"),
+          contact: window.frameElement.getAttribute("data-phone"),
+        },
+        notes: {
+          address: window.frameElement.getAttribute("data-address"),
+        },
+        theme: {
+          color: "#FFD819",
+        },
+        modal: {
+          ondismiss: function () {
+            window.parent.postMessage("MODAL_CLOSED", "*");
+          },
+        },
+      };
+      var userSet = this.getAttribute("data-userset");
+      if (window.frames["myframe"] && !userSet) {
+        this.setAttribute("data-userset", "true");
+        frames["myframe"].location.href =
+          "http://test.com/hello?uname=" + getUserName();
+      }
+      var rzp1 = new Razorpay(options);
+      window.onload = function (e) {
+        rzp1.open();
+        if (e) {
+          e.preventDefault();
+        }
+      };
+    </script>
+  </body>
+</html>

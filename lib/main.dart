@@ -2,6 +2,7 @@ import 'package:crafty/UI/Activity/Login.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:provider/provider.dart';
+import 'package:sizer/sizer.dart';
 
 import 'Helper/CartData.dart';
 import 'UI/Activity/SplashScreen.dart';
@@ -48,20 +49,22 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (BuildContext context) => CartData(),
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        routes: {
-          'login': (context) => Login(),
-        },
-        title: 'Crafty',
-        theme: ThemeData(
-          // primarySwatch: Colors.yellow,
-          primaryColor: Styles.Log_sign,
-          backgroundColor: Styles.bg_color,
-          buttonColor: Styles.button_color,
-        ),
-        home: SplashScreen(),
-      ),
+      child: Sizer(builder: (context,orientation,deviceType){
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          routes: {
+            'login': (context) => Login(),
+          },
+          title: 'Crafty',
+          theme: ThemeData(
+            // primarySwatch: Colors.yellow,
+            primaryColor: Styles.Log_sign,
+            backgroundColor: Styles.bg_color,
+            buttonColor: Styles.button_color,
+          ),
+          home: SplashScreen(),
+        );
+      }),
     );
   }
 }

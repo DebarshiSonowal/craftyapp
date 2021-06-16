@@ -1,156 +1,215 @@
+
+import 'dart:async';
+
 import 'package:crafty/Helper/CartData.dart';
 import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/Models/Products.dart';
-import 'package:crafty/UI/CustomWidgets/ProductItemView.dart';
-import 'package:empty_widget/empty_widget.dart';
+import 'package:crafty/UI/CustomWidgets/AllProductsFragmentProductItemview.dart';
+import 'package:crafty/UI/CustomWidgets/LoadingAnimation.dart';
+import 'package:crafty/UI/Styling/Styles.dart';
+import 'package:crafty/Utility/Users.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'ProductView.dart';
 
-class AllProducts extends StatefulWidget {
+class AllProductsFragment extends StatefulWidget {
   @override
   _AllProductsState createState() => _AllProductsState();
-
-  AllProducts();
 }
 
-class _AllProductsState extends State<AllProducts> {
+class _AllProductsState extends State<AllProductsFragment> {
   get buttonSize => 20.0;
-  EmptyListWidget emptyListWidget;
-  var _selected = null;
+  bool showError = false;
+  Widget emptyListWidget;
+  RefreshController _refreshController =
+  RefreshController(initialRefresh: false);
+  BuildContext sysContext;
 
   @override
   Widget build(BuildContext context) {
-    return Provider.of<CartData>(context, listen: false).allproducts.length == 0
-        ? emptyListWidget
-        : Container(
-            height: MediaQuery.of(context).size.height,
-            child: Padding(
-              padding: const EdgeInsets.all(2.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  DropdownButtonHideUnderline(
-                    child: ButtonTheme(
-                      alignedDropdown: true,
-                      child: DropdownButton<String>(
-                          value: _selected,
-                          isExpanded: true,
-                          style: TextStyle(color: Colors.black, fontSize: 18),
-                          items: <String>[
-                            'Price Low to High',
-                            'Price High to Low'
-                          ].map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                          hint: Text(
-                            "Filter",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600),
-                          ),
-                          onChanged: (String value) {
-                            setState(() {
-                              _selected = value;
-                              if (_selected == 'Price Low to High') {
-                                Provider.of<CartData>(context, listen: false)
-                                    .setSortedList(Provider.of<CartData>(
-                                            context,
-                                            listen: false)
-                                        .allproducts);
-                                Provider.of<CartData>(context, listen: false)
-                                    .sorted
-                                    .sort((a, b) => double.parse(a.Price)
-                                        .compareTo(double.parse(b.Price)));
-                              } else {
-                                Provider.of<CartData>(context, listen: false)
-                                    .setSortedList(Provider.of<CartData>(
-                                            context,
-                                            listen: false)
-                                        .allproducts);
-                                Provider.of<CartData>(context, listen: false)
-                                    .sorted
-                                    .sort((a, b) => double.parse(b.Price)
-                                        .compareTo(double.parse(a.Price)));
-                              }
-                            });
-                          }),
-                    ),
-                  ),
-                  Container(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: Container(
-                              height: MediaQuery.of(context).size.height -
-                                  (MediaQuery.of(context).size.width / (1.5)),
-                              child: GridView.count(
-                                  scrollDirection: Axis.vertical,
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: 10,
-                                  mainAxisSpacing: 10,
-                                  shrinkWrap: true,
-                                  children: List.generate(getLength(), (index) {
-                                    return ProductItemVIew(
-                                        buttonSize: buttonSize,
-                                        list: getAppropriateList(),
-                                        OnTap: () {
-                                          Navigator.push(
-                                              context,
-                                              PageTransition(
-                                                  type: PageTransitionType.fade,
-                                                  child: ProductView(
-                                                    product:
-                                                        getAppropriateList()[
-                                                            index],
-                                                    fragNav: Test.fragNavigate,
-                                                  )));
-                                        },
-                                        Index: index);
-                                  })),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
+    sysContext = context;
+    return Scaffold(
+      body: SmartRefresher(
+        enablePullDown: true,
+        enablePullUp: false,
+        header: WaterDropHeader(),
+        footer: CustomFooter(
+          builder: (BuildContext context, LoadStatus mode) {
+            Widget body;
+            if (mode == LoadStatus.idle) {
+              body = Text("pull up load");
+            } else if (mode == LoadStatus.loading) {
+              body = CupertinoActivityIndicator();
+            } else if (mode == LoadStatus.failed) {
+              body = Text("Load Failed!Click retry!");
+            } else if (mode == LoadStatus.canLoading) {
+              body = Text("release to load more");
+            } else {
+              body = Text("No more Data");
+            }
+            return Container(
+              height: 75.0,
+              child: Center(child: body),
+            );
+          },
+        ),
+        controller: _refreshController,
+        onRefresh: _onRefresh,
+        onLoading: _onLoading,
+        child:
+        Provider.of<CartData>(context, listen: true).allproducts.length ==
+            0 &&
+            showError
+            ? emptyListWidget
+            : getUI(),
+      ),
+    );
   }
 
   @override
   void initState() {
-    emptyListWidget = EmptyListWidget(
-        title: 'No Items',
-        subTitle: 'No Items added to the cart',
-        image: 'assets/images/404.png',
-        titleTextStyle: TextStyle(
-          color: Color(0xff9da9c7),
-        ),
-        subtitleTextStyle: TextStyle(
-          color: Color(0xffabb8d6),
-        ));
+    emptyListWidget = Styles.EmptyError;
     super.initState();
+    Timer(Duration(seconds: 7), () {
+      changevalue();
+    });
   }
 
-  List<Products> getAppropriateList() {
-    return _selected != null
-        ? Provider.of<CartData>(context, listen: false).sorted
-        : Provider.of<CartData>(context, listen: false).allproducts;
+  getUI() {
+    return Provider.of<CartData>(context, listen: true).allproducts.length == 0
+        ? LoadingAnimation(
+        Provider.of<CartData>(context, listen: true).allproducts.length,
+        10,
+        null)
+        : Padding(
+          padding: EdgeInsets.only(top: 10,bottom: 10),
+          child: Container(
+            color: Colors.transparent,
+            height: MediaQuery.of(context).size.height,
+      child: GridView.builder(gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          childAspectRatio: (MediaQuery.of(context).size.width)/(MediaQuery.of(context).size.height+30),
+          crossAxisSpacing: 0,
+          mainAxisSpacing: 5,
+          crossAxisCount:2),
+          shrinkWrap: true,
+          itemBuilder: (context,index)=>
+          AllProductsFragmentProductItemView(
+              buttonSize: buttonSize,
+              list: Provider.of<CartData>(context,
+                  listen: false)
+                  .allproducts,
+              OnTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            ProductView(
+                              product: Provider.of<
+                                  CartData>(
+                                  context,
+                                  listen: false)
+                                  .allproducts[index],
+                              fragNav:
+                              Test.fragNavigate,
+                            )));
+              },
+              Index: index)
+      ),
+    ),
+        );
   }
 
-  int getLength() {
-    return getAppropriateList().length;
+  void _onRefresh() async {
+    UsersModel usersModel = UsersModel();
+    var Data = await usersModel.getAll();
+    if (Data.toString() != "Server Error" ||
+        Data.toString() != "Products not found") {
+      List<Products> data = Data;
+      if (data != null) {
+        setState(() {
+          new Future.delayed(Duration.zero, () {
+            Provider.of<CartData>(context, listen: false).setAllProduct(data);
+            Test.addData(data, context);
+          });
+          Test.bihu = data;
+          showError = false;
+          _refreshController.refreshCompleted();
+        });
+      } else {
+        _refreshController.refreshFailed();
+      }
+    } else {
+      _refreshController.refreshFailed();
+    }
   }
+
+  void _onLoading() async {
+    await Future.delayed(Duration(milliseconds: 1000));
+    _refreshController.loadComplete();
+  }
+
+  void changevalue() {
+    if (mounted) {
+      setState(() {
+        showError = true;
+      });
+    }
+  }
+
+
 }
+
+// DropdownButtonHideUnderline(
+// child: ButtonTheme(
+// alignedDropdown: true,
+// child: DropdownButton<String>(
+// value: _selected,
+// isExpanded: true,
+// style: TextStyle(color: Colors.black, fontSize: 18),
+// items: <String>[
+// 'Price Low to High',
+// 'Price High to Low'
+// ].map<DropdownMenuItem<String>>((String value) {
+// return DropdownMenuItem<String>(
+// value: value,
+// child: Text(value),
+// );
+// }).toList(),
+// hint: Text(
+// "Filter",
+// style: TextStyle(
+// color: Colors.black,
+// fontSize: 18,
+// fontWeight: FontWeight.w600),
+// ),
+// onChanged: (String value) {
+// setState(() {
+// _selected = value;
+// if (_selected == 'Price Low to High') {
+// Provider.of<CartData>(context, listen: false)
+//     .setSortedList(Provider.of<CartData>(
+// context,
+// listen: false)
+//     .allproducts);
+// Provider.of<CartData>(context, listen: false)
+//     .sorted
+//     .sort((a, b) => double.parse(a.Price)
+//     .compareTo(double.parse(b.Price)));
+// } else {
+// Provider.of<CartData>(context, listen: false)
+//     .setSortedList(Provider.of<CartData>(
+// context,
+// listen: false)
+//     .allproducts);
+// Provider.of<CartData>(context, listen: false)
+//     .sorted
+//     .sort((a, b) => double.parse(b.Price)
+//     .compareTo(double.parse(a.Price)));
+// }
+// });
+// }),
+// ),
+// ),

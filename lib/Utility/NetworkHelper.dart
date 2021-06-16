@@ -130,22 +130,31 @@ class NetworkHelper {
     );
     Response response;
     try {
-      response = await dio.post(url + "login", data: body);
+      response = await dio.post(url + "loginNew", data: body);
     } on DioError catch (e) {
       if (e.type == DioErrorType.CONNECT_TIMEOUT ||
           e.type == DioErrorType.RESPONSE) {
-        if (e.response == null || e.response.statusCode != 400) {
-          response = Response(statusCode: 500);
-        } else {
-          response = Response(statusCode: 400);
+        // print("ADA23 ${e.response.statusCode}");
+
+        if (e.response!=null) {
+          if (e.response.statusCode == 400||e.response.statusCode == 500) {
+                    print("ADA");
+                    response = Response(statusCode: 500);
+                  }
         }
+        response = Response(statusCode: 500);
       }
     }
-    if (response.statusCode == 200) {
-      print("Response : ${response.data}");
-      return response.data;
-    } else if (response.statusCode == 500) {
-      return "Server Error";
+    if (response!=null) {
+      print("Response ${response}");
+      if (response.statusCode == 200) {
+            print("Response : ${response.data}");
+            return response.data;
+          } else if (response.statusCode == 500) {
+            return "Server Error";
+          } else {
+            return "User not found";
+          }
     } else {
       return "User not found";
     }
@@ -180,15 +189,21 @@ class NetworkHelper {
       response = await dio.post(url + "signup", data: body);
     } on DioError catch (e) {
       if (e.type == DioErrorType.CONNECT_TIMEOUT) {
+        print("Received null");
         response = Response(statusCode: 500);
       }
     }
-    if (response.statusCode == 200) {
-      return response.data;
-    } else if (response.statusCode == 500) {
-      return "Server Error";
+
+    if (response!=null) {
+      if (response.statusCode == 200) {
+            return response.data;
+          } else if (response.statusCode == 500) {
+            return "Server Error";
+          } else {
+            return "409";
+          }
     } else {
-      return "User not found";
+      return "409";
     }
   }
 
@@ -294,7 +309,7 @@ class NetworkHelper {
     print("GIve $body");
     BaseOptions options =
         new BaseOptions(connectTimeout: 10000, receiveTimeout: 5000, headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Type': 'application/json',
       'Accept': 'application/json',
       'Authorization': 'Bearer ${Test.accessToken}',
     });
@@ -320,15 +335,19 @@ class NetworkHelper {
       }
     }
     print("response ${response}");
-    if (response.statusCode == 200) {
-      var data = response.data;
-      print(data);
-      print(data['body']['cftoken']);
-      return data;
-    } else if (response.statusCode == 500) {
-      return "Server Error";
-    } else {
-      return "Unable to generate";
+    if (response!=null) {
+      if (response.statusCode == 200) {
+            var data = response.data;
+            print(data);
+            print(data['body']['cftoken']);
+            return data;
+          } else if (response.statusCode == 500) {
+            return "Server Error";
+          } else {
+            return "tryagain";
+          }
+    }else{
+      return "tryagain";
     }
   }
 
@@ -541,7 +560,7 @@ class NetworkHelper {
       );
       Response response;
       try {
-        response = await dio.get(url + "user");
+        response = await dio.get(url + "userNew");
         print(response);
       } on DioError catch (e) {
         if (e.type == DioErrorType.CONNECT_TIMEOUT) {
@@ -595,7 +614,7 @@ class NetworkHelper {
       var body = json.encode(data);
       print(body);
       BaseOptions options =
-          new BaseOptions(connectTimeout: 7000, receiveTimeout: 3000, headers: {
+          new BaseOptions(connectTimeout: 7000, receiveTimeout: 5000, headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': 'Bearer ${Test.accessToken}',

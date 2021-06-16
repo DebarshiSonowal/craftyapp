@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:crafty/Helper/CartData.dart';
 import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/Models/Products.dart';
+import 'package:crafty/UI/CustomWidgets/AllProductsFragmentProductItemview.dart';
 import 'package:crafty/UI/CustomWidgets/LoadingAnimation.dart';
 import 'package:crafty/UI/CustomWidgets/ProductItemView.dart';
 import 'package:crafty/UI/Styling/Styles.dart';
@@ -23,7 +24,7 @@ class SpecialAds extends StatefulWidget {
 class _SpecialAdsState extends State<SpecialAds> {
 
   get buttonSize => 20.0;
-  EmptyListWidget emptyListWidget;
+  Widget emptyListWidget;
   bool showError =false;
   RefreshController _refreshController =
   RefreshController(initialRefresh: false);
@@ -36,26 +37,26 @@ class _SpecialAdsState extends State<SpecialAds> {
       Provider.of<CartData>(context, listen: false).setSpecialTag(tag);
       var all = Provider.of<CartData>(context, listen: false).allproducts;
       for (var i in all) {
-            for (var j in i.Tags.toString().split(',')) {
-              if (j.trim().toUpperCase() == tag.toString().trim().toUpperCase()) {
-                list.add(i);
-                _refreshController.refreshCompleted();
-              }
-            }
+        for (var j in i.Tags.toString().split(',')) {
+          if (j.trim().toUpperCase() == tag.toString().trim().toUpperCase()) {
+            list.add(i);
+            _refreshController.refreshCompleted();
           }
+        }
+      }
 
       if (list.isNotEmpty) {
-            setState(() {
-              Provider.of<CartData>(context, listen: false).setSpecial(list);
-              _refreshController.refreshCompleted();
-              showError = false;
-            });
-          } else {
-            setState(() {
-              Provider.of<CartData>(context, listen: false).setSpecial([]);
-            });
-            _refreshController.refreshFailed();
-          }
+        setState(() {
+          Provider.of<CartData>(context, listen: false).setSpecial(list);
+          _refreshController.refreshCompleted();
+          showError = false;
+        });
+      } else {
+        setState(() {
+          Provider.of<CartData>(context, listen: false).setSpecial([]);
+        });
+        _refreshController.refreshFailed();
+      }
     } else {
       _refreshController.refreshFailed();
     }
@@ -72,19 +73,23 @@ class _SpecialAdsState extends State<SpecialAds> {
 
 
     Timer(Duration(seconds: 7), () {
-      setState(() {
-        showError = true;
-      });
+        Provider.of<CartData>(context, listen: false)
+            .special.length==0?setTrue():null;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    emptyListWidget = Styles.EmptyError;
+    emptyListWidget = EmptyListWidget(
+      title: "Oops!",
+      titleTextStyle: TextStyle(color: Styles.price_color,fontSize: 18,fontFamily: 'Halyard'),
+      subTitle: "Please Swipe down to refresh.",
+      subtitleTextStyle: TextStyle(color: Styles.price_color,fontSize: 16,fontFamily: 'Halyard'),
+    );
     return Scaffold(
       body: SmartRefresher(
         enablePullDown: true,
-        enablePullUp: true,
+        enablePullUp: false,
         header: WaterDropHeader(),
         footer: CustomFooter(
           builder: (BuildContext context, LoadStatus mode) {
@@ -110,10 +115,16 @@ class _SpecialAdsState extends State<SpecialAds> {
         onRefresh: _onRefresh,
         onLoading: _onLoading,
         child: Container(
-          child:showError?emptyListWidget:everything(context, buttonSize)
+            child:showError?emptyListWidget:everything(context, buttonSize)
         ),
       ),
     );
+  }
+
+  setTrue() {
+    setState(() {
+      showError = true;
+    });
   }
 }
 Widget everything(BuildContext context,buttonSize){
@@ -123,65 +134,41 @@ Widget everything(BuildContext context,buttonSize){
       Provider.of<CartData>(context, listen: false).special.length,
       10,
       null)
-      : Container(
-    height: MediaQuery.of(context).size.height,
-    child: Padding(
-      padding: const EdgeInsets.all(2.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: Container(
-                      height: MediaQuery.of(context).size.height -
-                          (MediaQuery.of(context).size.width / (2.5)),
-                      child: GridView.count(
-                          scrollDirection: Axis.vertical,
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 10,
-                          mainAxisSpacing: 10,
-                          shrinkWrap: true,
-                          children: List.generate(
-                              Provider.of<CartData>(context,
+      : Padding(
+    padding: EdgeInsets.only(top: 10,bottom: 10),
+        child: Container(
+        color: Colors.transparent,
+        height: MediaQuery.of(context).size.height-(MediaQuery.of(context).size.height/8),
+        child: GridView.count(
+            crossAxisCount: 2,
+            crossAxisSpacing: 0,
+            childAspectRatio: (MediaQuery.of(context).size.width) /
+                (MediaQuery.of(context).size.height + 30),
+            mainAxisSpacing: 5,
+            primary: true,
+            // shrinkWrap: true,
+            semanticChildCount: 2,
+            children: List.generate(
+                Provider.of<CartData>(context, listen: false)
+                    .special
+                    .length, (index) {
+              return AllProductsFragmentProductItemView(
+                  buttonSize: buttonSize,
+                  list:
+                  Provider.of<CartData>(context, listen: false)
+                      .special,
+                  OnTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ProductView(
+                              product: Provider.of<CartData>(context,
                                   listen: false)
-                                  .special
-                                  .length, (index) {
-                            return ProductItemVIew(
-                                buttonSize: buttonSize,
-                                list: Provider.of<CartData>(context,
-                                    listen: false)
-                                    .special,
-                                OnTap: () {
-                                  Navigator.push(
-                                      context,
-                                      PageTransition(
-                                          type:
-                                          PageTransitionType.fade,
-                                          child: ProductView(
-                                            product:
-                                            Provider.of<CartData>(
-                                                context,
-                                                listen: false)
-                                                .special[index],
-                                            fragNav:
-                                            Test.fragNavigate,
-                                          )));
-                                },
-                                Index: index);
-                          })),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
+                                  .special[index],
+                              fragNav: Test.fragNavigate,
+                            )));
+                  },
+                  Index: index);
+            }))),
+      );
 }

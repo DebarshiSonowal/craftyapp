@@ -1,12 +1,20 @@
 class CartProduct {
-  var _color, _payment, _picture, _quantity, _size, _Name, _UID,_indvPrice;
+  var _color,
+      _payment,
+      _picture,
+      _quantity,
+      _size,
+      _Name,
+      _UID,
+      _indvPrice,
+      _Id;
 
   CartProduct(this._color, this._payment, this._picture, this._quantity,
-      this._size, this._Name, this._UID);
+      this._size, this._Name, this._UID, this._Id);
 
   factory CartProduct.fromJson(dynamic json) {
     return CartProduct(json['color'], json['payment'], json['picture'],
-        json['quantity'], json['size'], json['name'], json['UID']);
+        json['quantity'], json['size'], json['name'], json['UID'], json['Id']);
   }
 
   Map<String, dynamic> toJson() => {
@@ -16,7 +24,8 @@ class CartProduct {
         'picture': _picture,
         'quantity': _quantity,
         'size': _size,
-        'UID': _UID
+        'UID': _UID,
+        'Id': _Id
       };
 
   get UID => _UID;
@@ -32,4 +41,10 @@ class CartProduct {
   get payment => _payment;
 
   get color => _color;
+
+  set setQuantity(value) {
+    _quantity = value;
+  }
+
+  get Id => _Id;
 }

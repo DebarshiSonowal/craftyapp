@@ -12,8 +12,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dio_connectivity_request_retrier.dart';
 
 class RetryOnAccessTokenInterceptor extends Interceptor {
-  static const url = "https://officialcraftybackend.herokuapp.com/users/";
- // static const url = "http://10.0.2.2:3000/users/";
+  // static const url = "https://officialcraftybackend.herokuapp.com/users/";
+ static const url = "http://10.0.2.2:3000/users/";
  //  static const url = "http://localhost:3000/users/";
   static int cse=0;
   final DioConnectivityRequestRetrier requestRetrier;

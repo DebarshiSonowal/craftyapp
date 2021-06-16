@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:crafty/Helper/CartData.dart';
 import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/Models/Products.dart';
+import 'package:crafty/UI/CustomWidgets/AllProductsFragmentProductItemview.dart';
 import 'package:crafty/UI/CustomWidgets/LoadingAnimation.dart';
 import 'package:crafty/UI/CustomWidgets/ProductItemView.dart';
 import 'package:crafty/UI/Styling/Styles.dart';
@@ -28,17 +29,8 @@ class _WomenProductsState extends State<WomenProducts> {
   bool showError = false;
   EmptyListWidget emptyListWidget;
   RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
+  RefreshController(initialRefresh: false);
   BuildContext sysContext;
-
-  @override
-  void initState() {
-    emptyListWidget = Styles.EmptyError;
-    super.initState();
-    Timer(Duration(seconds: 7), () {
-      changevalue();
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +38,7 @@ class _WomenProductsState extends State<WomenProducts> {
     return Scaffold(
       body: SmartRefresher(
         enablePullDown: true,
-        enablePullUp: true,
+        enablePullUp: false,
         header: WaterDropHeader(),
         footer: CustomFooter(
           builder: (BuildContext context, LoadStatus mode) {
@@ -71,55 +63,71 @@ class _WomenProductsState extends State<WomenProducts> {
         controller: _refreshController,
         onRefresh: _onRefresh,
         onLoading: _onLoading,
-        child: Padding(
-          padding: EdgeInsets.only(
-            top: 17.0,
-          ),
-          child: Center(
-            child: Provider.of<CartData>(context, listen: true)
-                            .allproducts
-                            .length ==
-                        0 &&
-                    showError
-                ? emptyListWidget
-                : getUI(),
-          ),
-        ),
+        child:
+        Provider.of<CartData>(context, listen: true).allproducts.length ==
+            0 &&
+            showError
+            ? emptyListWidget
+            : getUI(),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    emptyListWidget = EmptyListWidget(
+      title: "Oops! This is embarrassing",
+      subTitle: "Please Swipe down to refresh.",
+    );
+    super.initState();
+    Timer(Duration(seconds: 7), () {
+      changevalue();
+    });
   }
 
   getUI() {
     return Provider.of<CartData>(context, listen: true).allproducts.length == 0
         ? LoadingAnimation(
-            Provider.of<CartData>(context, listen: true).allproducts.length,
-            10,
-            null)
-        : Container(
-            height: MediaQuery.of(context).size.height,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: Container(
-                            height: MediaQuery.of(context).size.height -
-                                (MediaQuery.of(context).size.width / 2),
-                            child: gridView(context),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
+        Provider.of<CartData>(context, listen: true).allproducts.length,
+        10,
+        null)
+        : Padding(
+      padding: EdgeInsets.only(top: 10,bottom: 10),
+      child: Container(
+          color: Colors.transparent,
+          height: MediaQuery.of(context).size.height,
+          child: GridView.count(
+              crossAxisCount: 2,
+              crossAxisSpacing: 0,
+              childAspectRatio: (MediaQuery.of(context).size.width) /
+                  (MediaQuery.of(context).size.height + 30),
+              mainAxisSpacing: 5,
+              primary: true,
+              shrinkWrap: true,
+              semanticChildCount: 2,
+              children: List.generate(
+                  Provider.of<CartData>(context, listen: false)
+                      .women
+                      .length, (index) {
+                return AllProductsFragmentProductItemView(
+                    buttonSize: buttonSize,
+                    list:
+                    Provider.of<CartData>(context, listen: false)
+                        .women,
+                    OnTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ProductView(
+                                product: Provider.of<CartData>(context,
+                                    listen: false)
+                                    .women[index],
+                                fragNav: Test.fragNavigate,
+                              )));
+                    },
+                    Index: index);
+              }))),
+    );
   }
 
   void _onRefresh() async {
@@ -151,39 +159,13 @@ class _WomenProductsState extends State<WomenProducts> {
     _refreshController.loadComplete();
   }
 
-  Widget gridView(BuildContext context) {
-    return GridView.builder(
-      itemCount:
-          Provider.of<CartData>(context, listen: false).womenProducts.length,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-      ),
-      itemBuilder: (
-        context,
-        index,
-      ) {
-        return ProductItemVIew(
-            buttonSize: buttonSize,
-            list: Provider.of<CartData>(context, listen: true).womenProducts,
-            OnTap: () {
-              Navigator.push(
-                  context,
-                  PageTransition(
-                      type: PageTransitionType.fade,
-                      child: ProductView(
-                        product: Provider.of<CartData>(context, listen: false)
-                            .womenProducts[index],
-                        fragNav: Test.fragNavigate,
-                      )));
-            },
-            Index: index);
-      },
-    );
+  void changevalue() {
+    if (mounted) {
+      setState(() {
+        showError = true;
+      });
+    }
   }
 
-  void changevalue() {
-    showError = true;
-  }
+
 }

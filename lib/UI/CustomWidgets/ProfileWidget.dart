@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-
+import 'package:sizer/sizer.dart';
 class ProfileWidget extends StatelessWidget {
   String url, name, designation;
 
@@ -23,7 +23,7 @@ class ProfileWidget extends StatelessWidget {
           //   ),
           //   errorWidget: (context, url, error) => Icon(Icons.error),
           // ),
-          child:  Image.asset("assets/images/user.png",height: 100),
+          child:  Image.asset("assets/images/user.png",height: 12.h),
         ),
         Padding(
           padding: const EdgeInsets.all(4.0),

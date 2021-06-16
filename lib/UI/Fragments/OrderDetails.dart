@@ -1,4 +1,3 @@
-
 import 'package:crafty/Helper/CartData.dart';
 import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/UI/CustomWidgets/CartItems.dart';
@@ -22,208 +21,389 @@ class _OrderDetailsState extends State<OrderDetails> {
     print(
         "The li asg ${Provider.of<CartData>(context).orderSelected.products.toString().split(",").length}");
     return Container(
-      color: Styles.bg_color,
-      height: MediaQuery.of(context).size.height,
+      color: Color(0xffe3e3e6),
+      height: MediaQuery.of(context).size.height -
+          (MediaQuery.of(context).size.width / 4),
+      width: double.infinity,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Container(
-            height: MediaQuery.of(context).size.width / 5,
-            color: Colors.white,
+          Expanded(
+            flex: 3,
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Order No: ${Provider.of<CartData>(context, listen: false).orderSelected.orderId}",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        "Tracking number: ${Provider.of<CartData>(context, listen: false).orderSelected.trackingId}",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      )
-                    ],
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "${Provider.of<CartData>(context, listen: false).orderSelected.date}",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        "${Provider.of<CartData>(context, listen: false).orderSelected.status}",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Provider.of<CartData>(context, listen: false)
-                                        .orderSelected
-                                        .status
-                                        .toString()
-                                        .trim() ==
-                                    "Cancelled"
-                                ? Colors.red
-                                : Colors.green),
+              padding: EdgeInsets.only(top: 3, left: 2, right: 2),
+              child: Card(
+                elevation: 1,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      new BoxShadow(
+                        color: Color(0xffE3E3E3),
+                        blurRadius: 5.0,
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
-          ),
-          Container(
-            height: MediaQuery.of(context).size.width / 1.2,
-            color: Colors.white70,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  Flexible(
-                    flex: 1,
-                    child: Text(
-                      "Order Items",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Flexible(
-                    flex: 10,
-                    child: Column(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Flexible(
-                          child: Text(
-                            "${Provider.of<CartData>(context).orderSelected.color.toString().split(",").length} items",
-                            textAlign: TextAlign.start,
-                          ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Order No:",
+                              style: TextStyle(
+                                fontSize: 12, color: Colors.black, fontFamily: 'Halyard',),
+                            ),
+                            Text(
+                              "Tracking ID:",
+                              style: TextStyle(
+                                fontSize: 12, color: Colors.black, fontFamily: 'Halyard',),
+                            ),
+                            Text(
+                              "Date:",
+                              style: TextStyle(
+                                fontSize: 12, color: Colors.black, fontFamily: 'Halyard',),
+                            ),
+                            Text(
+                              "Status:",
+                              style: TextStyle(
+                                fontSize: 12, color: Colors.black, fontFamily: 'Halyard',),
+                            ),
+                          ],
                         ),
-                        Flexible(
-                            flex: 10,
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              scrollDirection: Axis.vertical,
-                              itemCount: Provider.of<CartData>(context)
-                                  .orderSelected
-                                  .products
-                                  .toString()
-                                  .split(",")
-                                  .length,
-                              itemBuilder: (BuildContext ctxt, int index) {
-                                return CartItem(
-                                  index: index,
-                                  list: Provider.of<CartData>(context)
-                                      .orderSelected,
-                                  callback: null,
-                                  th: true,
-                                );
-                              },
-                            )),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "${Provider.of<CartData>(context, listen: false).orderSelected.orderId}",
+                              style: TextStyle(
+                                fontSize: 12, color: Colors.black,fontWeight: FontWeight.w600, fontFamily: 'Halyard',),
+                            ),
+                            Text(
+                              "${Provider.of<CartData>(context, listen: false).orderSelected.trackingId}",
+                              style: TextStyle(
+                                fontSize: 12, color: Colors.black,fontWeight: FontWeight.w600, fontFamily: 'Halyard',),
+                            ),
+                            Text(
+                              "${Provider.of<CartData>(context, listen: false).orderSelected.date.toString().substring(3,5)}/${Provider.of<CartData>(context, listen: false).orderSelected.date.toString().substring(0,2)}/${Provider.of<CartData>(context, listen: false).orderSelected.date.toString().substring(6)}",
+                              style: TextStyle(
+                                fontSize: 12, color: Colors.black,fontWeight: FontWeight.w600, fontFamily: 'Halyard',),
+                            ),
+                            Text(
+                              "${Provider.of<CartData>(context, listen: false).orderSelected.status}",
+                              style: TextStyle(
+                                fontSize: 12, color: Colors.black,fontWeight: FontWeight.w600, fontFamily: 'Halyard',),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
-                ],
+                ),
               ),
             ),
           ),
-          Container(
-            height: MediaQuery.of(context).size.width / 3,
-            color: Colors.white,
+          SizedBox(
+            height: 5,
+          ),
+          Expanded(
+            flex:10,
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Order Information",
-                    style: TextStyle(fontSize: 20),
+              padding: EdgeInsets.only(left: 3, right: 3),
+              child: Card(
+                elevation: 1,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      new BoxShadow(
+                        color: Color(0xffE3E3E3),
+                        blurRadius: 5.0,
+                      ),
+                    ],
                   ),
-                  SizedBox(
-                    height: 10,
+                  height: MediaQuery.of(context).size.width / 1.2,
+                  width: double.infinity,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        Flexible(
+                          flex: 1,
+                          child: Text(
+                            "Order Items",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 20),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        Flexible(
+                          flex: 10,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  "${Provider.of<CartData>(context).orderSelected.color.toString().split(",").length} items",
+                                  textAlign: TextAlign.start,
+                                ),
+                              ),
+                              // Flexible(
+                              //     flex: 10,
+                              //     child: ListView.builder(
+                              //       shrinkWrap: true,
+                              //       scrollDirection: Axis.vertical,
+                              //       itemCount: Provider.of<CartData>(context)
+                              //           .orderSelected
+                              //           .products
+                              //           .toString()
+                              //           .split(",")
+                              //           .length,
+                              //       itemBuilder: (BuildContext ctxt, int index) {
+                              //         return Card(
+                              //           child: Container(
+                              //             child:
+                              //
+                              //             ,
+                              //           ),
+                              //         );
+                              //       },
+                              //     )),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 4,
+            child: Card(
+              elevation: 1,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    new BoxShadow(
+                      color: Color(0xffE3E3E3),
+                      blurRadius: 5.0,
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Flexible(
-                        flex: 1,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Shipping address:"),
-                            SizedBox(
-                              height: 30,
-                            ),
-                            Text("Total price:"),
-                          ],
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          "Order Information",
+                          style: TextStyle(fontSize: 16),
                         ),
                       ),
-                      Flexible(
-                        flex: 2,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Expanded(
+                        flex: 5,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            Text(
-                              "${Provider.of<CartData>(context, listen: false).orderSelected.address}",
-                              softWrap: true,
-                              maxLines: 2,
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                            Expanded(
+                              flex: 3,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text("Shipping address:",
+                                    style: TextStyle(
+                                      fontSize: 12, color: Colors.black, fontFamily: 'Halyard',),
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  Text("Total price:", style: TextStyle(
+                                    fontSize: 12, color: Colors.black, fontFamily: 'Halyard',),),
+                                ],
+                              ),
                             ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                              "₹ ${Provider.of<CartData>(context, listen: false).orderSelected.price}",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.red),
+                            Expanded(
+                              flex: 5,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    "${Provider.of<CartData>(context, listen: false).orderSelected.address}",
+                                    softWrap: true,
+                                    maxLines: 2,
+                                    style: TextStyle(
+                                      fontSize: 12, color: Colors.black,fontWeight: FontWeight.w600, fontFamily: 'Halyard',),
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  Text(
+                                    "₹ ${Provider.of<CartData>(context, listen: false).orderSelected.price}",
+                                    style: TextStyle(
+                                      fontSize: 12, color: Styles.price_color,fontWeight: FontWeight.w600, fontFamily: 'Halyard',),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
                       ),
                     ],
                   ),
+                ),
+              ),
+            ),
+          ),
+          Card(
+            elevation: 1,
+            child: Container(
+              decoration: BoxDecoration(
+                boxShadow: [
+                  new BoxShadow(
+                    color: Color(0xffE3E3E3),
+                    blurRadius: 5.0,
+                  ),
+                ],
+              ),
+              // child:  Card(
+              //   elevation: 1.5,
+              //   child: Container(
+              //     height: 50,
+              //     width: MediaQuery.of(context).size.width,
+              //     decoration: BoxDecoration(
+              //       color: Colors.white,
+              //       boxShadow: [
+              //         new BoxShadow(
+              //           color: Color(0xffE3E3E3),
+              //           blurRadius: 5.0,
+              //         ),
+              //       ],
+              //     ),
+              //     child: ElevatedButton(
+              //       style: ButtonStyle(
+              //         backgroundColor: MaterialStateProperty.all(Colors.red),
+              //       ),
+              //       child: Text(
+              //         'Proceed',
+              //         style: TextStyle(
+              //             color: Colors.white,
+              //             fontSize: 17,
+              //             fontFamily: Styles.font,
+              //             fontWeight: FontWeight.bold),
+              //       ),
+              //       onPressed: () {
+              //
+              //       },
+              //     ),
+              //   ),
+              // ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed:  () => cancelOrder(
+                          Provider.of<CartData>(context,
+                              listen: false)
+                              .orderSelected
+                              .orderId,
+                          context),
+                      style: ButtonStyle(
+                        enableFeedback: true,
+                        shape: MaterialStateProperty.all<
+                            RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.zero,
+                            )),
+                        backgroundColor: MaterialStateProperty.all(
+                            Color(0xffE3E3E3)),
+                        shadowColor: MaterialStateProperty.all(
+                            Color(0xffE3E3E3)),
+                        elevation: MaterialStateProperty.all(4),
+                        overlayColor: MaterialStateProperty.resolveWith(
+                              (states) {
+                            return states
+                                .contains(MaterialState.pressed)
+                                ? Color(0xffE3E3E3)
+                                : null;
+                          },
+                        ),
+                      ),
+                      child: Container(
+                        child: Center(
+                          child: Text("Cancel",
+                              style: TextStyle(
+                                  fontFamily: "Halyard",
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black)),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 2,
+                    child: Container(
+                      margin: EdgeInsets.all(2),
+                      color: Colors.black,
+                    ),
+                  ),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed:() {
+                        Test.fragNavigate
+                            .putPosit(key: 'Contact Us');
+                      },
+                      style: ButtonStyle(
+                        enableFeedback: true,
+                        shape: MaterialStateProperty.all<
+                            RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.zero,
+                            )),
+                        backgroundColor: MaterialStateProperty.all(
+                            Styles.price_color),
+                        shadowColor: MaterialStateProperty.all(
+                            Color(0xffE3E3E3)),
+                        elevation: MaterialStateProperty.all(4),
+                        overlayColor: MaterialStateProperty.resolveWith(
+                              (states) {
+                            return states
+                                .contains(MaterialState.pressed)
+                                ? Color(0xffE3E3E3)
+                                : null;
+                          },
+                        ),
+                      ),
+                      child: Container(
+                        child: Center(
+                          child: Text("Contact us",
+                              style: TextStyle(
+                                  fontFamily: "Halyard",
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white)),
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
-          Provider.of<CartData>(context, listen: false)
-                      .orderSelected
-                      .status
-                      .toString()
-                      .trim() ==
-                  "Cancelled"
-              ? ElevatedButton(
-                  onPressed: () {
-                    Test.fragNavigate.putPosit(key: 'Contact Us');
-                  },
-                  child: Text("Help"))
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    ElevatedButton(
-                        onPressed: () => cancelOrder(
-                            Provider.of<CartData>(context, listen: false)
-                                .orderSelected
-                                .orderId,
-                            context),
-                        child: Text("Cancel")),
-                    ElevatedButton(
-                        onPressed: () {
-                          Test.fragNavigate.putPosit(key: 'Contact Us');
-                        },
-                        child: Text("Help"))
-                  ],
-                )
         ],
       ),
     );

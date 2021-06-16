@@ -1,4 +1,4 @@
-class Order {
+class Order extends Comparable{
   var _color,
       _date,
       _email,
@@ -95,4 +95,25 @@ class Order {
   get indvPrice => _indvPrice;
 
   get phone => _phone;
+
+  @override
+  int compareTo(other) {
+    if (this.date == null || other == null) {
+      return null;
+    }
+
+    if (this.date < other.date) {
+      return 1;
+    }
+
+    if (this.date > other.date) {
+      return -1;
+    }
+
+    if (this.date == other.marks) {
+      return 0;
+    }
+
+    return null;
+  }
 }

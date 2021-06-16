@@ -1,77 +1,34 @@
+import 'package:crafty/UI/Styling/Styles.dart';
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-class LoadingAnimation extends StatelessWidget {
-  int length,items;
+class LoadingAnimation extends StatefulWidget {
+  int length, items;
   double height;
 
-  LoadingAnimation(this.length, this.items,this.height);
+  LoadingAnimation(this.length, this.items, this.height);
 
+  @override
+  State<StatefulWidget> createState() {
+    return _LoadingAnimationState();
+  }
+
+
+}
+class _LoadingAnimationState extends State<LoadingAnimation> with TickerProviderStateMixin{
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: height==null?MediaQuery.of(context).size.height:height,
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        children: <Widget>[
-          Expanded(
-            child: Shimmer.fromColors(
-              baseColor: Colors.grey[300],
-              highlightColor: Colors.grey[100],
-              enabled: length==0?true:false,
-              child: ListView.builder(
-                itemBuilder: (_, __) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Container(
-                        width: 48.0,
-                        height: 48.0,
-                        color: Colors.white,
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8.0),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Container(
-                              width: double.infinity,
-                              height: 8.0,
-                              color: Colors.white,
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 2.0),
-                            ),
-                            Container(
-                              width: double.infinity,
-                              height: 8.0,
-                              color: Colors.white,
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 2.0),
-                            ),
-                            Container(
-                              width: 40.0,
-                              height: 8.0,
-                              color: Colors.white,
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                itemCount: items,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+        height: widget.height == null ? MediaQuery.of(context).size.height : widget.height,
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+        child:SpinKitFadingCube(
+          color: Styles.price_color,
+          size: 50.0,
+          controller: AnimationController(
+              vsync: this, duration: const Duration(milliseconds: 1200)),
+
+        ));
   }
+
 }

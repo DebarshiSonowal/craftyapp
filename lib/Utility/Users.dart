@@ -19,8 +19,9 @@ const url = "https://officialcraftybackend.herokuapp.com/users/";
 class UsersModel {
   Future<dynamic> login(LoginData loginData) async {
     NetworkHelper networkHelper = NetworkHelper(url);
-    print("HERE");
+
     var Data = await networkHelper.log(loginData);
+    print("HERE ${Data}");
     return Data;
   }
   Future<dynamic> cancel(var orderId,var email) async {

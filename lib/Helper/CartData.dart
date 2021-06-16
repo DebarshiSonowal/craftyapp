@@ -15,7 +15,9 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CartData extends ChangeNotifier {
-  static List<CartProduct> _list = [];
+  static List<CartProduct> _list = [
+  ];
+  Map<String, String> paymentdata;
   User _user = null;
   Profile _profile = null;
   List<Order> _order = [];
@@ -23,8 +25,7 @@ class CartData extends ChangeNotifier {
   List<Products> _men = [];
   List<Products> _women = [];
   List<Products> _couple = [];
-  List<Products> _sorted=[];
-  static String RESULT = "assets/raw/loading.json", TXT = "Please Wait";
+  static String RESULT = "assets/raw/loading.json", TXT = "Successful",price,id;
   Razorpay _razorpay = null;
   List<Categories> _categ = [];
   List<Ads> _ads = [];
@@ -32,23 +33,23 @@ class CartData extends ChangeNotifier {
   List<Products> _special =[];
   String address,name;
   Address _address;
+  String _orderId;
   Order _orderSelected;
 
 //Set
   void setAddress(Address value) {
     _address = value;
     notifyListeners();
+    print("${_address.address}");
   }
 
-
-  void setOrderSelected(Order value) {
-    _orderSelected = value;
-    print("Selected ${value.products}");
+  void setOrderId(String id){
+    _orderId = id;
     notifyListeners();
   }
 
-  void setSortedList(List<Products>list){
-    _sorted = list;
+  void setOrderSelected(Order value) {
+    _orderSelected = value;
     notifyListeners();
   }
 
@@ -70,18 +71,17 @@ class CartData extends ChangeNotifier {
   }
   void setRazorpay(Razorpay razorpay) {
     _razorpay = razorpay;
-    print("RAzor ${_razorpay.Key}");
     notifyListeners();
   }
 
   void setAds(List<Ads> ads) {
     _ads = ads;
-    print("Adss are ${ads}");
     notifyListeners();
   }
 
   void setAllProduct(List<Products> product) {
     _allproducts = product;
+    print(product.length);
     notifyListeners();
   }
 
@@ -133,9 +133,9 @@ class CartData extends ChangeNotifier {
 
   void addProduct(CartProduct cartProduct) {
     _list.add(cartProduct);
-    print(cartProduct.quantity);
-    Styles.showWarningToast(Colors.green, "Item added", Colors.white, 15);
     saveInfo();
+    // print("Unique Id is ${cartProduct.Id.toString()}");
+    Styles.showWarningToast(Colors.green, "Item added", Colors.white, 15);
     notifyListeners();
   }
 
@@ -147,11 +147,13 @@ class CartData extends ChangeNotifier {
   static void saveInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString("data", listString);
-    print("DOne");
+
   }
 
 //Get
   List<Products> get allproducts => _allproducts;
+
+  Order get orderSelected => _orderSelected;
 
   Profile get profile => _profile;
 
@@ -160,7 +162,7 @@ class CartData extends ChangeNotifier {
   }
 
 
-  Order get orderSelected => _orderSelected;
+  String get orderId => _orderId;
 
   Address get getAddress => _address;
 
@@ -180,7 +182,6 @@ class CartData extends ChangeNotifier {
     for (var i in getAds()) {
       list.add(i.picture);
     }
-    print("Size ${list.length}");
     return list;
   }
 
@@ -196,7 +197,7 @@ class CartData extends ChangeNotifier {
 
   static String get listString {
     List<Map<String, dynamic>> jsonData =
-        _list.map((word) => word.toJson()).toList();
+    _list.map((word) => word.toJson()).toList();
     return jsonEncode(jsonData);
   }
 
@@ -216,6 +217,10 @@ class CartData extends ChangeNotifier {
     return a;
   }
 
+  removeAddress() {
+    _address = null;
+    notifyListeners();
+  }
   UnmodifiableListView<CartProduct> get listview {
     return UnmodifiableListView(_list);
   }
@@ -223,9 +228,6 @@ class CartData extends ChangeNotifier {
   static int get listLengths {
     return _list.length;
   }
-
-
-  List<Products> get sorted => _sorted;
 
   int get listLength {
     return _list.length;
@@ -237,19 +239,9 @@ class CartData extends ChangeNotifier {
     double price = 0;
     for (int i = 0; i < _list.length; i++) {
       price += double.parse(_list[i].payment.toString()) * _list[i].quantity;
+      print(double.parse(_list[i].payment.toString()) * _list[i].quantity);
     }
     return price;
-  }
-  String getIndivisualPrice(){
-    String price="";
-    for (int i = 0; i < _list.length; i++) {
-      if(i!=_list.length-1){
-        price += _list[i].payment.toString()+",";
-      }else{
-        price += _list[i].payment.toString();
-      }
-    }
-    return price.trim();
   }
 
   String get Colours {
@@ -292,7 +284,13 @@ class CartData extends ChangeNotifier {
     }
     return col;
   }
-
+  int get noOfTotalItems{
+    int a = 0;
+    for(var i in _list){
+      a += i.quantity;
+    }
+    return a;
+  }
   String get quantity {
     List<String> col = [];
     for (var i in _list) {
@@ -303,28 +301,32 @@ class CartData extends ChangeNotifier {
 
   List<Products> get men => _men;
 
-  List<Products> get menProducts{
-    return _allproducts.where((element) => element.Gender.toString().trim()=="MALE").toList();
-  }
-
   List<Products> get women => _women;
 
-  List<Products> get womenProducts{
-    return _allproducts.where((element) => element.Gender.toString().trim()=="FEMALE").toList();
-  }
   //Remove
   static void removeALL(int first, int second) {
     _list.removeRange(first, second);
+    print("Removed");
     saveInfo();
   }
-
+  String getIndivisualPrice(){
+    String price="";
+    for (int i = 0; i < _list.length; i++) {
+      if(i!=_list.length-1){
+        price += _list[i].payment.toString()+",";
+      }else{
+        price += _list[i].payment.toString();
+      }
+    }
+    return price.trim();
+  }
   void removeAll(int first, int second) {
     _list.removeRange(first, second);
     saveInfo();
     notifyListeners();
   }
 
-  void removeProduct(int index) {
+  void removeProduct(int index,var Id) {
     _list.removeAt(index);
     notifyListeners();
   }

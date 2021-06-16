@@ -62,7 +62,7 @@ class _OrdersState extends State<Orders> {
     return Scaffold(
       body: SmartRefresher(
         enablePullDown: true,
-        enablePullUp: true,
+        enablePullUp: false,
         header: WaterDropHeader(),
         footer: CustomFooter(
           builder: (BuildContext context, LoadStatus mode) {
@@ -90,19 +90,11 @@ class _OrdersState extends State<Orders> {
         child: Container(
           child: Provider.of<CartData>(context, listen: false).order.length==0
               ? EmptyListWidget(
-                  title: 'No Orders',
-                  subTitle: 'No  orders received yet',
-                  image: 'assets/images/404.png',
-                  titleTextStyle: Theme.of(context)
-                      .typography
-                      .dense
-                      .headline4
-                      .copyWith(color: Color(0xff9da9c7)),
-                  subtitleTextStyle: Theme.of(context)
-                      .typography
-                      .dense
-                      .bodyText1
-                      .copyWith(color: Color(0xffabb8d6)))
+            title: "Oops!",
+            titleTextStyle: TextStyle(color: Styles.price_color,fontSize: 18,fontFamily: 'Halyard'),
+            subTitle: "Please swipe down to reload",
+            subtitleTextStyle: TextStyle(color:  Styles.price_color,fontSize: 14,fontFamily: 'Halyard'),
+          )
               : OrderItem(),
         ),
       ),

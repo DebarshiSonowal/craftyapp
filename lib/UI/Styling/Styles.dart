@@ -3,13 +3,27 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class Styles {
-  static const Log_sign = Color(0xffFFD819);
-  static const bg_color = Color(0xffF4F3F3);
+  //Color(0xffFFD819)
+  static const Log_sign = Colors.white;
+  //Color(0xffF4F3F3)
+  static const bg_color = Colors.white60;
+  static const price_color = Color(0xff00c99e);
   static const log_sign_text = Colors.black;
   static const button_color = Colors.black;
   static const button_text_color = Colors.white;
   static const hyperlink = Colors.black;
   static const url = "https://officialcraftybackend.herokuapp.com/users/";
+  static final font = "Halyard";
+
+  static getPriceSize(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+    if (width >= 717) {
+      return MediaQuery.of(context).size.height / 45;
+    } else {
+      return MediaQuery.of(context).size.height / 60;
+    }
+  }
+
 // static const url = "http://10.0.2.2:3000/users/";
 //static const url = "http://localhost:3000/users/";
   static void showWarningToast(
@@ -40,21 +54,10 @@ class Styles {
       ),
     ));
   }
-  static EmptyListWidget EmptyError  = EmptyListWidget(
-      title: 'Please swipe down to refresh',
-      subTitle:
-      'No Items found in this categories',
-      image: 'assets/images/404.png',
-      titleTextStyle: TextStyle(
-          color: Colors.red,
-          fontWeight: FontWeight.bold,
-          fontSize: 20
-      ),
-      subtitleTextStyle: TextStyle(
-        color: Color(0xffabb8d6),
-      ));
 
-  static void showBottomSheet(BuildContext context,Function child){
+  static  EmptyListWidget EmptyError = EmptyListWidget();
+
+  static void showBottomSheet(BuildContext context, Function child) {
     showModalBottomSheet(
         context: context,
         isDismissible: true,

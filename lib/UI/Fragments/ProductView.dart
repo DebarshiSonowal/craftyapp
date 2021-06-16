@@ -1,9 +1,9 @@
+import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_controller.dart';
 import 'package:crafty/Helper/CartData.dart';
 import 'package:crafty/Helper/Test.dart';
-import 'package:crafty/Models/CartProduct.dart';
 import 'package:crafty/Models/Products.dart';
-import 'package:crafty/UI/Activity/PhotoviewAsset.dart';
 import 'package:crafty/UI/CustomWidgets/GroupButton.dart';
 import 'package:crafty/UI/CustomWidgets/ImageSlider.dart';
 import 'package:crafty/UI/CustomWidgets/Photoview.dart';
@@ -12,17 +12,15 @@ import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fragment_navigate/navigate-bloc.dart';
-import 'package:like_button/like_button.dart';
-import 'package:page_transition/page_transition.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:sizer/sizer.dart';
+import 'ProductSummary.dart';
 
 class ProductView extends StatefulWidget {
   final FragNavigate fragNav;
 
   ProductView({this.product, this.fragNav});
-
-  int quantity = 1;
 
   final Products product;
 
@@ -30,495 +28,737 @@ class ProductView extends StatefulWidget {
   _ProductViewState createState() => _ProductViewState();
 }
 
-class _ProductViewState extends State<ProductView> {
+class _ProductViewState extends State<ProductView>
+    with TickerProviderStateMixin {
   get buttonSize => 30.0;
   var selectedColor;
   var selectedSize;
   var snackBar;
   var currentIndex = 0;
+  int quantity = 1;
   int currentPhoto = 0;
   List<int> lst = [1, 22, 3];
   int Index;
+  final TextStyle lowstyle = TextStyle(
+    fontFamily: "Halyard",
+    color: Colors.black54,
+    fontWeight: FontWeight.w400,
+    fontSize: 18,
+  );
+  CarouselController controller = CarouselController();
 
   @override
   void initState() {
-    selectedColor = widget.product.Color.toString().split(",")[0];
     super.initState();
+    try {
+      print("Colada  ${widget.product.Color.split(",").length}");
+      widget.product.Color.split(",").length == 1 ? setDefaultColor() : null;
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
+    print(
+        "Image data ${widget.product.Image.toString().split(',').toString()}");
+    return Material(
+      child: SafeArea(
         child: Container(
-          color: Styles.bg_color,
+          color: Color(0xffe3e3e6),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Card(
-                    color: Colors.white70,
-                    child: IconButton(
-                      splashColor: Colors.white,
-                      icon: Icon(
-                        Icons.arrow_back,
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ),
-                  Card(
-                    color: Colors.white70,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: LikeButton(
-                        size: buttonSize,
-                        circleColor: CircleColor(
-                            start: Color(0xff00ddff), end: Color(0xff0099cc)),
-                        bubblesColor: BubblesColor(
-                          dotPrimaryColor: Color(0xff33b5e5),
-                          dotSecondaryColor: Color(0xff0099cc),
-                        ),
-                        likeBuilder: (bool isLiked) {
-                          return Icon(
-                            FontAwesomeIcons.heart,
-                            color: isLiked ? Colors.red : Colors.grey,
-                            size: buttonSize,
-                          );
-                        },
-                      ),
-                    ),
-                  )
-                ],
-              ),
-              Flexible(
-                flex: 2,
-                child: CarouselWithIndicatorDemo(widget.product,
-                    Test.fragNavigate, (index) => onTapeed(index), (t) {
-                  setState(() {
-                    currentIndex = t;
-                    print(currentIndex);
-                  });
-                }),
-              ),
-              Flexible(
-                flex: 2,
-                child: Card(
-                  color: Colors.white,
-                  elevation: 6,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(30),
-                        topRight: Radius.circular(30)),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Container(
-                      height: 400,
-                      decoration: BoxDecoration(
-                        color: Color(0xFFFFFFFF),
-                      ),
-                      child: CustomScrollView(
-                        scrollDirection: Axis.vertical,
-                        slivers: [
-                          SliverFillRemaining(
-                            hasScrollBody: false,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+              Expanded(
+                  child: Stack(
+                    alignment: AlignmentDirectional.topCenter,
+                    children: [
+                      SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            Container(
+                              child: CarouselWithIndicatorDemo(
+                                  widget.product,
+                                  Test.fragNavigate,
+                                      (index) => onTapeed(index), (t) {
+                                setState(() {
+                                  currentIndex = t;
+                                });
+                              }, Color(0xffececec),controller),
+                            ),
+                            Card(
+                              elevation: 1,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    new BoxShadow(
+                                      color: Color(0xffE3E3E3),
+                                      blurRadius: 5.0,
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Flexible(
-                                      fit: FlexFit.loose,
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 30),
-                                        child: Text(
-                                          widget.product.Name,
-                                          textAlign: TextAlign.left,
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 22,
-                                          ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 10),
+                                      child: Text(
+                                        widget.product.Name,
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: Styles.font,
+                                          fontSize: 16.sp,
                                         ),
                                       ),
                                     ),
                                     Padding(
-                                      padding: const EdgeInsets.only(right: 30),
+                                      padding:
+                                      const EdgeInsets.only(left: 10, top: 8),
                                       child: Text(
-                                        "₹${widget.product.Price}",
+                                        "${widget.product.Short}",
                                         style: TextStyle(
-                                          color: Colors.red,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18,
+                                          fontFamily: "Halyard",
+                                          color: Colors.black54,
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 10.sp,
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding:
+                                      const EdgeInsets.only(left: 10, top: 8),
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            "₹${widget.product.Price}",
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: Styles.font,
+                                              fontSize: 16.sp,
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 4,
+                                          ),
+                                          Text(
+                                            "₹699",
+                                            style: TextStyle(
+                                              decoration:
+                                              TextDecoration.lineThrough,
+                                              fontWeight: FontWeight.w300,
+                                              fontFamily: Styles.font,
+                                              fontSize: 14.sp,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding:
+                                      const EdgeInsets.only(left: 10, top: 2),
+                                      child: Text(
+                                        "inclusive of all taxes",
+                                        style: TextStyle(
+                                          color: Styles.price_color,
+                                          fontWeight: FontWeight.w500,
+                                          fontFamily: Styles.font,
+                                          fontSize: 12.sp,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      child: Container(
+                                        color: Color(0xffE4E4E7),
+                                      ),
+                                      height: 0.2,
+                                      width: MediaQuery.of(context).size.width,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 10, top: 2, bottom: 5),
+                                      child: Text(
+                                        "Expected delivery time is 5-7 working days",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w300,
+                                          fontFamily: Styles.font,
+                                          fontSize: 10.sp,
                                         ),
                                       ),
                                     ),
                                   ],
                                 ),
-                                Flexible(
-                                  flex: 3,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 10),
-                                    child: Text(
-                                      "Description:",
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
+                              ),
+                            ),
+                            Card(
+                              elevation: 1,
+                              child: Container(
+                                width: MediaQuery.of(context).size.width,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    new BoxShadow(
+                                      color: Color(0xffE3E3E3),
+                                      blurRadius: 5.0,
                                     ),
-                                  ),
+                                  ],
                                 ),
-                                Text("${widget.product.Short}"),
-                                Flexible(
-                                  flex: 3,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 10),
-                                    child: Text(
-                                      "Available Colors:",
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Flexible(
-                                  flex: 3,
-                                  child: GroupButton(
-                                    width: 85,
-                                    spacing: MediaQuery.of(context).size.height,
-                                    elevation: 5,
-                                    customShape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(20)),
-                                    ),
-                                    absoluteZeroSpacing: true,
-                                    unSelectedColor:
-                                        Theme.of(context).canvasColor,
-                                    buttonLables:
-                                        widget.product.Color.split(","),
-                                    buttonValues:
-                                        widget.product.Color.split(","),
-                                    buttonTextStyle: ButtonTextStyle(
-                                        selectedColor: Colors.black,
-                                        unSelectedColor: Colors.black,
-                                        textStyle: TextStyle(fontSize: 12)),
-                                    radioButtonValue: (value) {
-                                      setState(() {
-                                        selectedColor = value;
-                                        print("selected $selectedColor $value");
-                                        // selectedSize = null;
-                                      });
-                                      print("selected $selectedColor");
-                                    },
-                                    selectedColor: Styles.Log_sign,
-                                    defaultSelected: widget.product.Color
-                                        .split(",")[currentIndex],
-                                  ),
-                                ),
-                                TextButton(
-                                  child: Text(
-                                    "Size Chart",
-                                    style: TextStyle(
-                                        color: Colors.red,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        PageTransition(
-                                            type: PageTransitionType.fade,
-                                            child: PhotoviewAsset(
-                                                checkGender() == true
-                                                    ? "Men"
-                                                    : "Women")));
-                                  },
-                                ),
-                                ConstrainedBox(
-                                  constraints: BoxConstraints.tightFor(
-                                      width: 300, height: 50),
-                                  child: ElevatedButton(
-                                    style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              Styles.Log_sign),
-                                    ),
-                                    child: Text(
-                                      'Order',
-                                      style: TextStyle(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.only(top: 5, left: 10),
+                                      child: Text(
+                                        "Easy 15 days returns and exchanges",
+                                        style: TextStyle(
                                           color: Colors.black,
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.bold),
+                                          fontWeight: FontWeight.w500,
+                                          fontFamily: Styles.font,
+                                          fontSize: 12.sp,
+                                        ),
+                                      ),
                                     ),
-                                    onPressed: () {
-                                      print("AS $selectedColor");
-                                      showModalBottomSheet(
-                                          backgroundColor: Colors.transparent,
-                                          context: context,
-                                          isDismissible: true,
-                                          isScrollControlled: true,
-                                          builder: (BuildContext context) {
-                                            return StatefulBuilder(
-                                              builder: (BuildContext context,
-                                                  StateSetter setModelState) {
-                                                return BottomContainer(
-                                                    context, setModelState);
+                                    Padding(
+                                      padding: EdgeInsets.only(bottom: 5, left: 10),
+                                      child: Text(
+                                        "Choose to return or exchange for a  different size (if available) within 15 days of delivery",
+                                        style: TextStyle(
+                                          fontFamily: "Halyard",
+                                          color: Colors.black54,
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 10.sp,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Card(
+                              elevation: 1,
+                              child: Container(
+                                padding: const EdgeInsets.only(
+                                    left: 10, top: 10, bottom: 20),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    new BoxShadow(
+                                      color: Color(0xffE3E3E3),
+                                      blurRadius: 5.0,
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Colors",
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w300,
+                                        fontFamily: Styles.font,
+                                        fontSize: 14.sp,
+                                      ),
+                                    ),
+                                    Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 10, top: 10),
+                                        child: GroupButton(
+                                          width: 20.w,
+                                          height: 5.h,
+                                          spacing:
+                                          MediaQuery.of(context).size.height,
+                                          elevation: 5,
+                                          customShape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(20)),
+                                          ),
+                                          absoluteZeroSpacing: true,
+                                          unSelectedColor: Colors.white54,
+                                          buttonLables:
+                                          widget.product.Color.split(","),
+                                          buttonValues:
+                                          widget.product.Color.split(","),
+                                          buttonTextStyle: ButtonTextStyle(
+                                              selectedColor: Styles.price_color,
+                                              unSelectedColor: Colors.black,
+                                              textStyle: TextStyle(fontSize: 9.sp)),
+                                          radioButtonValue: (value) {
+                                            setState(() {
+                                              selectedColor = value;
+                                              // selectedSize = null;
+                                              controller.jumpToPage(getIndex());
+                                            });
+                                            if (!getLabels()
+                                                .contains(selectedSize)) {
+                                              selectedSize = null;
+                                            }
+                                          },
+                                          selectedColor: Styles.Log_sign,
+                                          defaultSelected:widget.product.Color
+                                              .split(",").length==1? widget.product.Color
+                                              .split(",")[currentIndex]:null,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Card(
+                              elevation: 1,
+                              child: Container(
+                                padding: const EdgeInsets.only(
+                                    left: 10, top: 10, bottom: 20),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    new BoxShadow(
+                                      color: Color(0xffE3E3E3),
+                                      blurRadius: 5.0,
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Size",
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w300,
+                                            fontFamily: Styles.font,
+                                            fontSize: 14.sp,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 5.w,
+                                        ),
+                                        Container(
+                                          child: DropdownButton<String>(
+                                            focusColor: Colors.white,
+                                            value: selectedSize,
+                                            //elevation: 5,
+                                            style: TextStyle(color: Colors.white),
+                                            iconEnabledColor: Colors.black,
+                                            items: getLabels()
+                                                .map<DropdownMenuItem<String>>(
+                                                    (String value) {
+                                                  return DropdownMenuItem<String>(
+                                                    value: value,
+                                                    child: Text(
+                                                      value,
+                                                      style: TextStyle(
+                                                          color: Colors.black),
+                                                    ),
+                                                  );
+                                                }).toList(),
+                                            hint: Text(
+                                              "",
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 10.sp,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                            onChanged: (String value) {
+                                              setState(() {
+                                                selectedSize = value;
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Quantity:",
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w300,
+                                            fontFamily: Styles.font,
+                                            fontSize: 14.sp,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 1.w,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.end,
+                                          children: [
+                                            IconButton(
+                                              icon: Icon(
+                                                FontAwesomeIcons.minus,
+                                                color: Colors.black,
+                                                size: 2.h,
+                                              ),
+                                              onPressed: () {
+                                                setState(() {
+                                                  quantity == 1
+                                                      ? Styles.showWarningToast(
+                                                      Colors.yellow,
+                                                      "Minimum is one",
+                                                      Colors.black,
+                                                      15)
+                                                      : quantity--;
+                                                });
                                               },
-                                            );
-                                          }).whenComplete(() {
-                                        setState(() {
-                                          selectedSize = null;
-                                          widget.quantity = 1;
-                                        });
-                                      });
-                                    },
+                                            ),
+                                            Card(
+                                                elevation: 0,
+                                                color: Styles.bg_color,
+                                                child: Padding(
+                                                  padding:
+                                                  const EdgeInsets.all(1.0),
+                                                  child: Text(
+                                                    "${quantity}",
+                                                    style: TextStyle(
+                                                        fontFamily: "Halyard",
+                                                        fontWeight: FontWeight.w500,
+                                                        fontSize: 14.sp),
+                                                  ),
+                                                )),
+                                            IconButton(
+                                              icon: Icon(
+                                                FontAwesomeIcons.plus,
+                                                color: Colors.black,
+                                                size: 2.h,
+                                              ),
+                                              onPressed: () {
+                                                setState(() {
+                                                  quantity == 5
+                                                      ? Styles.showWarningToast(
+                                                      Colors.yellow,
+                                                      "Miximum is 5",
+                                                      Colors.black,
+                                                      15)
+                                                      : quantity++;
+                                                });
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          width: 0.3.w,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Card(
+                              elevation: 1,
+                              child: Container(
+                                padding: EdgeInsets.only(top: 5),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    new BoxShadow(
+                                      color: Color(0xffE3E3E3),
+                                      blurRadius: 5.0,
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      "SIZE CHART",
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily: Styles.font,
+                                        fontSize: 14.sp,
+                                      ),
+                                    ),
+                                    Container(
+                                      height: 200,
+                                      child: PhotoView(
+                                        backgroundDecoration: BoxDecoration(
+                                          color: Colors.white,
+                                        ),
+                                        // ignore: unrelated_type_equality_checks
+                                        imageProvider: checkGender() == true
+                                            ? AssetImage(
+                                          "assets/images/men.jpg",
+                                        )
+                                            : AssetImage(
+                                          'assets/images/women.jpg',
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 2.5,
+                            ),
+                            Card(
+                              elevation: 1,
+                              child: Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    boxShadow: [
+                                      new BoxShadow(
+                                        color: Color(0xffE3E3E3),
+                                        blurRadius: 5.0,
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ],
+                                  child: RichText(
+                                    text: TextSpan(
+                                      // Note: Styles for TextSpans must be explicitly defined.
+                                      // Child text spans will inherit styles from parent
+                                      style: new TextStyle(
+                                        fontSize: 14.0,
+                                        color: Colors.black,
+                                      ),
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                          text: "Fit : ",
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w500,
+                                            fontFamily: Styles.font,
+                                            fontSize: 12.sp,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: 'Regular Fit\n',
+                                          style: TextStyle(
+                                            fontFamily: "Halyard",
+                                            color: Colors.black54,
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 10.sp,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: 'Material : ',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w500,
+                                            fontFamily: Styles.font,
+                                            fontSize: 12.sp,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text:
+                                          '100% Cotton, Bio-Washed & Pre-Shrunk\n',
+                                          style: TextStyle(
+                                            fontFamily: "Halyard",
+                                            color: Colors.black54,
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 10.sp,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: 'Wash Care : ',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w500,
+                                            fontFamily: Styles.font,
+                                            fontSize: 12.sp,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text:
+                                          'Machine wash. Wash in cold water, use mild detergent, dry in shade , do not iron directly on print, do not bleach, do not tumble dry. Dry on flat surface as hanging may cause measurement variations.\n',
+                                          style: TextStyle(
+                                            fontFamily: "Halyard",
+                                            color: Colors.black54,
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 10.sp,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: 'Sizing : ',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w500,
+                                            fontFamily: Styles.font,
+                                            fontSize: 12.sp,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text:
+                                          'Please refer to the size chart to see which size fits you the best.\n',
+                                          style: TextStyle(
+                                            fontFamily: "Halyard",
+                                            color: Colors.black54,
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 10.sp,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: 'Please Note : ',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w500,
+                                            fontFamily: Styles.font,
+                                            fontSize: 12.sp,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text:
+                                          'Colors may slightly vary depending upon your screen brightness.',
+                                          style: TextStyle(
+                                            fontFamily: "Halyard",
+                                            color: Colors.black54,
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 10.sp,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )),
                             ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Card BottomContainer(BuildContext context, StateSetter setModelState) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Container(
-          height: MediaQuery.of(context).size.width,
-          color: Colors.white70,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Flexible(
-                    flex: 2,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            PageTransition(
-                                type: PageTransitionType.fade,
-                                child: Photoview(widget.product.Image
-                                    .toString()
-                                    .split(",")[getIndex()]
-                                    .trim())));
-                      },
-                      child: CachedNetworkImage(
-                        imageUrl: widget.product.Image
-                            .toString()
-                            .split(",")[getIndex()]
-                            .trim(),
-                        height: MediaQuery.of(context).size.width / (2.5),
-                        progressIndicatorBuilder:
-                            (context, url, downloadProgress) => SizedBox(
-                          width: 50.0,
-                          height: 50.0,
-                          child: Shimmer.fromColors(
-                            baseColor: Colors.red,
-                            highlightColor: Colors.yellow,
-                            child: Center(
-                              child: Text(
-                                'Please Wait',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 15.0,
-                                  fontWeight: FontWeight.bold,
+                            Card(
+                              elevation: 1,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    new BoxShadow(
+                                      color: Color(0xffE3E3E3),
+                                      blurRadius: 5.0,
+                                    ),
+                                  ],
                                 ),
+                                padding: EdgeInsets.all(2),
+                                child: Image.asset("assets/images/payment.jpg"),
                               ),
                             ),
-                          ),
-                        ),
-                        errorWidget: (context, url, error) => Icon(Icons.error),
-                      ),
-                    ),
-                  ),
-                  Flexible(
-                    flex: 1,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          widget.product.Name.toString(),
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Text(selectedColor),
-                        Text(
-                          "₹${widget.product.Price}",
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-              Flexible(
-                flex: 2,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Text(
-                    "Available Sizes:",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ),
-              Flexible(
-                flex: 2,
-                child: CustomRadioButton(
-                  width: 65,
-                  elevation: 5,
-                  customShape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
-                  ),
-                  absoluteZeroSpacing: true,
-                  unSelectedColor: Theme.of(context).canvasColor,
-                  buttonLables: getLabels(),
-                  buttonValues: getLabels(),
-                  buttonTextStyle: ButtonTextStyle(
-                      selectedColor: Colors.black,
-                      unSelectedColor: Colors.black,
-                      textStyle: TextStyle(fontSize: 12)),
-                  radioButtonValue: (value) {
-                    selectedSize = value;
-                    print(value);
-                  },
-                  selectedColor: Styles.Log_sign,
-                ),
-              ),
-              Flexible(
-                flex: 2,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Text(
-                    "Quantity:",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                width: 140,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      flex: 4,
-                      child: Card(
-                        child: IconButton(
-                          icon: Icon(
-                            FontAwesomeIcons.minus,
-                            color: Colors.red,
-                          ),
-                          onPressed: () {
-                            setModelState(() {
-                              widget.quantity == 1
-                                  ? Styles.showWarningToast(Colors.yellow,
-                                      "Minimum is one", Colors.black, 15)
-                                  : widget.quantity--;
-                            });
-                          },
+                          ],
                         ),
                       ),
-                    ),
-                    Flexible(
-                        flex: 4,
-                        child: Card(
-                            elevation: 0,
-                            color: Styles.bg_color,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                "${widget.quantity}",
-                                style: TextStyle(fontSize: 16),
+                      Container(
+                        margin: EdgeInsets.all(15),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.5),
+                                borderRadius: BorderRadius.circular(20.0),
                               ),
-                            ))),
-                    Flexible(
-                      flex: 4,
-                      child: Card(
-                        child: IconButton(
-                          icon: Icon(
-                            FontAwesomeIcons.plus,
-                            color: Colors.green,
-                          ),
-                          onPressed: () {
-                            setModelState(() {
-                              widget.quantity == 5
-                                  ? Styles.showWarningToast(Colors.yellow,
-                                      "Miximum is 5", Colors.black, 15)
-                                  : widget.quantity++;
-                            });
-                          },
+                              child: IconButton(
+                                splashColor: Colors.white,
+                                icon: Icon(
+                                  Icons.arrow_back,
+                                  color: Colors.white,
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.5),
+                                borderRadius: BorderRadius.circular(20.0),
+                              ),
+                              child: IconButton(
+                                icon: Badge(
+                                    showBadge:
+                                    Provider.of<CartData>(context).listLength ==
+                                        0
+                                        ? false
+                                        : true,
+                                    badgeContent: Text(
+                                        "${Provider.of<CartData>(context).listLength}",
+                                        style: TextStyle(color: Colors.white)),
+                                    animationType: BadgeAnimationType.scale,
+                                    child: Icon(
+                                      Icons.add_shopping_cart,
+                                      color: Colors.white,
+                                    )),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  Test.fragNavigate
+                                      .putPosit(key: 'Cart', force: true);
+                                },
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              Flexible(
-                flex: 2,
+                    ],
+                  )),
+              Card(
+                elevation: 1.5,
                 child: Container(
-                  width: MediaQuery.of(context).size.width / (1.2),
-                  height: MediaQuery.of(context).size.width / 5,
+                  height: 50,
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      new BoxShadow(
+                        color: Color(0xffE3E3E3),
+                        blurRadius: 5.0,
+                      ),
+                    ],
+                  ),
                   child: ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.red),
+                    ),
+                    child: Text(
+                      'Proceed',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 17,
+                          fontFamily: Styles.font,
+                          fontWeight: FontWeight.bold),
+                    ),
                     onPressed: () {
-                      if (selectedColor != null && selectedSize != null) {
-                        Navigator.pop(context);
-                        show();
+                      if (selectedSize != null) {
+                        showModalBottomSheet(
+                            backgroundColor: Colors.transparent,
+                            context: context,
+                            isDismissible: true,
+                            isScrollControlled: false,
+                            builder: (BuildContext context) {
+                              return StatefulBuilder(
+                                builder: (BuildContext context,
+                                    StateSetter setModelState) {
+                                  return Wrap(
+                                    children: [
+                                      ProductSummary(
+                                      getIndex(),
+                                  quantity,
+                                  widget.product,
+                                  () {},
+                                  selectedColor,
+                                  selectedSize)
+                                    ],
+                                  );
+                                },
+                              );
+                            }).whenComplete(() {
+                          if (mounted) {
+                            setState(() {
+
+                            });
+                          } else {
+
+                          }
+                        });
                       } else {
-                        Styles.showWarningToast(Styles.Log_sign,
-                            'Please select a size', Colors.black, 16);
+                        Styles.showWarningToast(Colors.red,
+                            "Please select a size", Colors.white, 18);
                       }
                     },
-                    child: Text(
-                      'Next',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16),
-                    ),
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(Styles.Log_sign),
-                    ),
                   ),
                 ),
               ),
@@ -527,56 +767,19 @@ class _ProductViewState extends State<ProductView> {
         ),
       ),
     );
-  }
-
-  show() {
-    Provider.of<CartData>(context, listen: false).addProduct(
-      CartProduct(
-          selectedColor,
-          widget.product.Price,
-          widget.product.Image.toString().split(",")[getIndex()].trim(),
-          widget.quantity,
-          selectedSize,
-          widget.product.Name,
-          widget.product.Id),
-    );
-    Styles.showSnackBar(context, Colors.green, Duration(seconds: 5),
-        'Product Added', Colors.white, () {
-      setState(() {
-        Navigator.pop(context);
-        widget.fragNav.putPosit(key: 'Cart');
-      });
-    });
   }
 
   getLabels() {
     var list = widget.product.Color.split(",");
-    print(list);
     int i = list.indexOf(
         selectedColor == null ? list[0].toString() : selectedColor.toString());
-    print(list
-        .indexOf(selectedColor == null ? list[0].toString() : selectedColor)
-        .toString());
     var lst = widget.product.Size.split(".");
     return lst[i].toString().split(",");
   }
 
-  getIndex() {
-    if (widget.product.Image.toString().split(",").length > -1 &&
-        widget.product.Image.toString().split(",").length >
-            widget.product.Color.toString().split(",").indexOf(selectedColor)) {
-      print(widget.product.Image.toString().split(",").length);
-      print(widget.product.Color.toString().split(",").indexOf(selectedColor));
-      print(
-          "DW ${widget.product.Color.toString().split(",").indexOf(selectedColor)}");
-      return widget.product.Color.toString().split(",").indexOf(selectedColor);
-    } else {
-      print(selectedColor);
-      print(widget.product.Image.toString().split(",").length);
-      print(widget.product.Color.toString().split(",").indexOf(selectedColor));
-      print("DW 0");
-      return 0;
-    }
+  bool checkGender() {
+    print(widget.product.Gender.toString());
+    return widget.product.Gender.toString().trim() == "MALE" ? true : false;
   }
 
   onTapeed(int index) {
@@ -584,14 +787,22 @@ class _ProductViewState extends State<ProductView> {
     Index = index;
     Navigator.push(
         context,
-        PageTransition(
-            type: PageTransitionType.fade,
-            child: Photoview(
+        MaterialPageRoute(
+            builder: (context) => Photoview(
                 widget.product.Image.toString().split(',')[index].trim())));
   }
 
-  bool checkGender() {
-    print(widget.product.Gender.toString());
-    return widget.product.Gender.toString().trim() == "MALE";
+  getIndex() {
+    if (widget.product.Image.toString().split(",").length > -1 &&
+        widget.product.Image.toString().split(",").length >
+            widget.product.Color.toString().split(",").indexOf(selectedColor)) {
+      return widget.product.Color.toString().split(",").indexOf(selectedColor);
+    } else {
+      return 0;
+    }
+  }
+
+  setDefaultColor() {
+    selectedColor = widget.product.Color.split(",")[0];
   }
 }

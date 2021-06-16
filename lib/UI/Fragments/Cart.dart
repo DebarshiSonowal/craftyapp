@@ -601,10 +601,10 @@ class _CartState extends State<Cart> {
     var order = CashOrder();
     order.customerName =
         Provider.of<CartData>(context, listen: false).user.name;
-    order.customerEmail = 'debarkhisonowal@gmail.com';
-    order.customerPhone = '8638372157';
-    order.orderAmount = amount;
-    order.stage = "TEST";
+    order.customerEmail = Provider.of<CartData>(context, listen: false).profile.email;
+    order.customerPhone = Provider.of<CartData>(context, listen: false).profile.phone;
+    order.orderAmount = 1;
+    order.stage = "PROD";
     return order;
   }
 

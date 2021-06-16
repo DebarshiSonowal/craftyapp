@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'package:sizer/sizer.dart';
 class ContactUs extends StatefulWidget {
   @override
   _ContactUsState createState() => _ContactUsState();
@@ -17,40 +17,38 @@ class _ContactUsState extends State<ContactUs> {
     return Container(
       child: Column(
         // crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          SizedBox(
-            height: 2,
-          ),
           Image(
-              height: 170,
-              width: 180,
+            fit: BoxFit.fitWidth,
+              height: 15.h,
+              width:  15.w,
               image: AssetImage('assets/images/crafty.png')),
           Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Text(
-              "We are manufacturer of high quality clothing like hoodie, t-shirts etc.\n"
-              "We are committed to satisfaction our customers the best quality of products at reasonable price.\n"
-              "Customer satisfaction is our utmost priority.",
-              style: TextStyle(
-                height: 1.7,
-                fontSize: 16,
-                fontFamily: "Somana",
+            padding: EdgeInsets.only(left: 2.w,right: 2.w),
+            child: Flexible(
+              child: Text(
+                "We are manufacturer of high quality clothing like hoodie, t-shirts etc.\n"
+                "We are committed to satisfaction our customers the best quality of products at reasonable price.\n"
+                "Customer satisfaction is our utmost priority.",
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  fontFamily: "Somana",
+                ),
+                textAlign: TextAlign.left,
               ),
-              textAlign: TextAlign.left,
             ),
           ),
           Center(
               child: Text(
             "Reach us on",
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 12.sp,
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
           )),
           Padding(
-            padding: const EdgeInsets.all(5.0),
+            padding: const EdgeInsets.all(1.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -89,13 +87,13 @@ class _ContactUsState extends State<ContactUs> {
               child: Text(
             "Follow Us",
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 12.sp,
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
           )),
           Padding(
-            padding: const EdgeInsets.all(5.0),
+            padding:EdgeInsets.all(1.h),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -126,17 +124,23 @@ class _ContactUsState extends State<ContactUs> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        PageTransition(
-                            type: PageTransitionType.fade,
-                            child: HelpScreen("Return")));
-                  },
-                  child: Text('Return Policy')),
-              ElevatedButton(
-                  onPressed: _launchPrivacy, child: Text('Privacy Policy')),
+              SizedBox(
+                height: 5.h,
+                child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          PageTransition(
+                              type: PageTransitionType.fade,
+                              child: HelpScreen("Return")));
+                    },
+                    child: Text('Return Policy')),
+              ),
+              SizedBox(
+                height: 5.h,
+                child: ElevatedButton(
+                    onPressed: _launchPrivacy, child: Text('Privacy Policy')),
+              ),
             ],
           ),
         ],

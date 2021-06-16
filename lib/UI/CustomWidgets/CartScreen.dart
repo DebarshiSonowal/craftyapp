@@ -95,7 +95,8 @@ class _CartScreennState extends State<CartScreenn> {
                       Styles.Log_sign, "Item removed", Colors.black, 15);
                   setState(() {
                     Provider.of<CartData>(context, listen: false)
-                        .removeProduct(index);
+                        .removeProduct(index,Provider.of<CartData>(context,
+                        listen: false).list[index].Id);
                     var json = jsonEncode(
                         Provider.of<CartData>(context, listen: false)
                             .list
@@ -112,7 +113,8 @@ class _CartScreennState extends State<CartScreenn> {
                         Styles.Log_sign, "Item removed", Colors.black, 15);
                     setState(() {
                       Provider.of<CartData>(context, listen: false)
-                          .removeProduct(index);
+                          .removeProduct(index,Provider.of<CartData>(context,
+                          listen: false).list[index].Id);
                       var json = jsonEncode(
                           Provider.of<CartData>(context, listen: false)
                               .list

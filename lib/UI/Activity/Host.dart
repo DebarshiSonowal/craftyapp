@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:badges/badges.dart';
 import 'package:crafty/Helper/CartData.dart';
 import 'package:crafty/Helper/DataSearch.dart';
 import 'package:crafty/Helper/Navigation.dart';
@@ -7,7 +8,7 @@ import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/Models/Ads.dart';
 import 'package:crafty/Models/Categories.dart';
 import 'package:crafty/Models/Products.dart';
-import 'package:crafty/Models/Razorpay.dart';
+import 'package:crafty/UI/Activity/Blank.dart';
 import 'package:crafty/UI/CustomWidgets/Photoview.dart';
 import 'package:crafty/UI/Fragments/About.dart';
 import 'package:crafty/UI/Fragments/AllProducts.dart';
@@ -74,7 +75,7 @@ class HostState extends State<Host> {
     new Future.delayed(Duration.zero, () {
       _fragNav.setDrawerContext = context;
     });
-    Provider.of<CartData>(context, listen: false).profile != null
+    Provider.of<CartData>(context, listen: false).user == null && Provider.of<CartData>(context, listen: false).profile != null
         ? null
         : getProfie();
     super.initState();
@@ -137,8 +138,47 @@ class HostState extends State<Host> {
               return Scaffold(
                 key: _fragNav.drawerKey,
                 appBar: AppBar(
-                  title: Text(s.data.title),
+                  titleSpacing:0,
+                  title: Padding(
+                    padding:EdgeInsets.only(top:6),
+                    child: TextButton(
+                      onPressed: () {
+                        _fragNav.putPosit(key: "Home");
+                      },
+                      child: Text(
+                        "Crafty",
+                        style: TextStyle(
+                          fontFamily: "Beyond",
+                          fontSize: 16,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
+                  ),
+                  leading: IconButton(
+                    iconSize: 25,
+                    icon: Icon(Icons.menu),
+                    onPressed: () {
+                      _fragNav.drawerKey.currentState.openDrawer();
+                    },
+                  ),
                   actions: [
+                    IconButton(
+                      icon: Badge(
+                          showBadge:
+                          Provider.of<CartData>(context).listLength == 0
+                              ? false
+                              : true,
+                          badgeContent: Text(
+                              "${Provider.of<CartData>(context).listLength}",style: TextStyle(
+                            color: Colors.white,fontFamily: 'Halyard',
+                          ),),
+                          animationType: BadgeAnimationType.scale,
+                          child: Icon(Icons.add_shopping_cart)),
+                      onPressed: () {
+                        _fragNav.putPosit(key: "Cart");
+                      },
+                    ),
                     IconButton(
                       icon: Icon(Icons.search),
                       onPressed: () {
@@ -150,49 +190,58 @@ class HostState extends State<Host> {
                   bottom: s.data.bottom.child,
                 ),
                 drawer: NavDrawer(_fragNav),
-                bottomNavigationBar: BottomNavigationBar(
-                  items: const <BottomNavigationBarItem>[
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.home),
-                      label: 'Home',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.verified_user),
-                      label: 'Profile',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.add_shopping_cart),
-                      label: 'Cart',
-                    ),
-                  ],
-                  currentIndex: _fragNav.screenList.keys
-                              .toList()
-                              .indexOf(_fragNav.currentKey) >
-                          2
-                      ? 0
-                      : _fragNav.screenList.keys
-                          .toList()
-                          .indexOf(_fragNav.currentKey),
-                  selectedItemColor: Colors.black,
-                  backgroundColor: Colors.white70,
-                  onTap: (index) {
-                    setState(() {
-                      bottom = index;
-                      var b = _fragNav.screenList.keys.toList();
-                      var c = _fragNav.actionsList;
-                      if (c != null) {
-                        _fragNav.putPosit(key: b[index]);
-                      } else {
-                        initialize();
-                        try {
-                          _fragNav.putPosit(key: b[index]);
-                        } catch (e) {
-                          print("GGOt $e");
-                        }
-                      }
-                    });
-                  },
-                ),
+                // bottomNavigationBar: BottomNavigationBar(
+                //   items:<BottomNavigationBarItem>[
+                //     BottomNavigationBarItem(
+                //       icon: Icon(Icons.home),
+                //       label: 'Home',
+                //     ),
+                //     BottomNavigationBarItem(
+                //       icon: Icon(Icons.verified_user),
+                //       label: 'Profile',
+                //     ),
+                //     BottomNavigationBarItem(
+                //       icon: Badge(
+                //           showBadge:
+                //           Provider.of<CartData>(context).listLength == 0
+                //               ? false
+                //               : true,
+                //           badgeContent: Text(
+                //               "${Provider.of<CartData>(context).listLength}",
+                //           style: TextStyle(color: Colors.white),),
+                //           animationType: BadgeAnimationType.scale,
+                //           child: Icon(Icons.add_shopping_cart)),
+                //       label: 'Cart',
+                //     ),
+                //   ],
+                //   currentIndex: _fragNav.screenList.keys
+                //               .toList()
+                //               .indexOf(_fragNav.currentKey) >
+                //           2
+                //       ? 0
+                //       : _fragNav.screenList.keys
+                //           .toList()
+                //           .indexOf(_fragNav.currentKey),
+                //   selectedItemColor: Colors.black,
+                //   backgroundColor: Color(0xffeeeeee),
+                //   onTap: (index) {
+                //     setState(() {
+                //       bottom = index;
+                //       var b = _fragNav.screenList.keys.toList();
+                //       var c = _fragNav.actionsList;
+                //       if (c != null) {
+                //         _fragNav.putPosit(key: b[index]);
+                //       } else {
+                //         initialize();
+                //         try {
+                //           _fragNav.putPosit(key: b[index]);
+                //         } catch (e) {
+                //           print("GGOt $e");
+                //         }
+                //       }
+                //     });
+                //   },
+                // ),
                 body: DefaultTabController(
                   length: s.data.bottom.length,
                   child: ScreenNavigate(child: s.data.fragment, bloc: _fragNav),
@@ -316,7 +365,7 @@ class HostState extends State<Host> {
           title: 'Profile',
           fragment: ProfilePage(),
           icon: Icons.accessibility),
-      Posit(key: 'Cart', title: 'Cart', fragment: Cart(), icon: Icons.ac_unit),
+      Posit(key: 'Cart', title: 'Cart', fragment: CartDup(), icon: Icons.ac_unit),
       Posit(
           key: 'Men', title: 'Men', fragment: MenProducts(), icon: Icons.code),
       Posit(
@@ -355,7 +404,7 @@ class HostState extends State<Host> {
           key: 'All',
           title: 'All Products',
           icon: Icons.code,
-          fragment: AllProducts()),
+          fragment: AllProductsFragment()),
       Posit(
           key: 'Details',
           title: 'Details',
