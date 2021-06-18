@@ -11,6 +11,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Test {
   static var bihu;
 
+  static GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey();
+
   static String url;
 
   static String specialTag=null;

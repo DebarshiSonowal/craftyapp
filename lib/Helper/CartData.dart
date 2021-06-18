@@ -19,6 +19,7 @@ class CartData extends ChangeNotifier {
   ];
   Map<String, String> paymentdata;
   User _user = null;
+  List<Products> _sortedList=[];
   Profile _profile = null;
   List<Order> _order = [];
   List<Products> _allproducts = [];
@@ -48,6 +49,10 @@ class CartData extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setSortedList(List<Products> list ){
+    _sortedList = list;
+    notifyListeners();
+  }
   void setOrderSelected(Order value) {
     _orderSelected = value;
     notifyListeners();
@@ -161,6 +166,8 @@ class CartData extends ChangeNotifier {
     return _user;
   }
 
+
+  List<Products> get sorted=> _sortedList;
 
   String get orderId => _orderId;
 
@@ -330,4 +337,6 @@ class CartData extends ChangeNotifier {
     _list.removeAt(index);
     notifyListeners();
   }
+
+
 }

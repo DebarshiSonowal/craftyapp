@@ -49,17 +49,22 @@ class HostState extends State<Host> {
   static FragNavigate _fragNav;
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-
+  GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
   void getLoginData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var acc = prefs.get('access');
     var ref = prefs.get('refresh');
     print(acc);
     if (acc != null && ref != null) {
-      setState(() {
+      if (mounted) {
+        setState(() {
+                Test.accessToken = acc;
+                Test.refreshToken = ref;
+              });
+      } else {
         Test.accessToken = acc;
         Test.refreshToken = ref;
-      });
+      }
     }
   }
 
@@ -77,7 +82,7 @@ class HostState extends State<Host> {
     });
     Provider.of<CartData>(context, listen: false).user == null && Provider.of<CartData>(context, listen: false).profile != null
         ? null
-        : getProfie();
+        : getProfie(_fragNav.drawerKey.currentContext);
     super.initState();
   }
 
@@ -292,11 +297,17 @@ class HostState extends State<Host> {
               women.add(i);
             }
           }
-          setState(() {
+          if (mounted) {
+            setState(() {
+                        Provider.of<CartData>(context, listen: false).setAllProduct(data);
+                        Provider.of<CartData>(context, listen: false).setMen(men);
+                        Provider.of<CartData>(context, listen: false).setWomen(women);
+                      });
+          } else {
             Provider.of<CartData>(context, listen: false).setAllProduct(data);
             Provider.of<CartData>(context, listen: false).setMen(men);
             Provider.of<CartData>(context, listen: false).setWomen(women);
-          });
+          }
         } else {
           print("empty");
         }
@@ -433,7 +444,7 @@ class HostState extends State<Host> {
     _fragNav.setDrawerContext = context;
   }
 
-  void getProfie() async {
+  void getProfie(dynamic context) async {
     UsersModel usersModel3 = UsersModel();
     if (Test.accessToken!=null) {
       var profile = await usersModel3

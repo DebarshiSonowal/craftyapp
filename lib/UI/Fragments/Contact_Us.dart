@@ -15,73 +15,72 @@ class _ContactUsState extends State<ContactUs> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: EdgeInsets.only(bottom: 1.h),
       child: Column(
         // crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Image(
             fit: BoxFit.fitWidth,
-              height: 15.h,
-              width:  15.w,
+              height: 17.h,
+              width:  17.w,
               image: AssetImage('assets/images/crafty.png')),
           Padding(
             padding: EdgeInsets.only(left: 2.w,right: 2.w),
-            child: Flexible(
-              child: Text(
-                "We are manufacturer of high quality clothing like hoodie, t-shirts etc.\n"
-                "We are committed to satisfaction our customers the best quality of products at reasonable price.\n"
-                "Customer satisfaction is our utmost priority.",
-                style: TextStyle(
-                  fontSize: 12.sp,
-                  fontFamily: "Somana",
-                ),
-                textAlign: TextAlign.left,
+            child: Text(
+              "We are manufacturer of high quality clothing like hoodie, t-shirts etc.\n"
+              "We are committed to satisfaction our customers the best quality of products at reasonable price.\n"
+              "Customer satisfaction is our utmost priority.",
+              style: TextStyle(
+                fontSize: 12.sp,
+                fontFamily: "Somana",
               ),
+              textAlign: TextAlign.left,
             ),
           ),
-          Center(
-              child: Text(
-            "Reach us on",
-            style: TextStyle(
-              fontSize: 12.sp,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
-          )),
-          Padding(
-            padding: const EdgeInsets.all(1.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ContactIconButton(() {
-                  _makingPhoneCall();
-                }, Colors.blueAccent, FontAwesomeIcons.phoneAlt,
-                    Color(0xff4867AA)),
-                ContactIconButton(() {
-                  try {
-                    _launchURL("https://craftyfashions.com");
-                  } catch (e) {
-                    print(e);
-                  }
-                }, Color(0xffD93084), FontAwesomeIcons.chrome,
-                    Color(0xffD64135)),
-                ContactIconButton(() {
-                  try {
-                    _launchURL(
-                        "https://play.app.goo.gl/?link=https://play.google.com/store/apps/details?id=com.craftyfashion.crafty");
-                  } catch (e) {
-                    print(e);
-                  }
-                }, Color(0xff4EB207), FontAwesomeIcons.googlePlay,
-                    Color(0xff4EB207)),
-                ContactIconButton(() {
-                  notavailable();
-                }, Color(0xff17B4F3), FontAwesomeIcons.appStore,
-                    Color(0xff17B4F3)),
-                ContactIconButton(() {
-                  _sendemail();
-                }, Color(0xffBF211E), Icons.email, Color(0xffBF211E))
-              ],
-            ),
+          Container(
+            child: Center(
+                child: Text(
+              "Reach us on",
+              style: TextStyle(
+                fontSize: 12.sp,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            )),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              ContactIconButton(() {
+                _makingPhoneCall();
+              }, Colors.blueAccent, FontAwesomeIcons.phoneAlt,
+                  Color(0xff4867AA)),
+              ContactIconButton(() {
+                try {
+                  _launchURL("https://craftyfashions.com");
+                } catch (e) {
+                  print(e);
+                }
+              }, Color(0xffD93084), FontAwesomeIcons.chrome,
+                  Color(0xffD64135)),
+              ContactIconButton(() {
+                try {
+                  _launchURL(
+                      "https://play.app.goo.gl/?link=https://play.google.com/store/apps/details?id=com.craftyfashion.crafty");
+                } catch (e) {
+                  print(e);
+                }
+              }, Color(0xff4EB207), FontAwesomeIcons.googlePlay,
+                  Color(0xff4EB207)),
+              ContactIconButton(() {
+                notavailable();
+              }, Color(0xff17B4F3), FontAwesomeIcons.appStore,
+                  Color(0xff17B4F3)),
+              ContactIconButton(() {
+                _sendemail();
+              }, Color(0xffBF211E), Icons.email, Color(0xffBF211E))
+            ],
           ),
           Center(
               child: Text(
@@ -92,34 +91,31 @@ class _ContactUsState extends State<ContactUs> {
             ),
             textAlign: TextAlign.center,
           )),
-          Padding(
-            padding:EdgeInsets.all(1.h),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ContactIconButton(() {
-                  _launchSocial('fb://page/109839907854388',
-                      'https://www.facebook.com/Crafty-fashions-109839907854388');
-                }, Colors.blueAccent, FontAwesomeIcons.facebookF,
-                    Color(0xff4867AA)),
-                ContactIconButton(() {
-                  try {
-                    _launchURL("https://www.instagram.com/crafty_fashions_/");
-                  } catch (e) {
-                    print(e);
-                  }
-                }, Color(0xffD93084), FontAwesomeIcons.instagram,
-                    Color(0xffD93084)),
-                ContactIconButton(() {
-                  _sendWhatsapp();
-                }, Color(0xff00A2F3), FontAwesomeIcons.whatsapp,
-                    Color(0xff4ECD5C)),
-                ContactIconButton(() {
-                  notavailable();
-                }, Color(0xff00A2F3), FontAwesomeIcons.twitter,
-                    Color(0xff00A2F3))
-              ],
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              ContactIconButton(() {
+                _launchSocial('fb://page/109839907854388',
+                    'https://www.facebook.com/Crafty-fashions-109839907854388');
+              }, Colors.blueAccent, FontAwesomeIcons.facebookF,
+                  Color(0xff4867AA)),
+              ContactIconButton(() {
+                try {
+                  _launchURL("https://www.instagram.com/crafty_fashions_/");
+                } catch (e) {
+                  print(e);
+                }
+              }, Color(0xffD93084), FontAwesomeIcons.instagram,
+                  Color(0xffD93084)),
+              ContactIconButton(() {
+                _sendWhatsapp();
+              }, Color(0xff00A2F3), FontAwesomeIcons.whatsapp,
+                  Color(0xff4ECD5C)),
+              ContactIconButton(() {
+                notavailable();
+              }, Color(0xff00A2F3), FontAwesomeIcons.twitter,
+                  Color(0xff00A2F3))
+            ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
