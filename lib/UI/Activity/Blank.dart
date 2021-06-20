@@ -721,7 +721,7 @@ class _CartDupState extends State<CartDup> with TickerProviderStateMixin{
                                 .profile !=
                                 null) {
                               if(Provider.of<CartData>(context, listen: false).list.length > 0){
-                                showSelectAddress();
+                                // showSelectAddress();
                               }else{
                                 Fluttertoast.showToast(
                                     msg: 'Add some items to the Cart',
@@ -1195,6 +1195,7 @@ class _CartDupState extends State<CartDup> with TickerProviderStateMixin{
     // Styles.showWarningToast(Colors.green, "Successful", Colors.white, 15);
 
     var id = "order_cod_" + getRandomString(5);
+
     try {
       var a = await usersModel.saveOrderDatabase(
           saveToDatabase(
@@ -1265,9 +1266,7 @@ class _CartDupState extends State<CartDup> with TickerProviderStateMixin{
         status,
         Provider.of<CartData>(context, listen: false).ids,
         Provider.of<CartData>(context, listen: false)
-            .Pictures
-            .split(",")[0]
-            .trim(),
+            .Pictures,
         amount,
         Provider.of<CartData>(context, listen: false).quantity,
         Provider.of<CartData>(context, listen: false).Sizes,

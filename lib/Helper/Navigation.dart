@@ -162,6 +162,13 @@ class NavDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
+            leading: Icon(FontAwesomeIcons.share),
+            title: Text('Share Crafty'),
+            onTap: () {
+              Share.share("Checkout this awesome app \nhttps://play.app.goo.gl/?link=https://play.google.com/store/apps/details?id=com.craftyfashion.crafty",subject: "Checkout this awesome app");
+            },
+          ),
+          ListTile(
             leading: Icon(FontAwesomeIcons.headphones),
             title: Text('Contact Us',style: style,),
             onTap: () {

@@ -145,10 +145,9 @@ class NetworkHelper {
         response = Response(statusCode: 500);
       }
     }
-    if (response!=null) {
-      print("Response ${response}");
+    print("Response ${response.data}");
+    if (response!=null && response.data !=null) {
       if (response.statusCode == 200) {
-            print("Response : ${response.data}");
             return response.data;
           } else if (response.statusCode == 500) {
             return "Server Error";
@@ -586,7 +585,7 @@ class NetworkHelper {
       }
     } else {
       print("CCCvbbb");
-      return "Server Error";
+      return "No DATA";
     }
   }
 

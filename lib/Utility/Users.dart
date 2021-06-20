@@ -71,9 +71,11 @@ class UsersModel {
       User user =
           User(user1["name"], user1["_id"], user1["email"], user1["googleId"]);
       return user;
+    }else{
+      print("DFg1 $user1");
+      return "User Not Found";
     }
-    print("DFg1 $user1");
-    return "User Not Found";
+
   }
 
   Future<dynamic> getAll() async {

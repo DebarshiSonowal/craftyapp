@@ -50,6 +50,7 @@ class HostState extends State<Host> {
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
+
   void getLoginData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var acc = prefs.get('access');
@@ -58,9 +59,9 @@ class HostState extends State<Host> {
     if (acc != null && ref != null) {
       if (mounted) {
         setState(() {
-                Test.accessToken = acc;
-                Test.refreshToken = ref;
-              });
+          Test.accessToken = acc;
+          Test.refreshToken = ref;
+        });
       } else {
         Test.accessToken = acc;
         Test.refreshToken = ref;
@@ -80,7 +81,8 @@ class HostState extends State<Host> {
     new Future.delayed(Duration.zero, () {
       _fragNav.setDrawerContext = context;
     });
-    Provider.of<CartData>(context, listen: false).user == null && Provider.of<CartData>(context, listen: false).profile != null
+    Provider.of<CartData>(context, listen: false).user == null &&
+            Provider.of<CartData>(context, listen: false).profile != null
         ? null
         : getProfie(_fragNav.drawerKey.currentContext);
     super.initState();
@@ -143,9 +145,9 @@ class HostState extends State<Host> {
               return Scaffold(
                 key: _fragNav.drawerKey,
                 appBar: AppBar(
-                  titleSpacing:0,
+                  titleSpacing: 0,
                   title: Padding(
-                    padding:EdgeInsets.only(top:6),
+                    padding: EdgeInsets.only(top: 6),
                     child: TextButton(
                       onPressed: () {
                         _fragNav.putPosit(key: "Home");
@@ -171,13 +173,16 @@ class HostState extends State<Host> {
                     IconButton(
                       icon: Badge(
                           showBadge:
-                          Provider.of<CartData>(context).listLength == 0
-                              ? false
-                              : true,
+                              Provider.of<CartData>(context).listLength == 0
+                                  ? false
+                                  : true,
                           badgeContent: Text(
-                              "${Provider.of<CartData>(context).listLength}",style: TextStyle(
-                            color: Colors.white,fontFamily: 'Halyard',
-                          ),),
+                            "${Provider.of<CartData>(context).listLength}",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Halyard',
+                            ),
+                          ),
                           animationType: BadgeAnimationType.scale,
                           child: Icon(Icons.add_shopping_cart)),
                       onPressed: () {
@@ -260,7 +265,9 @@ class HostState extends State<Host> {
   }
 
   void getEverything(BuildContext context) async {
-    if (Provider.of<CartData>(context, listen: false).getCateg() == null) {
+    print(Provider.of<CartData>(context, listen: false).getCateg());
+    if (Provider.of<CartData>(context, listen: false).getCateg() == null ||
+        Provider.of<CartData>(context, listen: false).getCateg().length == 0) {
       print("Firrst");
       UsersModel usersModel1 = UsersModel();
       var data = await usersModel1.getRequired();
@@ -277,7 +284,8 @@ class HostState extends State<Host> {
             Colors.red, "Unable to connect to the server", Colors.white, 18);
       }
     }
-    if (Provider.of<CartData>(context, listen: false).allproducts == null||Provider.of<CartData>(context, listen: false).allproducts.length==0) {
+    if (Provider.of<CartData>(context, listen: false).allproducts == null ||
+        Provider.of<CartData>(context, listen: false).allproducts.length == 0) {
       print("Firrst1");
       UsersModel usersModel = UsersModel();
       var Data = await usersModel.getAll();
@@ -299,10 +307,10 @@ class HostState extends State<Host> {
           }
           if (mounted) {
             setState(() {
-                        Provider.of<CartData>(context, listen: false).setAllProduct(data);
-                        Provider.of<CartData>(context, listen: false).setMen(men);
-                        Provider.of<CartData>(context, listen: false).setWomen(women);
-                      });
+              Provider.of<CartData>(context, listen: false).setAllProduct(data);
+              Provider.of<CartData>(context, listen: false).setMen(men);
+              Provider.of<CartData>(context, listen: false).setWomen(women);
+            });
           } else {
             Provider.of<CartData>(context, listen: false).setAllProduct(data);
             Provider.of<CartData>(context, listen: false).setMen(men);
@@ -320,34 +328,24 @@ class HostState extends State<Host> {
         var UserData = await usersModel1.getUser();
         if (UserData != "User Not Found") {
           Provider.of<CartData>(context, listen: false).updateUser(UserData);
-        } else {
-          Dialogs.materialDialog(
-              msg: 'Sorry Something is wrong',
-              title: "Server Error",
-              color: Colors.white,
-              context: context,
-              actions: [
-                IconsButton(
-                  onPressed: clearData,
-                  text: 'Accepted',
-                  iconData: Icons.delete,
-                  color: Colors.red,
-                  textStyle: TextStyle(color: Colors.white),
-                  iconColor: Colors.white,
-                ),
-              ]);
         }
       }
       if (Provider.of<CartData>(context, listen: false).profile == null) {
         print("Firrst3");
         UsersModel usersModel2 = UsersModel();
-        var profile = await usersModel2
-            .getProf(Provider.of<CartData>(context, listen: false).user.id);
+        var profile;
+        try {
+          profile = await usersModel2
+              .getProf(Provider.of<CartData>(context, listen: false).user.id);
+        } catch (e) {
+          print(e);
+        }
         if (profile != "Server Error" && profile != null) {
           Provider.of<CartData>(context, listen: false).updateProfile(profile);
         }
       }
-      if (Provider.of<CartData>(context, listen: false).order == null||Provider.of<CartData>(context, listen: false).order.length==0) {
+      if (Provider.of<CartData>(context, listen: false).order == null ||
+          Provider.of<CartData>(context, listen: false).order.length == 0) {
         print("Firrst3");
         UsersModel usersModel3 = UsersModel();
         var order = await usersModel3.getOrdersforUser(
@@ -355,7 +353,7 @@ class HostState extends State<Host> {
         if (order != "Server Error" && order != "Orders  not found") {
           Provider.of<CartData>(context, listen: false).orders(order);
         }
-      }else{
+      } else {
         print("ADAAGQGQ");
       }
     }
@@ -376,7 +374,8 @@ class HostState extends State<Host> {
           title: 'Profile',
           fragment: ProfilePage(),
           icon: Icons.accessibility),
-      Posit(key: 'Cart', title: 'Cart', fragment: CartDup(), icon: Icons.ac_unit),
+      Posit(
+          key: 'Cart', title: 'Cart', fragment: CartDup(), icon: Icons.ac_unit),
       Posit(
           key: 'Men', title: 'Men', fragment: MenProducts(), icon: Icons.code),
       Posit(
@@ -446,9 +445,9 @@ class HostState extends State<Host> {
 
   void getProfie(dynamic context) async {
     UsersModel usersModel3 = UsersModel();
-    if (Test.accessToken!=null) {
+    if (Test.accessToken != null) {
       var profile = await usersModel3
-              .getProf(Provider.of<CartData>(context, listen: false).user.id);
+          .getProf(Provider.of<CartData>(context, listen: false).user.id);
       if (profile != "Server Error" && profile != null) {
         Provider.of<CartData>(context, listen: false).updateProfile(profile);
       }

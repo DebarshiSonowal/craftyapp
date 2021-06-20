@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:crafty/Helper/CartData.dart';
 import 'package:crafty/Helper/Test.dart';
 import 'package:crafty/Models/Products.dart';
@@ -24,7 +23,6 @@ class _SpecialAdsState extends State<SpecialAds> {
   get buttonSize => 20.0;
   Widget emptyListWidget;
   bool showError =false;
-  var  _selected;
   RefreshController _refreshController =
   RefreshController(initialRefresh: false);
   void _onRefresh(){
@@ -71,8 +69,12 @@ class _SpecialAdsState extends State<SpecialAds> {
 
 
     Timer(Duration(seconds: 7), () {
-        Provider.of<CartData>(context, listen: false)
-            .special.length==0?setTrue():null;
+        try {
+          Provider.of<CartData>(context, listen: false)
+                      .special.length==0?setTrue():null;
+        } catch (e) {
+          print(e);
+        }
     });
   }
 
@@ -112,18 +114,20 @@ class _SpecialAdsState extends State<SpecialAds> {
         controller: _refreshController,
         onRefresh: _onRefresh,
         onLoading: _onLoading,
-        child: Container(
-            child:showError?emptyListWidget:everything(context, buttonSize)
+        child: Consumer<CartData>(
+          builder: (context,data,child)=>Container(
+              child:showError?emptyListWidget:everything(context, buttonSize,data)
+          ),
         ),
       ),
     );
   }
-  everything(BuildContext context,buttonSize){
+  everything(BuildContext context,buttonSize,data){
     var _selected;
-    return  Provider.of<CartData>(context, listen: false).special == null ||
-        Provider.of<CartData>(context, listen: false).special.length == 0
+    return  data.special == null ||
+        data.special.length == 0
         ? LoadingAnimation(
-        Provider.of<CartData>(context, listen: false).special.length,
+        data.special.length,
         10,
         null)
         : Padding(
@@ -209,21 +213,20 @@ class _SpecialAdsState extends State<SpecialAds> {
                     // shrinkWrap: true,
                     semanticChildCount: 2,
                     children: List.generate(
-                        Provider.of<CartData>(context, listen: false)
+                        data
                             .special
                             .length, (index) {
                       return AllProductsFragmentProductItemView(
                           buttonSize: buttonSize,
                           list:
-                          Provider.of<CartData>(context, listen: false)
+                          data
                               .special,
                           OnTap: () {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => ProductView(
-                                      product: Provider.of<CartData>(context,
-                                          listen: false)
+                                      product: data
                                           .special[index],
                                       fragNav: Test.fragNavigate,
                                     )));

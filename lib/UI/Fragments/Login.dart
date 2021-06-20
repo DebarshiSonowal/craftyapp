@@ -355,6 +355,7 @@ class _LoginState extends State<Login> {
 
       });
     } else if (data == "Server Error") {
+
       pr.hide().then((isHidden) {
         Styles.showWarningToast(Colors.red, "Your Internet Connection is slow. Try again later", Colors.white, 15);
       });

@@ -143,9 +143,9 @@ class OrderItem extends StatelessWidget {
                                             child: Text("Details"),
                                           ),
                                           onTap: () {
-                                           Styles.showWarningToast(Styles.price_color, 'Coming soon', Colors.white, 12);
-                                            // Provider.of<CartData>(context,listen: false).setOrderSelected(Provider.of<CartData>(context, listen: false).order.reversed.toList()[index]);
-                                            // Test.fragNavigate.putPosit(key: 'Details', force: true);
+                                           // Styles.showWarningToast(Styles.price_color, 'Coming soon', Colors.white, 12);
+                                            Provider.of<CartData>(context,listen: false).setOrderSelected(Provider.of<CartData>(context, listen: false).order.reversed.toList()[index]);
+                                            Test.fragNavigate.putPosit(key: 'Details', force: true);
                                           },
                                           splashColor: Colors.black45,
                                           radius: MediaQuery.of(context).size.width,

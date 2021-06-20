@@ -56,8 +56,12 @@ class Test {
         Data.toString() != "Products not found") {
       List<Products> data = Data;
       if (data != null) {
-        Provider.of<CartData>(context, listen: false)
-            .setAllProduct(data);
+        try {
+          Provider.of<CartData>(context, listen: false)
+                      .setAllProduct(data);
+        } catch (e) {
+          print(e);
+        }
         addData(data,context);
       }
     }
@@ -73,8 +77,16 @@ class Test {
           women.add(i);
         }
       }
+      try {
         Provider.of<CartData>(context, listen: false).setMen(men);
+      } catch (e) {
+        print(e);
+      }
+      try {
         Provider.of<CartData>(context, listen: false).setWomen(women);
+      } catch (e) {
+        print(e);
+      }
     } else {
       print("empty");
     }

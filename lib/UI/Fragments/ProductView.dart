@@ -60,8 +60,8 @@ class _ProductViewState extends State<ProductView>
 
   @override
   Widget build(BuildContext context) {
-    print(
-        "Image data ${widget.product.Image.toString().split(',').toString()}");
+    print("Colors ${widget.product.Color
+        .split(",")}");
     return Material(
       child: SafeArea(
         child: Container(
@@ -285,7 +285,7 @@ class _ProductViewState extends State<ProductView>
                                           buttonTextStyle: ButtonTextStyle(
                                               selectedColor: Styles.price_color,
                                               unSelectedColor: Colors.black,
-                                              textStyle: TextStyle(fontSize: 9.sp)),
+                                              textStyle: TextStyle(fontSize: 7.sp,fontFamily: 'Halyard')),
                                           radioButtonValue: (value) {
                                             setState(() {
                                               selectedColor = value;
@@ -501,7 +501,7 @@ class _ProductViewState extends State<ProductView>
                               ),
                             ),
                             SizedBox(
-                              height: 2.5,
+                              height: 0.3.h,
                             ),
                             Card(
                               elevation: 1,
@@ -698,7 +698,7 @@ class _ProductViewState extends State<ProductView>
               Card(
                 elevation: 1.5,
                 child: Container(
-                  height: 50,
+                  height: 7.h,
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
                     color: Colors.white,

@@ -26,7 +26,8 @@ class _AllProductsState extends State<AllProductsFragment> {
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   BuildContext sysContext;
-var _selected;
+  var _selected;
+
   @override
   Widget build(BuildContext context) {
     sysContext = context;
@@ -58,12 +59,11 @@ var _selected;
         controller: _refreshController,
         onRefresh: _onRefresh,
         onLoading: _onLoading,
-        child:
-            Provider.of<CartData>(context, listen: true).allproducts.length ==
-                        0 &&
-                    showError
-                ? emptyListWidget
-                : getUI(),
+        child: Consumer<CartData>(
+            builder: (context, data, child) =>
+                data.allproducts.length == 0 && showError
+                    ? emptyListWidget
+                    : getUI(data)),
       ),
     );
   }
@@ -77,12 +77,9 @@ var _selected;
     });
   }
 
-  getUI() {
-    return Provider.of<CartData>(context, listen: true).allproducts.length == 0
-        ? LoadingAnimation(
-            Provider.of<CartData>(context, listen: true).allproducts.length,
-            10,
-            null)
+  getUI(data) {
+    return data.allproducts.length == 0
+        ? LoadingAnimation(data.allproducts.length, 10, null)
         : Padding(
             padding: EdgeInsets.only(top: 2, bottom: 10),
             child: Container(
@@ -102,14 +99,15 @@ var _selected;
                           ),
                         ],
                       ),
-                      height:5.h,
+                      height: 5.h,
                       child: DropdownButtonHideUnderline(
                         child: ButtonTheme(
                           alignedDropdown: true,
                           child: DropdownButton<String>(
                               value: _selected,
                               isExpanded: true,
-                              style: TextStyle(color: Colors.black, fontSize: 18),
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 18),
                               items: <String>[
                                 'Price Low to High',
                                 'Price High to Low'
@@ -130,22 +128,26 @@ var _selected;
                                 setState(() {
                                   _selected = value;
                                   if (_selected == 'Price Low to High') {
-                                    Provider.of<CartData>(context, listen: false)
+                                    Provider.of<CartData>(context,
+                                            listen: false)
                                         .setSortedList(Provider.of<CartData>(
                                                 context,
                                                 listen: false)
                                             .allproducts);
-                                    Provider.of<CartData>(context, listen: false)
+                                    Provider.of<CartData>(context,
+                                            listen: false)
                                         .sorted
                                         .sort((a, b) => double.parse(a.Price)
                                             .compareTo(double.parse(b.Price)));
                                   } else {
-                                    Provider.of<CartData>(context, listen: false)
+                                    Provider.of<CartData>(context,
+                                            listen: false)
                                         .setSortedList(Provider.of<CartData>(
                                                 context,
                                                 listen: false)
                                             .allproducts);
-                                    Provider.of<CartData>(context, listen: false)
+                                    Provider.of<CartData>(context,
+                                            listen: false)
                                         .sorted
                                         .sort((a, b) => double.parse(b.Price)
                                             .compareTo(double.parse(a.Price)));
@@ -162,29 +164,27 @@ var _selected;
                   Expanded(
                     child: Container(
                       child: GridView.builder(
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                              childAspectRatio:
-                                  (MediaQuery.of(context).size.width) /
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                  childAspectRatio: (MediaQuery.of(context)
+                                          .size
+                                          .width) /
                                       (MediaQuery.of(context).size.height + 30),
-                              crossAxisSpacing: 0,
-                              mainAxisSpacing: 5,
-                              crossAxisCount: 2),
+                                  crossAxisSpacing: 0,
+                                  mainAxisSpacing: 5,
+                                  crossAxisCount: 2),
                           shrinkWrap: true,
                           itemBuilder: (context, index) =>
                               AllProductsFragmentProductItemView(
                                   buttonSize: buttonSize,
-                                  list:
-                                      Provider.of<CartData>(context, listen: false)
-                                          .allproducts,
+                                  list: data.allproducts,
                                   OnTap: () {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) => ProductView(
-                                                  product: Provider.of<CartData>(
-                                                          context,
-                                                          listen: false)
-                                                      .allproducts[index],
+                                                  product:
+                                                      data.allproducts[index],
                                                   fragNav: Test.fragNavigate,
                                                 )));
                                   },

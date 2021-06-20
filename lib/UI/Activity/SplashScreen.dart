@@ -36,14 +36,14 @@ class _SplashScreenState extends State<SplashScreen>
     // getLoginData();
 
     syscontext=context;
-    getEverything(syscontext);
+    getEverything(_scaffoldKey.currentContext);
     super.initState();
     // checkPrev();
 
     Timer(Duration(seconds: 3), () => checkPrev());
     animationController = new AnimationController(
       vsync: this,
-      duration: new Duration(seconds: 5),
+      duration: new Duration(seconds: 3),
     );
     animationController.repeat();
     // ;
@@ -64,53 +64,57 @@ class _SplashScreenState extends State<SplashScreen>
     }
     return Scaffold(
       key: _scaffoldKey,
-      body: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          Container(
-            decoration: BoxDecoration(color: Styles.Log_sign),
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+      body: Consumer<CartData>(
+        builder: (context,CartData,child){
+          return Stack(
+            fit: StackFit.expand,
             children: <Widget>[
               Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    new AnimatedBuilder(
-                      animation: animationController,
-                      child: new Container(
-                        height: 200.0,
-                        width: 200.0,
-                        child: new Image.asset('assets/images/logo.png'),
-                      ),
-                      builder: (BuildContext context, Widget _widget) {
-                        return new Transform.rotate(
-                          angle: animationController.value * 6.3,
-                          child: _widget,
-                        );
-                      },
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 20.0),
-                    ),
-                    CircleAvatar(
-                      backgroundColor: Colors.transparent,
-                      radius: 100.0,
-                      child: Image(
-                          height: 100.0,
-                          width: 100.0,
-                          image: AssetImage('assets/images/crafty.png')),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 10.0),
-                    ),
-                  ],
-                ),
+                decoration: BoxDecoration(color: Styles.Log_sign),
               ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  Container(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        new AnimatedBuilder(
+                          animation: animationController,
+                          child: new Container(
+                            height: 200.0,
+                            width: 200.0,
+                            child: new Image.asset('assets/images/logo.png'),
+                          ),
+                          builder: (BuildContext context, Widget _widget) {
+                            return new Transform.rotate(
+                              angle: animationController.value * 6.3,
+                              child: _widget,
+                            );
+                          },
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 20.0),
+                        ),
+                        CircleAvatar(
+                          backgroundColor: Colors.transparent,
+                          radius: 100.0,
+                          child: Image(
+                              height: 100.0,
+                              width: 100.0,
+                              image: AssetImage('assets/images/crafty.png')),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 10.0),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              )
             ],
-          )
-        ],
+          );
+        },
       ),
     );
   }
@@ -153,7 +157,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void getEverything(BuildContext context) async {
-    Test.getAllProducts(context);
+    Test.getAllProducts(_scaffoldKey.currentContext);
     getLoginData();
     UsersModel usersModel1 = UsersModel();
     UsersModel usersModel3 = UsersModel();
@@ -163,20 +167,36 @@ class _SplashScreenState extends State<SplashScreen>
       var data1 = data['require'] as List;
       List<Categories> categories =
           data1.map((e) => Categories.fromJson(e)).toList();
-      Provider.of<CartData>(context, listen: false).setCategory(categories);
+      try {
+        Provider.of<CartData>(context, listen: false).setCategory(categories);
+      } catch (e) {
+        print(e);
+      }
       var data2 = data['ads'] as List;
       List<Ads> ads = data2.map((e) => Ads.fromJson(e)).toList();
-      Provider.of<CartData>(context, listen: false).setAds(ads);
+      try {
+        Provider.of<CartData>(context, listen: false).setAds(ads);
+      } catch (e) {
+        print(e);
+      }
     } else {
       UsersModel usersModel1 = UsersModel();
       var data = await usersModel1.getRequired();
       var data1 = data['require'] as List;
       List<Categories> categories =
           data1.map((e) => Categories.fromJson(e)).toList();
-      Provider.of<CartData>(context, listen: false).setCategory(categories);
+      try {
+        Provider.of<CartData>(context, listen: false).setCategory(categories);
+      } catch (e) {
+        print(e);
+      }
       var data2 = data['ads'] as List;
       List<Ads> ads = data2.map((e) => Ads.fromJson(e)).toList();
-      Provider.of<CartData>(context, listen: false).setAds(ads);
+      try {
+        Provider.of<CartData>(context, listen: false).setAds(ads);
+      } catch (e) {
+        print(e);
+      }
     }
     var UserData = await usersModel4.getUser();
     if (UserData != "User Not Found") {
