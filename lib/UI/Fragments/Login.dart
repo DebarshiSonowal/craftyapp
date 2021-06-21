@@ -194,7 +194,7 @@ class _LoginState extends State<Login> {
                                 color: Colors.black,
                                 fontSize: 19.0,
                                 fontWeight: FontWeight.w600));
-                        if (email == null && password == null) {
+                        if (email == null || password == null) {
                           Styles.showWarningToast(Colors.red, "Please enter required fields", Colors.white, 15);
                           // LogIn(email,password);
 

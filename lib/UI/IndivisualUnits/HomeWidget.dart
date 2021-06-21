@@ -4,7 +4,6 @@ import 'package:crafty/Models/Products.dart';
 import 'package:crafty/UI/CustomWidgets/AllProducts.dart';
 import 'package:crafty/UI/CustomWidgets/CategoryData.dart';
 import 'package:crafty/UI/CustomWidgets/LoadingAnimation.dart';
-import 'package:crafty/UI/Fragments/AllProducts.dart';
 import 'package:crafty/UI/Styling/Styles.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -28,13 +27,13 @@ class _HomeWidgetState extends State<HomeWidget> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               data.getCateg().length == 0
-                  ? LoadingAnimation(data.getCateg().length, 6, MediaQuery.of(context).size.height / 3)
+                  ? LoadingAnimation(data.getCateg().length, 6,
+                      MediaQuery.of(context).size.height / 3)
                   : CategoryData(showIndex, (index) {
                       if (data.getCateg()[index].name.toString().trim() !=
                               'Men' &&
                           data.getCateg()[index].name.toString().trim() !=
                               'Women') {
-                        print("das");
                         List<Products> list = [];
                         for (var i in data.allproducts) {
                           if (i.Gender.toString().trim().toUpperCase() ==
@@ -226,7 +225,6 @@ class _HomeWidgetState extends State<HomeWidget> {
   }
 
   showIndex(int i) {
-
     List<Products> list = [];
     var tag = Provider.of<CartData>(context, listen: false).getAds()[i].tag;
     Test.specialTag = tag;
@@ -241,15 +239,23 @@ class _HomeWidgetState extends State<HomeWidget> {
       }
     }
     if (list.isNotEmpty) {
-      setState(() {
-        Provider.of<CartData>(context, listen: false).setSpecial(list);
-      });
-    } else {
-      setState(() {
+      if (mounted) {
+        setState(() {
+                Provider.of<CartData>(context, listen: false).setSpecial(list);
+              });
+      } else {
         Provider.of<CartData>(context, listen: false).setSpecial([]);
-      });
+      }
+    } else {
+      if (mounted) {
+        setState(() {
+                Provider.of<CartData>(context, listen: false).setSpecial([]);
+              });
+      } else {
+        Provider.of<CartData>(context, listen: false).setSpecial([]);
+      }
     }
-    if (tag.toString().trim()!='COUPLE') {
+    if (tag.toString().trim() != 'COUPLE') {
       Test.fragNavigate.putPosit(key: 'Special', force: true);
     } else {
       print("ADA");
@@ -270,11 +276,17 @@ class _HomeWidgetState extends State<HomeWidget> {
           print("WOMEN $i");
         }
       }
-      setState(() {
+      if (mounted) {
+        setState(() {
+                Provider.of<CartData>(context, listen: false).setAllProduct(data);
+                Provider.of<CartData>(context, listen: false).setMen(men);
+                Provider.of<CartData>(context, listen: false).setWomen(women);
+              });
+      } else {
         Provider.of<CartData>(context, listen: false).setAllProduct(data);
         Provider.of<CartData>(context, listen: false).setMen(men);
         Provider.of<CartData>(context, listen: false).setWomen(women);
-      });
+      }
     } else {
       print("empty");
     }

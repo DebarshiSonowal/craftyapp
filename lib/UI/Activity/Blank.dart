@@ -721,7 +721,7 @@ class _CartDupState extends State<CartDup> with TickerProviderStateMixin{
                                 .profile !=
                                 null) {
                               if(Provider.of<CartData>(context, listen: false).list.length > 0){
-                                // showSelectAddress();
+                                showSelectAddress();
                               }else{
                                 Fluttertoast.showToast(
                                     msg: 'Add some items to the Cart',

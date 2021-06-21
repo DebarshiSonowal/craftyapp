@@ -102,7 +102,6 @@ class CartData extends ChangeNotifier {
 
   void orders(List<Order> value) {
     _order = value;
-    print(value);
   }
 
   void updateProfile(Profile profile) {

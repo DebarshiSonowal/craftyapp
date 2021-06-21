@@ -8,28 +8,14 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fragment_navigate/navigate-bloc.dart';
 import 'package:provider/provider.dart';
-
+import 'package:substring_highlight/substring_highlight.dart';
+import 'package:sizer/sizer.dart';
 import 'CartData.dart';
 
 class DataSearch extends SearchDelegate {
   var name, INDEX = 0;
   var suggestionList;
   final FragNavigate _fragNav;
-  final cities = [
-    "Kokrajhar",
-    "Sivsagar",
-    "Jorhat",
-    "Nagaon",
-    "Mumbai",
-    "Delhi",
-    "Golaghat"
-  ];
-
-  final recentCities = [
-    "Jorhat",
-    "Nagaon",
-    "Mumbai",
-  ];
 
   DataSearch(this._fragNav);
 
@@ -60,35 +46,42 @@ class DataSearch extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    final int searched = int.tryParse(query);
-    print(name);
     Products product;
-    for(var i in Provider.of<CartData>(context, listen: false).allproducts){
+    for (var i in Provider.of<CartData>(context, listen: false).allproducts) {
       try {
-        if(suggestionList[INDEX] == i.Name){
-                product = i;
-                break;
-              }
+        if (suggestionList[INDEX].toString().toUpperCase ==
+            i.Name.toString().toUpperCase) {
+          product = i;
+          break;
+        } else {
+          print("NOP ${i.Name}");
+        }
       } catch (e) {
         print(e);
       }
     }
     return Container(
       height: MediaQuery.of(context).size.height,
-      child: product==null?EmptyListWidget(
-          title: 'No Found',
-          subTitle: 'Search with something else',
-          image: 'assets/images/404.png',
-          titleTextStyle: Theme.of(context)
-              .typography
-              .dense
-              .headline4
-              .copyWith(color: Color(0xff9da9c7)),
-          subtitleTextStyle: Theme.of(context)
-              .typography
-              .dense
-              .bodyText1
-              .copyWith(color: Color(0xffabb8d6))):Center(child: ProductView(fragNav: _fragNav,product: product,)),
+      child: product == null
+          ? EmptyListWidget(
+              title: 'No Found',
+              subTitle: 'Search with something else',
+              image: 'assets/images/404.png',
+              titleTextStyle: Theme.of(context)
+                  .typography
+                  .dense
+                  .headline4
+                  .copyWith(color: Color(0xff9da9c7)),
+              subtitleTextStyle: Theme.of(context)
+                  .typography
+                  .dense
+                  .bodyText1
+                  .copyWith(color: Color(0xffabb8d6)))
+          : Center(
+              child: ProductView(
+              fragNav: _fragNav,
+              product: product,
+            )),
       // color: Colors.amber,
       // child: Text(Test.bihuProducts[INDEX].Name),
     );
@@ -99,36 +92,24 @@ class DataSearch extends SearchDelegate {
     suggestionList = query.isEmpty
         ? getListOfNames(context)
         : getListOfNames(context)
-            .where((element) => element.startsWith(query))
+            .where((element) => element.contains(query.toUpperCase()))
             .toList(growable: true);
 
     return ListView.builder(
       itemBuilder: (context, index) => ListTile(
         onTap: () {
-          print("before");
-          for(var i in suggestionList){
-            print(i);
-          }
-          print("after ");
           name = suggestionList[index].substring(0, query.length);
           INDEX = index;
-          print("on tap");
           print(suggestionList[index]);
           print("''''");
           print(getListOfNames(context)[index]);
           showResults(context);
         },
         leading: Icon(FontAwesomeIcons.search),
-        title: RichText(
-          text: TextSpan(
-              text: suggestionList[index].substring(0, query.length),
-              style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-              children: [
-                TextSpan(
-                    text: suggestionList[index].substring(query.length),
-                    style: TextStyle(color: Colors.grey))
-              ]),
+        title:SubstringHighlight(
+          textStyle: TextStyle(color: Colors.black,fontFamily: 'Halyard',fontSize:12.sp),
+          text:  suggestionList[index],     // search result string from database or something
+          term: query,       // user typed "et"
         ),
       ),
       itemCount: suggestionList.length,
@@ -137,8 +118,13 @@ class DataSearch extends SearchDelegate {
 
   List<String> getListOfNames(BuildContext context) {
     List<String> list = [];
-    for (int i = 0; i < Provider.of<CartData>(context, listen: false).allproducts.length; i++) {
-      list.add(Provider.of<CartData>(context, listen: false).allproducts[i].Name.toString());
+    for (int i = 0;
+        i < Provider.of<CartData>(context, listen: false).allproducts.length;
+        i++) {
+      list.add(Provider.of<CartData>(context, listen: false)
+          .allproducts[i]
+          .Name
+          .toString());
     }
     return list;
   }

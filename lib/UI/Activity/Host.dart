@@ -55,7 +55,6 @@ class HostState extends State<Host> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var acc = prefs.get('access');
     var ref = prefs.get('refresh');
-    print(acc);
     if (acc != null && ref != null) {
       if (mounted) {
         setState(() {
@@ -91,7 +90,6 @@ class HostState extends State<Host> {
   @override
   void dispose() {
     _fragNav.dispose();
-    print("GHoast");
     super.dispose();
   }
 
@@ -101,7 +99,7 @@ class HostState extends State<Host> {
       Test.fragNavigate = _fragNav;
       _fragNav.setDrawerContext = context;
     } catch (e) {
-      print("pROBLEM $e");
+      print("$e");
     }
     return WillPopScope(
       onWillPop: () {
@@ -265,10 +263,8 @@ class HostState extends State<Host> {
   }
 
   void getEverything(BuildContext context) async {
-    print(Provider.of<CartData>(context, listen: false).getCateg());
     if (Provider.of<CartData>(context, listen: false).getCateg() == null ||
         Provider.of<CartData>(context, listen: false).getCateg().length == 0) {
-      print("Firrst");
       UsersModel usersModel1 = UsersModel();
       var data = await usersModel1.getRequired();
       if (data != "Server Error") {
@@ -286,7 +282,6 @@ class HostState extends State<Host> {
     }
     if (Provider.of<CartData>(context, listen: false).allproducts == null ||
         Provider.of<CartData>(context, listen: false).allproducts.length == 0) {
-      print("Firrst1");
       UsersModel usersModel = UsersModel();
       var Data = await usersModel.getAll();
       List<Products> data = [];
@@ -323,7 +318,6 @@ class HostState extends State<Host> {
     }
     if (Test.refreshToken != null && Test.accessToken != null) {
       if (Provider.of<CartData>(context, listen: false).user == null) {
-        print("Firrst2");
         UsersModel usersModel1 = UsersModel();
         var UserData = await usersModel1.getUser();
         if (UserData != "User Not Found") {
@@ -331,7 +325,6 @@ class HostState extends State<Host> {
         }
       }
       if (Provider.of<CartData>(context, listen: false).profile == null) {
-        print("Firrst3");
         UsersModel usersModel2 = UsersModel();
         var profile;
         try {
@@ -346,7 +339,6 @@ class HostState extends State<Host> {
       }
       if (Provider.of<CartData>(context, listen: false).order == null ||
           Provider.of<CartData>(context, listen: false).order.length == 0) {
-        print("Firrst3");
         UsersModel usersModel3 = UsersModel();
         var order = await usersModel3.getOrdersforUser(
             Provider.of<CartData>(context, listen: false).user.id);
