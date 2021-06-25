@@ -137,6 +137,7 @@ class CartData extends ChangeNotifier {
 
   void addProduct(CartProduct cartProduct) {
     _list.add(cartProduct);
+    print("ca ${cartProduct.Id}");
     saveInfo();
     // print("Unique Id is ${cartProduct.Id.toString()}");
     Styles.showWarningToast(Colors.green, "Item added", Colors.white, 15);
@@ -204,6 +205,7 @@ class CartData extends ChangeNotifier {
   static String get listString {
     List<Map<String, dynamic>> jsonData =
     _list.map((word) => word.toJson()).toList();
+    print(jsonData);
     return jsonEncode(jsonData);
   }
 

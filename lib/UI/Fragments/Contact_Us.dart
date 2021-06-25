@@ -112,7 +112,7 @@ class _ContactUsState extends State<ContactUs> {
               }, Color(0xff00A2F3), FontAwesomeIcons.whatsapp,
                   Color(0xff4ECD5C)),
               ContactIconButton(() {
-                notavailable();
+               _launchURL('https://twitter.com/crafty_fashions?fbclid=IwAR1MwvrWA6Gntr-OfGB25ARExBA90o11zXrjohB3o6acB2H90nV0d-RbIxU');
               }, Color(0xff00A2F3), FontAwesomeIcons.twitter,
                   Color(0xff00A2F3))
             ],

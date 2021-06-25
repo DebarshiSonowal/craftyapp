@@ -25,7 +25,7 @@ class CartProduct {
         'quantity': _quantity,
         'size': _size,
         'UID': _UID,
-        'Id': _Id
+        'Id': _Id.toString()
       };
 
   get UID => _UID;

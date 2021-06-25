@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "133335901179",
+    "project_id": "crafty-fashions-assam",
+    "storage_bucket": "crafty-fashions-assam.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:133335901179:android:d1e83068baf08fe6eaa15e",
+        "android_client_info": {
+          "package_name": "com.craftyfashion.crafty"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "133335901179-rt0k14a2pgm0r5rke13t25vk91u6decp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.craftyfashion.crafty",
+            "certificate_hash": "fd3f9e01bc1d92b28017573b2553b3cad89570be"
+          }
+        },
+        {
+          "client_id": "133335901179-3tcmi6uvrgdkeckne3c9o4ivdgdevh28.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDX8D-HUQ3geWPv7qQF7qztKyaJ9vuBC7M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "133335901179-3tcmi6uvrgdkeckne3c9o4ivdgdevh28.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
