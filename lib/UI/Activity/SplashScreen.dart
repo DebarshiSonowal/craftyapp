@@ -9,7 +9,7 @@ import 'package:crafty/UI/Fragments/NoInternet.dart';
 import 'package:crafty/UI/Styling/Styles.dart';
 import 'package:crafty/Utility/Users.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+// import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:page_transition/page_transition.dart';
@@ -33,7 +33,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void initState() {
-    this.initDynamicLinks();
+    // this.initDynamicLinks();
     checkInternet();
     // getLoginData();
 
@@ -212,28 +212,28 @@ class _SplashScreenState extends State<SplashScreen>
       }
     }
   }
-  void initDynamicLinks() async {
-    FirebaseDynamicLinks.instance.onLink(
-        onSuccess: (PendingDynamicLinkData dynamicLink) async {
-          final Uri deepLink = dynamicLink?.link;
-
-          if (deepLink != null) {
-            Navigator.pushNamed(context, deepLink.path);
-          }
-        },
-        onError: (OnLinkErrorException e) async {
-          print('onLinkError');
-          print(e.message);
-        }
-    );
-
-    final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
-    final Uri deepLink = data?.link;
-
-    if (deepLink != null) {
-      Navigator.pushNamed(context, deepLink.path);
-    }
-  }
+  // void initDynamicLinks() async {
+  //   FirebaseDynamicLinks.instance.onLink(
+  //       onSuccess: (PendingDynamicLinkData dynamicLink) async {
+  //         final Uri deepLink = dynamicLink?.link;
+  //
+  //         if (deepLink != null) {
+  //           Navigator.pushNamed(context, deepLink.path);
+  //         }
+  //       },
+  //       onError: (OnLinkErrorException e) async {
+  //         print('onLinkError');
+  //         print(e.message);
+  //       }
+  //   );
+  //
+  //   final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
+  //   final Uri deepLink = data?.link;
+  //
+  //   if (deepLink != null) {
+  //     Navigator.pushNamed(context, deepLink.path);
+  //   }
+  // }
 }
 
 
